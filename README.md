@@ -40,11 +40,11 @@ questions or feedback.
 
 | Milestone | Status | Version | Date |
 | --- | --- | --- | --- |
-| Preview Release | Completed | v0.1.0 | Aug 9th, 2024 |
-| Golang/JS Clients | pending | - | - |
-| Indexer Service | pending | - | - |
+| Preview Release | Released | v0.1.0 | Aug 9th, 2024 |
+| Golang/JS Clients | Pending | - | - |
+| Indexer Service | [Released](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
 | Code VM Explorer | - | - | - |
-| Sequencer Integration | pending | - | - |
+| Sequencer Integration | Pending | - | - |
 | Mobile App Integration | - | - | - |
 | Documentation | - | - | - |
 | Audit | - | - | - |
