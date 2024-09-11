@@ -21,7 +21,7 @@ use crate::{
 #[derive(Clone, Debug, BorshDeserialize, BorshSerialize, PartialEq)]
 #[repr(C)]
 struct OpcodeData {
-    amount: u32,
+    amount: u64,
     transcript: Hash,
     recent_root: Hash,
     commitment: Hash,
@@ -111,14 +111,14 @@ pub fn transfer_to_internal (
     let cpi_program = token_program.to_account_info().clone();
     let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
 
-    transfer(cpi_ctx, opcode_data.amount as u64)?;
+    transfer(cpi_ctx, opcode_data.amount)?;
 
     let mut vta = vm.read_account_using(
         dst_mem, 
         dst_index,
     ).unwrap().into_inner_timelock().unwrap();
 
-    vta.balance += opcode_data.amount as u64;
+    vta.balance += opcode_data.amount;
 
     let timelock_address = vta.get_timelock_address(
         vm.get_mint(), 
@@ -133,7 +133,7 @@ pub fn transfer_to_internal (
         opcode_data.recent_root,
         opcode_data.transcript,
         destination_address,
-        opcode_data.amount as u64,
+        opcode_data.amount,
     );
 
     // Whatever was passed in as the commitment should match what we calculated above
@@ -182,7 +182,7 @@ pub fn transfer_to_internal (
         Some(ChangeLogData::Transfer {
             src: relay_vault.to_account_info().key(),
             dst: destination_address,
-            amount: opcode_data.amount as u64,
+            amount: opcode_data.amount,
         })
     );
 

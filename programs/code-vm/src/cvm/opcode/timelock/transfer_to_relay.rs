@@ -27,7 +27,7 @@ use crate::{
 #[repr(C)]
 struct OpcodeData {
     signature: [u8; 64],
-    amount: u32
+    amount: u64
 }
 
 pub fn transfer_to_relay (
@@ -117,7 +117,7 @@ pub fn transfer_to_relay (
         &src_vta, 
         vra.address, 
         &vdn, 
-        opcode_data.amount as u64);
+        opcode_data.amount);
 
     // This action requires a signature from the source account
     sig_verify(
@@ -130,7 +130,7 @@ pub fn transfer_to_relay (
     vdn.nonce = vm.get_current_poh();
 
     // TODO: add bounds checking
-    src_vta.balance -= opcode_data.amount as u64;
+    src_vta.balance -= opcode_data.amount;
 
     vm.try_write_account_using(
         src_mem, 
@@ -170,7 +170,7 @@ pub fn transfer_to_relay (
         signer_seeds
     );
 
-    transfer(cpi_ctx, opcode_data.amount as u64)?;
+    transfer(cpi_ctx, opcode_data.amount)?;
 
     let src_timelock_address = src_vta.get_timelock_address(
         vm.get_mint(),
@@ -185,7 +185,7 @@ pub fn transfer_to_relay (
         Some(ChangeLogData::Transfer {
             src: src_token_address,
             dst: destination.to_account_info().key(),
-            amount: opcode_data.amount as u64,
+            amount: opcode_data.amount,
         })
     );
 

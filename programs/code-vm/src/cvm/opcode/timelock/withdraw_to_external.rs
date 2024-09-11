@@ -105,7 +105,7 @@ pub fn withdraw_to_external(
         destination.key(),
         &vdn);
 
-    let amount = src_vta.balance as u64;
+    let amount = src_vta.balance;
 
     // This action requires a signature from the source account
     sig_verify(

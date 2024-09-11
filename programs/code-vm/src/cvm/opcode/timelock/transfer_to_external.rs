@@ -27,7 +27,7 @@ use crate::{
 #[repr(C)]
 struct OpcodeData {
     signature: [u8; 64],
-    amount: u32, // Using u32 instead of u64 to save space
+    amount: u64,
 }
 
 pub fn transfer_to_external(
@@ -105,7 +105,7 @@ pub fn transfer_to_external(
         &src_vta, 
         destination.key(), 
         &vdn, 
-        opcode_data.amount as u64);
+        opcode_data.amount);
 
     // This action requires a signature from the source account
     sig_verify(
@@ -140,13 +140,13 @@ pub fn transfer_to_external(
         signer_seeds
     );
 
-    transfer(cpi_ctx, opcode_data.amount as u64)?;
+    transfer(cpi_ctx, opcode_data.amount)?;
 
     // Advance the nonce
     vdn.nonce = vm.get_current_poh();
 
     // TODO: add bounds checking
-    src_vta.balance -= opcode_data.amount as u64;
+    src_vta.balance -= opcode_data.amount;
 
     let src_timelock_address = src_vta.get_timelock_address(
         vm.get_mint(),
@@ -173,7 +173,7 @@ pub fn transfer_to_external(
         Some(ChangeLogData::Transfer {
             src: src_token_address,
             dst: destination.to_account_info().key(),
-            amount: opcode_data.amount as u64,
+            amount: opcode_data.amount,
         })
     );
 

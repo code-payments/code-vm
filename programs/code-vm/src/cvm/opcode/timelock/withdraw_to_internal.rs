@@ -104,7 +104,7 @@ pub fn withdraw_to_internal (
         &vdn
     );
 
-    let amount = src_vta.balance as u64;
+    let amount = src_vta.balance;
 
     // This action requires a signature from the source account
     sig_verify(
@@ -119,7 +119,7 @@ pub fn withdraw_to_internal (
     if src_index == dst_index {
         // No need to transfer
     } else {
-        dst_vta.balance += amount as u64;
+        dst_vta.balance += amount;
     }
 
     vm.try_write_account_using(

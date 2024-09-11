@@ -25,7 +25,7 @@ use crate::{
 #[repr(C)]
 struct OpcodeData {
     signature: [u8; 64],
-    amount: u32
+    amount: u64
 }
 
 pub fn transfer_to_internal (
@@ -103,7 +103,7 @@ pub fn transfer_to_internal (
         &src_vta, 
         &dst_vta, 
         &vdn, 
-        opcode_data.amount as u64);
+        opcode_data.amount);
 
     // This action requires a signature from the source account
     sig_verify(
@@ -118,8 +118,8 @@ pub fn transfer_to_internal (
     if src_index == dst_index {
         // No need to transfer, just update the nonce
     } else {
-        src_vta.balance -= opcode_data.amount as u64;
-        dst_vta.balance += opcode_data.amount as u64;
+        src_vta.balance -= opcode_data.amount;
+        dst_vta.balance += opcode_data.amount;
 
         vm.try_write_account_using(
             src_mem, 
@@ -162,7 +162,7 @@ pub fn transfer_to_internal (
         Some(ChangeLogData::Transfer {
             src: src_token_address,
             dst: dst_token_address,
-            amount: opcode_data.amount as u64,
+            amount: opcode_data.amount,
         })
     );
 

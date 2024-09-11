@@ -21,7 +21,7 @@ use crate::{
 #[derive(Clone, Debug, BorshDeserialize, BorshSerialize, PartialEq)]
 #[repr(C)]
 struct OpcodeData {
-    amount: u32,
+    amount: u64,
     transcript: Hash,
     recent_root: Hash,
     commitment: Hash,
@@ -100,7 +100,7 @@ pub fn transfer_to_external (
     let cpi_program = token_program.to_account_info().clone();
     let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
 
-    transfer(cpi_ctx, opcode_data.amount as u64)?;
+    transfer(cpi_ctx, opcode_data.amount)?;
 
     let destination_address = destination.key();
     let (commitment, _) = utils::find_relay_commitment_address( // <- expensive
@@ -108,7 +108,7 @@ pub fn transfer_to_external (
         opcode_data.recent_root,
         opcode_data.transcript,
         destination_address,
-        opcode_data.amount as u64,
+        opcode_data.amount,
     );
 
     // Whatever was passed in as the commitment should match what we calculated above
@@ -152,7 +152,7 @@ pub fn transfer_to_external (
         Some(ChangeLogData::Transfer {
             src: relay_vault.to_account_info().key(),
             dst: destination_address,
-            amount: opcode_data.amount as u64,
+            amount: opcode_data.amount,
         })
     );
 

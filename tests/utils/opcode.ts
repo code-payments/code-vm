@@ -56,7 +56,7 @@ class Timelock_TransferData {
   static readonly struct = new beet.BeetArgsStruct<Timelock_TransferData>(
     [
       ['signature', beet.uniformFixedSizeArray(beet.u8, 64)],
-      ['amount', beet.u32],
+      ['amount', beet.u64],
     ],
     'Timelock_TransferData'
   )
@@ -85,7 +85,7 @@ class Relay_TransferData {
 
   static readonly struct = new beet.BeetArgsStruct<Relay_TransferData>(
     [
-      ['amount', beet.u32],
+      ['amount', beet.u64],
       ['transcript', beetSolana.publicKey],
       ['recent_root', beetSolana.publicKey],
       ['commitment', beetSolana.publicKey],
