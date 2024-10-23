@@ -1,0 +1,1 @@
+solana_program::declare_id!("time2Z2SCnn3qYg3ULKVtdkh8YmZ5jFdKicnA1W2YnJ");
