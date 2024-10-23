@@ -5,12 +5,12 @@ use crate::opcode::*;
 
 /*
     This instruction is used to execute VM opcodes using virtual account memory
-    banks. Opcodes are a handful of purpose built instructions that allow us to 
+    banks. Opcodes are a handful of purpose built instructions that allow us to
     read, write, and transfer tokens between virtual accounts and external
     accounts.
-    
+
     Accounts expected by this instruction:
-    
+
     | # | R/W | Type         | Req | PDA | Name             | Description                                  |
     |---|-----|------------- |-----|-----|------------------|----------------------------------------------|
     | 0 | mut | Signer       | Yes |     | vm_authority     | The authority of the VM.                     |
@@ -45,7 +45,6 @@ use crate::opcode::*;
     3. data: [u8]          - The opaque data to pass into the VM opcode instruction.
 */
 pub fn process_exec(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-
     let args = ExecIx::try_from_slice(data)?;
     let ctx = ExecContext::try_from(accounts)?;
 
@@ -57,7 +56,9 @@ pub fn process_exec(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult 
     ctx.check_memory_banks()?;
 
     let ix = Opcode::try_from(args.opcode).unwrap();
+
     match ix {
+
         Opcode::TransferOp             => process_transfer(&ctx, &args),
         Opcode::WithdrawOp             => process_withdraw(&ctx, &args),
         Opcode::RelayOp                => process_relay(&ctx, &args),
@@ -91,9 +92,7 @@ pub struct ExecContext<'a, 'b> {
 }
 
 impl<'a, 'b> ExecContext<'a, 'b> {
-    pub fn try_from(accounts: &'a [AccountInfo<'b>]) 
-        -> Result<Self, ProgramError> {
-
+    pub fn try_from(accounts: &'a [AccountInfo<'b>]) -> Result<Self, ProgramError> {
         let (
             vm_authority_info,
             vm_info,

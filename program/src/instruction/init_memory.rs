@@ -1,8 +1,5 @@
 use code_vm_api::prelude::*;
-use solana_program::{
-    system_program,
-    sysvar,
-};
+use solana_program::{system_program, sysvar};
 use steel::*;
 
 /*
@@ -11,7 +8,7 @@ use steel::*;
     stored in one of these.
 
     Accounts expected by this instruction:
-    
+
     | # | R/W | Type    | PDA | Name           | Description                              |
     |---|-----|---------|-----|----------------|------------------------------------------|
     | 0 | mut | Signer  |     | vm_authority   | The authority of the VM.                 |
@@ -34,7 +31,6 @@ use steel::*;
     2. vm_memory_bump: u8   - The bump seed for the this memory account.
 */
 pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-
     let args = InitMemoryIx::try_from_bytes(data)?;
     let [
         vm_authority_info,
@@ -60,26 +56,26 @@ pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
 
     check_uninitialized_pda(
-        vm_memory_info, 
+        vm_memory_info,
         &[
-            CODE_VM, 
+            CODE_VM,
             VM_MEMORY_ACCOUNT,
             args.name.as_ref(),
-            vm_info.key.as_ref()
+            vm_info.key.as_ref(),
         ],
-        args.vm_memory_bump, 
-        &code_vm_api::id()
+        args.vm_memory_bump,
+        &code_vm_api::id(),
     )?;
 
     create_account::<MemoryAccount>(
         vm_memory_info,
         &code_vm_api::ID,
         &[
-            CODE_VM, 
+            CODE_VM,
             VM_MEMORY_ACCOUNT,
             args.name.as_ref(),
             vm_info.key.as_ref(),
-            &[args.vm_memory_bump]
+            &[args.vm_memory_bump],
         ],
         system_program_info,
         vm_authority_info,
@@ -96,4 +92,3 @@ pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
 
     Ok(())
 }
-

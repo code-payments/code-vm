@@ -4,18 +4,18 @@ use steel::*;
 /*
     This instruction pulls in a token deposit that was made by a user. In this
     instruction, tokens are moved from the deposit_ata to the vm omnibus and a
-    virtual account owned by the depositor is updated. 
-    
+    virtual account owned by the depositor is updated.
+
     Users that wish to timelock/depsit tokens must first find their derived
     deposit PDA. This is exposed by the mobile app. From there, the user can
     send tokens to the associated token address of that deposit PDA using any
-    SPL token wallet. 
-    
+    SPL token wallet.
+
     Once they have done this, we can call this instruction to pull in the
     deposit and update the user's virtual account.
 
     Accounts expected by this instruction:
-    
+
     | # | R/W | Type         | PDA | Name          | Description                                   |
     |---|-----|--------------|-----|---------------|-----------------------------------------------|
     | 0 | mut | Signer       |     | vm_authority  | The authority of the VM.                      |
@@ -41,7 +41,6 @@ use steel::*;
     1. signature: [u8; 64]  - A signature of the current account state signed by the VM authority.
 */
 pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-
     let args = DepositIx::try_from_bytes(data)?;
     let [
         vm_authority_info,
@@ -88,25 +87,25 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
             &depositor_info.key.to_bytes(),
             &vm_info.key.to_bytes(),
             &[args.bump],
-        ]]
+        ]],
     )?;
 
-    vta.balance = vta.balance
+    vta.balance = vta
+        .balance
         .checked_add(args.amount)
         .ok_or(ProgramError::ArithmeticOverflow)?;
 
     try_write(
         vm_memory_info,
         args.account_index,
-        &VirtualAccount::Timelock(vta)
+        &VirtualAccount::Timelock(vta),
     )?;
 
     vm.advance_poh(CodeInstruction::DepositIx, accounts, data);
-    vm.log_event(ChangeLogData::TimelockDeposit { 
-        account: va, 
+    vm.log_event(ChangeLogData::TimelockDeposit {
+        account: va,
         amount: args.amount,
     });
 
     Ok(())
 }
-

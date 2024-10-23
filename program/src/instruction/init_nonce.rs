@@ -7,7 +7,7 @@ use steel::*;
     the VM's memory.
 
     Accounts expected by this instruction:
-    
+
     | # | R/W | Type    | PDA | Name                   | Description                              |
     |---|-----|---------|-----|------------------------|------------------------------------------|
     | 0 | mut | Signer  |     | vm_authority           | The authority of the VM.                 |
@@ -28,7 +28,6 @@ use steel::*;
     0. nonce_bump: u8      - The bump seed for the nonce account address.
 */
 pub fn process_init_nonce(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-
     let args = InitNonceIx::try_from_bytes(data)?;
     let [
         vm_authority_info,
@@ -68,4 +67,3 @@ pub fn process_init_nonce(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
 
     Ok(())
 }
-

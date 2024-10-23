@@ -4,13 +4,13 @@ use steel::*;
 /*
     This instruction is used to non-custodially withdraw tokens from unlocked
     virtual accounts or deposit addresses. The tokens can be withdrawn from the
-    VM's memory, storage, or from a deposit account. 
-    
+    VM's memory, storage, or from a deposit account.
+
     The requirement for this instruction is that the owner's timelock account is
     in the unlocked state.
 
     Accounts expected by this instruction:
-    
+
     | # | R/W | Req | PDA | Type         | Name             | Description                            |
     |---|-----|-----|-----|------------  |------------------|----------------------------------------|
     | 0 | mut | Yes |     | Signer       | depositor        | The owner of the deposited tokens.     |
@@ -77,20 +77,21 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     let vm = load_vm(ctx.vm_info)?;
 
     vm.advance_poh(CodeInstruction::WithdrawIx, accounts, data);
-    vm.log_event(ChangeLogData::TimelockWithdraw { 
-        owner: ctx.depositor_info.key.clone(), 
-        dst: ctx.external_address_info.key.clone(), 
-        amount
+    vm.log_event(ChangeLogData::TimelockWithdraw {
+        owner: ctx.depositor_info.key.clone(),
+        dst: ctx.external_address_info.key.clone(),
+        amount,
     });
 
     Ok(())
 }
 
-fn process_withdraw_from_memory(ctx: &WithdrawContext, data: &WithdrawIxData) -> Result<u64, ProgramError> {
+fn process_withdraw_from_memory(
+    ctx: &WithdrawContext,
+    data: &WithdrawIxData,
+) -> Result<u64, ProgramError> {
     let account_index = match data {
-        WithdrawIxData::FromMemory { 
-            account_index, 
-        } => Ok(*account_index),
+        WithdrawIxData::FromMemory { account_index } => Ok(*account_index),
         _ => Err(ProgramError::InvalidInstructionData),
     }?;
 
@@ -124,11 +125,11 @@ fn process_withdraw_from_memory(ctx: &WithdrawContext, data: &WithdrawIxData) ->
         ctx.token_program_info,
         vta.balance,
         &[&[
-            CODE_VM, 
+            CODE_VM,
             VM_OMNIBUS,
             vm_info.key.as_ref(),
             &[vm.get_omnibus_bump()],
-        ]]
+        ]],
     )?;
 
     try_delete(vm_memory_info, account_index)?;
@@ -138,12 +139,15 @@ fn process_withdraw_from_memory(ctx: &WithdrawContext, data: &WithdrawIxData) ->
     Ok(vta.balance)
 }
 
-fn process_withdraw_from_storage(ctx: &WithdrawContext, data: &WithdrawIxData) -> Result<u64, ProgramError> {
+fn process_withdraw_from_storage(
+    ctx: &WithdrawContext,
+    data: &WithdrawIxData,
+) -> Result<u64, ProgramError> {
     let (packed_va, proof, signature) = match data {
-        WithdrawIxData::FromStorage { 
-            packed_va, 
-            proof, 
-            signature 
+        WithdrawIxData::FromStorage {
+            packed_va,
+            proof,
+            signature,
         } => Ok((packed_va, proof, signature)),
         _ => Err(ProgramError::InvalidInstructionData),
     }?;
@@ -157,11 +161,7 @@ fn process_withdraw_from_storage(ctx: &WithdrawContext, data: &WithdrawIxData) -
     let va_hash = va.get_hash();
     let sig_hash = hashv(&[signature.as_ref(), va_hash.as_ref()]);
 
-    sig_verify(
-        vm.authority.as_ref(), 
-        signature.as_ref(), 
-        va_hash.as_ref(),
-    )?;
+    sig_verify(vm.authority.as_ref(), signature.as_ref(), va_hash.as_ref())?;
 
     check_condition(
         ctx.vm_omnibus.is_some(),
@@ -185,11 +185,11 @@ fn process_withdraw_from_storage(ctx: &WithdrawContext, data: &WithdrawIxData) -
         ctx.token_program_info,
         vta.balance,
         &[&[
-            CODE_VM, 
+            CODE_VM,
             VM_OMNIBUS,
             vm_info.key.as_ref(),
             &[vm.get_omnibus_bump()],
-        ]]
+        ]],
     )?;
 
     ctx.create_receipt(&vta.nonce)?;
@@ -197,7 +197,10 @@ fn process_withdraw_from_storage(ctx: &WithdrawContext, data: &WithdrawIxData) -
     Ok(vta.balance)
 }
 
-fn process_withdraw_from_deposit(ctx: &WithdrawContext, data: &WithdrawIxData) -> Result<u64, ProgramError> {
+fn process_withdraw_from_deposit(
+    ctx: &WithdrawContext,
+    data: &WithdrawIxData,
+) -> Result<u64, ProgramError> {
     let bump = match data {
         WithdrawIxData::FromDeposit { bump } => Ok(*bump),
         _ => Err(ProgramError::InvalidInstructionData),
@@ -229,7 +232,7 @@ fn process_withdraw_from_deposit(ctx: &WithdrawContext, data: &WithdrawIxData) -
             &ctx.depositor_info.key.to_bytes(),
             &ctx.vm_info.key.to_bytes(),
             &[bump],
-        ]]
+        ]],
     )?;
 
     // No receipt is created for this type of withdraw
@@ -251,13 +254,11 @@ pub struct WithdrawContext<'a, 'b> {
     pub external_address_info: &'a AccountInfo<'b>,
     pub token_program_info: &'a AccountInfo<'b>,
     pub system_program_info: Option<&'a AccountInfo<'b>>,
-    pub rent_sysvar_info: Option<&'a AccountInfo<'b>>
+    pub rent_sysvar_info: Option<&'a AccountInfo<'b>>,
 }
 
-impl <'a, 'b> WithdrawContext<'a, 'b> {
-    pub fn try_from(accounts: &'a [AccountInfo<'b>]) 
-        -> Result<Self, ProgramError> {
-
+impl<'a, 'b> WithdrawContext<'a, 'b> {
+    pub fn try_from(accounts: &'a [AccountInfo<'b>]) -> Result<Self, ProgramError> {
         let (
             depositor_info,
             payer_info,
@@ -316,25 +317,24 @@ impl <'a, 'b> WithdrawContext<'a, 'b> {
         let owner = self.depositor_info.key;
         let vm = load_vm(self.vm_info)?;
 
-        let (timelock_address, _)= find_virtual_timelock_address(
+        let (timelock_address, _) = find_virtual_timelock_address(
             &vm.get_mint(),
             &vm.get_authority(),
             &owner,
             vm.get_lock_duration(),
         );
 
-        let (unlock_address, bump) = find_unlock_address(
-            &owner,
-            &timelock_address,
-            self.vm_info.key,
-        );
+        let (unlock_address, bump) =
+            find_unlock_address(&owner, &timelock_address, self.vm_info.key);
 
         check_condition(
             self.unlock_pda_info.key.eq(&unlock_address),
             "unlock_pda does not match the expected unlock address",
         )?;
 
-        let unlock_state = self.unlock_pda_info.to_account::<UnlockStateAccount>(&code_vm_api::ID)?;
+        let unlock_state = self
+            .unlock_pda_info
+            .to_account::<UnlockStateAccount>(&code_vm_api::ID)?;
 
         check_condition(
             unlock_state.is_unlocked(),
@@ -362,15 +362,10 @@ impl <'a, 'b> WithdrawContext<'a, 'b> {
         let unlock_pda_info = self.unlock_pda_info;
         let withdraw_receipt_info = self.withdraw_receipt_info.unwrap();
 
-        let (receipt_address, bump) = find_withdraw_receipt_address(
-            &unlock_pda_info.key,
-            nonce,
-            vm_info.key,
-        );
+        let (receipt_address, bump) =
+            find_withdraw_receipt_address(&unlock_pda_info.key, nonce, vm_info.key);
 
-        withdraw_receipt_info
-            .is_empty()?
-            .is_writable()?;
+        withdraw_receipt_info.is_empty()?.is_writable()?;
 
         check_condition(
             withdraw_receipt_info.key.eq(&receipt_address),
@@ -386,7 +381,7 @@ impl <'a, 'b> WithdrawContext<'a, 'b> {
                 unlock_pda_info.key.as_ref(),
                 nonce.as_ref(),
                 vm_info.key.as_ref(),
-                &[bump]
+                &[bump],
             ],
             self.system_program_info.unwrap(),
             self.payer_info,
@@ -395,4 +390,3 @@ impl <'a, 'b> WithdrawContext<'a, 'b> {
         Ok(())
     }
 }
-

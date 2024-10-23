@@ -6,10 +6,10 @@ use steel::*;
     storage (compressed_mem). The full account state along with a signature of
     the state is required in order to decompress it. The virtual account is
     decompressed into the VM's working memory (compact_mem) at the specified
-    account_index. 
+    account_index.
 
     Accounts expected by this instruction:
-    
+
     | # | R/W | Type            | Req | PDA | Name             | Description                              |
     |---|-----|-----------------|-----|-----|------------------|------------------------------------------|
     | 0 | mut | Signer          | Yes |     | vm_authority     | The authority of the VM.                 |
@@ -55,9 +55,7 @@ pub fn process_decompress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
         unlock_pda_info,       // optional
         withdraw_receipt_info, // optional
     ) = match accounts {
-        [ a1, a2, a3, a4, a5, a6, ] => (
-            a1, a2, a3, a4, get_optional(a5), get_optional(a6),
-        ),
+        [a1, a2, a3, a4, a5, a6] => (a1, a2, a3, a4, get_optional(a5), get_optional(a6)),
         _ => return Err(ProgramError::NotEnoughAccountKeys),
     };
 
@@ -105,8 +103,8 @@ pub fn process_decompress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     let va_hash = va.get_hash();
 
     sig_verify(
-        vm_authority_info.key.as_ref(), 
-        args.signature.as_ref(), 
+        vm_authority_info.key.as_ref(),
+        args.signature.as_ref(),
         va_hash.as_ref(),
     )?;
 
@@ -115,43 +113,33 @@ pub fn process_decompress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     try_write(vm_memory_info, args.account_index, &va)?;
 
     vm.advance_poh(CodeInstruction::DecompressIx, accounts, data);
-    vm.log_event(ChangeLogData::Decompress { 
-        account: va, 
-        storage: vm_storage_info.key.clone(), 
-        signature: args.signature
+    vm.log_event(ChangeLogData::Decompress {
+        account: va,
+        storage: vm_storage_info.key.clone(),
+        signature: args.signature,
     });
 
     Ok(())
 }
 
-
 fn check_timelock_state(
-    vta: &VirtualTimelockAccount, 
-    vm: &CodeVmAccount, 
-    vm_info: &AccountInfo<'_>, 
+    vta: &VirtualTimelockAccount,
+    vm: &CodeVmAccount,
+    vm_info: &AccountInfo<'_>,
     unlock_pda_info: &AccountInfo<'_>,
-    withdraw_receipt_info: &AccountInfo<'_>
+    withdraw_receipt_info: &AccountInfo<'_>,
 ) -> ProgramResult {
-    let timelock_address = vta.get_timelock_address(
-        &vm.get_mint(),
-        &vm.get_authority(),
-        vm.get_lock_duration(),
-    );
+    let timelock_address =
+        vta.get_timelock_address(&vm.get_mint(), &vm.get_authority(), vm.get_lock_duration());
 
-    let unlock_address = vta.get_unlock_address(
-        &timelock_address, 
-        &vm_info.key
-    );
+    let unlock_address = vta.get_unlock_address(&timelock_address, &vm_info.key);
 
     check_condition(
         unlock_pda_info.key.eq(&unlock_address),
         "unlock_pda does not match the expected unlock address",
     )?;
 
-    let receipt_address = vta.get_withdraw_receipt_address(
-        &unlock_address,
-        &vm_info.key
-    );
+    let receipt_address = vta.get_withdraw_receipt_address(&unlock_address, &vm_info.key);
 
     check_condition(
         withdraw_receipt_info.key.eq(&receipt_address),

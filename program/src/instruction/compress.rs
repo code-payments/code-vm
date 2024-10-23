@@ -13,7 +13,7 @@ use steel::*;
     memory before it is compressed.
 
     Accounts expected by this instruction:
-    
+
     | # | R/W | Type    | PDA | Name         | Description                              |
     |---|-----|---------|-----|--------------|------------------------------------------|
     | 0 | mut | Signer  |     | vm_authority | The authority of the VM.                 |
@@ -34,15 +34,9 @@ use steel::*;
     1. signature: [u8; 64]  - A signature of the current account state signed by the VM authority.
 */
 pub fn process_compress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-
     let args = CompressIx::try_from_bytes(data)?;
-    let [
-        vm_authority_info,
-        vm_info,
-        vm_memory_info,
-        vm_storage_info,
-    ] = accounts else {
-        return Err(ProgramError::NotEnoughAccountKeys);        
+    let [vm_authority_info, vm_info, vm_memory_info, vm_storage_info] = accounts else {
+        return Err(ProgramError::NotEnoughAccountKeys);
     };
 
     check_signer(vm_authority_info)?;
@@ -59,8 +53,8 @@ pub fn process_compress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     let va_hash = va.get_hash();
 
     sig_verify(
-        vm_authority_info.key.as_ref(), 
-        args.signature.as_ref(), 
+        vm_authority_info.key.as_ref(),
+        args.signature.as_ref(),
         va_hash.as_ref(),
     )?;
 
@@ -70,12 +64,11 @@ pub fn process_compress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     try_delete(vm_memory_info, args.account_index)?;
 
     vm.advance_poh(CodeInstruction::CompressIx, accounts, data);
-    vm.log_event(ChangeLogData::Compress { 
-        account: va, 
-        storage: vm_storage_info.key.clone(), 
-        signature: args.signature
+    vm.log_event(ChangeLogData::Compress {
+        account: va,
+        storage: vm_storage_info.key.clone(),
+        signature: args.signature,
     });
 
     Ok(())
 }
-

@@ -8,12 +8,12 @@ use crate::ExecContext;
     only happen if another transfer was done prior (either using RelayOp or
     ExternalRelayOp). The signature of the source account is required to
     authorize the transfer.
-    
+
     The existance of the virtual relay account is proof that the action was done
-    for a particular commitment value. 
-    
+    for a particular commitment value.
+
     Extra accounts required by this instruction:
-    
+
     | # | R/W | Type         | Req | PDA | Name             | Description                                  |
     |---|-----|------------- |-----|-----|------------------|----------------------------------------------|
     |...| The same as the vm_exec instruction.                                                             |
@@ -29,11 +29,7 @@ use crate::ExecContext;
     0. signature: [u8;64]  - The opcode to execute.
     1. amount: [u64]       - The account_indicies of the virtual accounts to use.
 */
-pub fn process_conditional_transfer(
-    ctx: &ExecContext,
-    data: &ExecIxData,
-) -> ProgramResult {
-
+pub fn process_conditional_transfer(ctx: &ExecContext, data: &ExecIxData) -> ProgramResult {
     let vm = load_vm(ctx.vm_info)?;
     let args = ConditionalTransferOp::try_from_bytes(&data.data)?;
 
@@ -127,8 +123,8 @@ pub fn process_conditional_transfer(
     );
 
     sig_verify(
-        src_vta.owner.as_ref(), 
-        args.signature.as_ref(), 
+        src_vta.owner.as_ref(),
+        args.signature.as_ref(),
         hash.as_ref(),
     )?;
 
@@ -139,14 +135,15 @@ pub fn process_conditional_transfer(
         token_program_info,
         args.amount,
         &[&[
-            CODE_VM, 
+            CODE_VM,
             VM_OMNIBUS,
             ctx.vm_info.key.as_ref(),
             &[vm.get_omnibus_bump()],
-        ]]
+        ]],
     )?;
 
-    src_vta.balance = src_vta.balance
+    src_vta.balance = src_vta
+        .balance
         .checked_sub(args.amount)
         .ok_or(ProgramError::ArithmeticOverflow)?;
 
@@ -164,7 +161,7 @@ pub fn process_conditional_transfer(
         &VirtualAccount::Nonce(vdn)
     )?;
 
-    vm.log_event(ChangeLogData::Transfer { 
+    vm.log_event(ChangeLogData::Transfer {
         src: VirtualAccount::Timelock(src_vta),
         dst: external_address_info.key.clone(),
         amount: args.amount,

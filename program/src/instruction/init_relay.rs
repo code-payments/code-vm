@@ -1,16 +1,13 @@
 use code_vm_api::prelude::*;
-use solana_program::{
-    system_program,
-    sysvar,
-};
+use solana_program::{system_program, sysvar};
 use steel::*;
 
 /*
     This instruction creates a new relay account and treasury. Relay accounts
     are used to facilitate private transfers using the Code privacy protocol.
-    
+
     Accounts expected by this instruction:
-    
+
     | # | R/W | Type         | PDA | Name           | Description                              |
     |---|-----|--------------|-----|----------------|------------------------------------------|
     | 0 | mut | Signer       |     | vm_authority   | The authority of the VM.                 |
@@ -37,7 +34,6 @@ use steel::*;
     2. relay_vault_bump: u8  - The bump seed for the relay token account.
 */
 pub fn process_init_relay(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-
     let args = InitRelayIx::try_from_bytes(data)?;
     let [
         vm_authority_info,
@@ -69,36 +65,36 @@ pub fn process_init_relay(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     )?;
 
     check_uninitialized_pda(
-        relay_info, 
+        relay_info,
         &[
-            CODE_VM, 
+            CODE_VM,
             VM_RELAY_ACCOUNT,
             args.name.as_ref(),
-            vm_info.key.as_ref()
+            vm_info.key.as_ref(),
         ],
-        args.relay_bump, 
-        &code_vm_api::id()
+        args.relay_bump,
+        &code_vm_api::id(),
     )?;
     check_uninitialized_pda(
-        relay_vault_info, 
+        relay_vault_info,
         &[
             CODE_VM, 
             VM_RELAY_VAULT,
             relay_info.key.as_ref()
         ],
         args.relay_vault_bump, 
-        &code_vm_api::id()
+        &code_vm_api::id(),
     )?;
 
     create_account::<RelayAccount>(
         relay_info,
         &code_vm_api::ID,
         &[
-            CODE_VM, 
+            CODE_VM,
             VM_RELAY_ACCOUNT,
             args.name.as_ref(),
             vm_info.key.as_ref(),
-            &[args.relay_bump]
+            &[args.relay_bump],
         ],
         system_program_info,
         vm_authority_info,
@@ -108,10 +104,10 @@ pub fn process_init_relay(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
         mint_info,
         relay_vault_info,
         &[
-            CODE_VM, 
+            CODE_VM,
             VM_RELAY_VAULT,
             relay_info.key.as_ref(),
-            &[args.relay_vault_bump]
+            &[args.relay_vault_bump],
         ],
         vm_authority_info,
         system_program_info,
@@ -129,10 +125,9 @@ pub fn process_init_relay(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     relay.treasury.vault = relay_vault_info.key.clone();
     relay.treasury.vault_bump = args.relay_vault_bump;
 
-    relay.history.init(&[
-        MERKLE_TREE_SEED,
-        relay_info.key.as_ref(),
-    ]);
+    relay
+        .history
+        .init(&[MERKLE_TREE_SEED, relay_info.key.as_ref()]);
 
     relay.recent_roots.push(relay.history.get_root().as_ref());
 
@@ -140,4 +135,3 @@ pub fn process_init_relay(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
 
     Ok(())
 }
-
