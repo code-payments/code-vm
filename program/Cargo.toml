@@ -1,0 +1,28 @@
+[package]
+name = "code-vm-program"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+test-sbf = []
+
+[dependencies]
+code-vm-api.workspace = true
+solana-program.workspace = true
+steel.workspace = true
+spl-token.workspace = true
+spl-associated-token-account.workspace = true
+
+[dev-dependencies]
+rand = "0.8.5"
+solana-sdk = "1.18"
+litesvm = "0.2.1"
+litesvm-token = "0.2.1"

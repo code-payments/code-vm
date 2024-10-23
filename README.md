@@ -41,6 +41,8 @@ questions or feedback.
 | Milestone | Status | Version | Date |
 | --- | --- | --- | --- |
 | Preview Release | Released | v0.1.0 | Aug 9th, 2024 |
+| Optimized Release | Pending | v0.2.0 | Oct 24th, 2024 |
+| IDLs | Pending | - | - |
 | Golang/JS Clients | Pending | - | - |
 | Indexer Service | [Released](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
 | Code VM Explorer | - | - | - |
@@ -58,22 +60,14 @@ questions or feedback.
 ## Quick Start
 
 1. Install Solana CLI: https://docs.solana.com/de/cli/install-solana-cli-tools
-2. Open Terminal: solana-test-validator to start a local validator
-3. In vscode in the terminal run: "npm install" to install the node packages needed to run the tests.
-4. Then: anchor build && anchor deploy 
-5. Copy the deployed program id from the terminal and paste it into the lib.rs and the anchor.toml file
-6. Then: anchor test or anchor test --skip-local-validator depending on your node version
+2. Open Terminal: `cargo build-sbf & cargo test-sbf -- --nocapture`
 
-Maybe you also need to install Anchor or Rust: https://www.anchor-lang.com/docs/installation
 
 ## Versions
 
 Please make sure you have the following versions installed:
 
 ```bash
-% anchor --version
-anchor-cli 0.30.0
-
 % rustc --version
 rustc 1.76.0 (07dca489a 2024-02-04)
 
