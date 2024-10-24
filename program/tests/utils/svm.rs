@@ -19,7 +19,6 @@ pub fn setup_svm() -> LiteSVM {
 }
 
 pub fn send_tx(svm: &mut LiteSVM, tx: Transaction) -> TransactionResult {
-    let msg = tx.message().serialize();
     let res = svm.send_transaction(tx.clone());
 
     let meta = match res.as_ref() {
@@ -27,11 +26,11 @@ pub fn send_tx(svm: &mut LiteSVM, tx: Transaction) -> TransactionResult {
         Err(v) => v.meta.clone()
     };
 
+    print_tx(meta, tx);
+
     if res.is_err() {
         println!("error:\t{:?}", res.as_ref().err().unwrap().err);
     }
-
-    print_tx(meta, msg, tx);
 
     res
 }
@@ -73,7 +72,9 @@ pub fn mint_to(svm: &mut LiteSVM,
         .send()
 }
 
-pub fn print_tx(meta: TransactionMetadata, msg: Vec<u8>, tx: Transaction) {
+pub fn print_tx(meta: TransactionMetadata, tx: Transaction) {
+    let msg = tx.message().serialize();
+
     println!("\n");
     println!("--------------------------------------------------------------------------------");
     println!("sig:\t{:?}", meta.signature);
