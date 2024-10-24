@@ -8,10 +8,10 @@
 The Code Virtual Machine (Code VM) is a program that runs on the Solana
 blockchain. It is purpose built for payments and reduces transaction fees by up
 to `95%` and account rent by `80%` when compared to using non-virtualized
-accounts. Additionally, the Code VM can compress dormant accounts off-chain,
-reducing account rent to effectively `zero`.  Compressed accounts can be
-decompressed when needed — either automatically using the Code app or manually
-through a public indexer. 
+accounts. The VM operates on compact representations of accounts but can further 
+compress dormant accounts off-chain, effectively reducing rent to `zero`. 
+Compressed accounts can be decompressed when needed — either automatically 
+using the Code app or manually through a public indexer.
 
 The Code VM is designed to be used by the Code app, to deliver a seamless
 payments experience to millions of users at negligible cost.
