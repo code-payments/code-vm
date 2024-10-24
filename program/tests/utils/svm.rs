@@ -1,7 +1,10 @@
+#![cfg(test)]
 use std::path::PathBuf;
+use code_vm_api::prelude::CodeInstruction;
 use solana_sdk::{pubkey::Pubkey, signature::Keypair, signer::Signer, transaction::Transaction};
-use litesvm::{types::{FailedTransactionMetadata, TransactionResult}, LiteSVM};
+use litesvm::{types::{FailedTransactionMetadata, TransactionMetadata, TransactionResult}, LiteSVM};
 use litesvm_token::{CreateAssociatedTokenAccount, CreateMint, MintTo};
+use pretty_hex::*;
 
 pub fn program_bytes() -> Vec<u8> {
     let mut so_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -16,9 +19,8 @@ pub fn setup_svm() -> LiteSVM {
 }
 
 pub fn send_tx(svm: &mut LiteSVM, tx: Transaction) -> TransactionResult {
-    let res = svm.send_transaction(tx);
-
-    println!("");
+    let msg = tx.message().serialize();
+    let res = svm.send_transaction(tx.clone());
 
     let meta = match res.as_ref() {
         Ok(v) => v.clone(),
@@ -29,14 +31,7 @@ pub fn send_tx(svm: &mut LiteSVM, tx: Transaction) -> TransactionResult {
         println!("error:\t{:?}", res.as_ref().err().unwrap().err);
     }
 
-    println!("tx:\t{:?}", meta.signature);
-    println!("cu:\t{:?}", meta.compute_units_consumed);
-    println!("logs:");
-    for log in &meta.logs {
-        println!("\t{:?}", log);
-    }
-
-    println!("");
+    print_tx(meta, msg, tx);
 
     res
 }
@@ -76,4 +71,35 @@ pub fn mint_to(svm: &mut LiteSVM,
     MintTo::new(svm, payer, mint, destination, amount)
         .owner(mint_owner)
         .send()
+}
+
+pub fn print_tx(meta: TransactionMetadata, msg: Vec<u8>, tx: Transaction) {
+    println!("\n");
+    println!("--------------------------------------------------------------------------------");
+    println!("sig:\t{:?}", meta.signature);
+    println!("len:\t{:?}", msg.len());
+    println!("\nbody:\n{}", base64::encode(&msg));
+
+    for i in 0..tx.message.instructions.len() {
+        let ix = &tx.message.instructions[i];
+        let ix_type = CodeInstruction::try_from(ix.data[0] as u8).unwrap();
+
+        println!("\nix:\t{:?} ({})", ix_type, ix.data[0]);
+        println!("accounts:");
+
+        for key in &ix.accounts {
+            println!("\t{}: {:?}", key, tx.message.account_keys[*key as usize]);
+        }
+
+        println!("\ndata:\n\t{:?}", ix.data);
+        println!("\n\n{}\n", pretty_hex(&ix.data))
+    }
+
+    println!("");
+    println!("cu:\t{:?}", meta.compute_units_consumed);
+    println!("logs:");
+    for log in &meta.logs {
+        println!("\t{:?}", log);
+    }
+    println!("");
 }

@@ -1,3 +1,4 @@
+#![cfg(test)]
 use code_vm_api::prelude::*;
 use litesvm::{types::TransactionResult, LiteSVM};
 use solana_sdk::{pubkey::Pubkey, signature::Keypair, signer::Signer, transaction::Transaction};
