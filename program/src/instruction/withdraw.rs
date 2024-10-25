@@ -68,10 +68,17 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
 
     ctx.check_unlock_state()?;
 
-    let amount = match args {
-        WithdrawIxData::FromDeposit { .. } => process_withdraw_from_deposit(&ctx, &args),
-        WithdrawIxData::FromMemory { .. } => process_withdraw_from_memory(&ctx, &args),
-        WithdrawIxData::FromStorage { .. } => process_withdraw_from_storage(&ctx, &args),
+    match args {
+
+        WithdrawIxData::FromDeposit { .. } => 
+            process_withdraw_from_deposit(&ctx, &args),
+
+        WithdrawIxData::FromMemory { .. } => 
+            process_withdraw_from_memory(&ctx, &args),
+
+        WithdrawIxData::FromStorage { .. } => 
+            process_withdraw_from_storage(&ctx, &args),
+
     }?;
 
     let vm = load_vm(ctx.vm_info)?;
@@ -84,7 +91,7 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
 fn process_withdraw_from_memory(
     ctx: &WithdrawContext,
     data: &WithdrawIxData,
-) -> Result<u64, ProgramError> {
+) -> ProgramResult {
     let account_index = match data {
         WithdrawIxData::FromMemory { account_index } => Ok(*account_index),
         _ => Err(ProgramError::InvalidInstructionData),
@@ -131,13 +138,13 @@ fn process_withdraw_from_memory(
 
     ctx.create_receipt(&vta.nonce)?;
 
-    Ok(vta.balance)
+    Ok(())
 }
 
 fn process_withdraw_from_storage(
     ctx: &WithdrawContext,
     data: &WithdrawIxData,
-) -> Result<u64, ProgramError> {
+) -> ProgramResult {
     let (packed_va, proof, signature) = match data {
         WithdrawIxData::FromStorage {
             packed_va,
@@ -189,13 +196,13 @@ fn process_withdraw_from_storage(
 
     ctx.create_receipt(&vta.nonce)?;
 
-    Ok(vta.balance)
+    Ok(())
 }
 
 fn process_withdraw_from_deposit(
     ctx: &WithdrawContext,
     data: &WithdrawIxData,
-) -> Result<u64, ProgramError> {
+) -> ProgramResult {
     let bump = match data {
         WithdrawIxData::FromDeposit { bump } => Ok(*bump),
         _ => Err(ProgramError::InvalidInstructionData),
@@ -232,7 +239,7 @@ fn process_withdraw_from_deposit(
 
     // No receipt is created for this type of withdraw
 
-    Ok(token_account.amount)
+    Ok(())
 }
 
 pub struct WithdrawContext<'a, 'b> {

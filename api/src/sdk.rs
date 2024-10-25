@@ -378,54 +378,17 @@ pub fn timelock_withdraw(
     // accounts.
 
     let accounts = match data {
-        WithdrawIxData::FromDeposit { .. } => vec![
-            AccountMeta::new(depositor, true),
-            AccountMeta::new(payer, true),
-            AccountMeta::new(vm, false),
-            optional_meta(None, false), // vm_omnibus
-            optional_meta(None, false), // vm_memory
-            optional_meta(None, false), // vm_storage
-            optional_meta(deposit_pda, false),
-            optional_meta(deposit_ata, false),
-            AccountMeta::new(unlock_pda, false),
-            optional_meta(None, false), // withdraw_receipt
-            AccountMeta::new(external_address, false),
-            AccountMeta::new_readonly(spl_token::id(), false),
-            optional_meta(None, false), // system_program
-            optional_meta(None, false), // rent_sysvar
-        ],
-        WithdrawIxData::FromMemory { .. } => vec![
-            AccountMeta::new(depositor, true),
-            AccountMeta::new(payer, true),
-            AccountMeta::new(vm, false),
-            optional_meta(vm_omnibus, false),
-            optional_meta(vm_memory, false),
-            optional_meta(None, false), // vm_storage
-            optional_meta(None, false), // deposit_pda
-            optional_meta(None, false), // deposit_ata
-            AccountMeta::new(unlock_pda, false),
-            optional_meta(withdraw_receipt, false),
-            AccountMeta::new(external_address, false),
-            AccountMeta::new_readonly(spl_token::id(), false),
-            optional_readonly_meta(Some(system_program::id()), false),
-            optional_readonly_meta(Some(solana_program::sysvar::rent::id()), false),
-        ],
-        WithdrawIxData::FromStorage { .. } => vec![
-            AccountMeta::new(depositor, true),
-            AccountMeta::new(payer, true),
-            AccountMeta::new(vm, false),
-            optional_meta(vm_omnibus, false),
-            optional_meta(None, false), // vm_memory
-            optional_meta(vm_storage, false),
-            optional_meta(None, false), // deposit_pda
-            optional_meta(None, false), // deposit_ata
-            AccountMeta::new(unlock_pda, false),
-            optional_meta(withdraw_receipt, false),
-            AccountMeta::new(external_address, false),
-            AccountMeta::new_readonly(spl_token::id(), false),
-            optional_readonly_meta(Some(system_program::id()), false),
-            optional_readonly_meta(Some(solana_program::sysvar::rent::id()), false),
-        ]
+        WithdrawIxData::FromDeposit { .. } => 
+            withdraw_from_deposit(
+                depositor, payer, vm, deposit_pda, deposit_ata, unlock_pda, external_address),
+
+        WithdrawIxData::FromMemory { .. } => 
+            withdraw_from_memory(
+                depositor, payer, vm, vm_omnibus, vm_memory, unlock_pda, withdraw_receipt, external_address),
+
+        WithdrawIxData::FromStorage { .. } => 
+            withdraw_from_storage(
+                depositor, payer, vm, vm_omnibus, vm_storage, unlock_pda, withdraw_receipt, external_address),
     };
 
     let data = WithdrawIx::try_to_bytes(data).unwrap();
@@ -435,4 +398,87 @@ pub fn timelock_withdraw(
         accounts,
         data,
     }
+}
+
+fn withdraw_from_deposit(
+    depositor: Pubkey,
+    payer: Pubkey,
+    vm: Pubkey,
+    deposit_pda: Option<Pubkey>,
+    deposit_ata: Option<Pubkey>,
+    unlock_pda: Pubkey,
+    external_address: Pubkey,
+) -> Vec<AccountMeta> {
+    vec![
+        AccountMeta::new(depositor, true),
+        AccountMeta::new(payer, true),
+        AccountMeta::new(vm, false),
+        optional_meta(None, false), // vm_omnibus
+        optional_meta(None, false), // vm_memory
+        optional_meta(None, false), // vm_storage
+        optional_meta(deposit_pda, false),
+        optional_meta(deposit_ata, false),
+        AccountMeta::new(unlock_pda, false),
+        optional_meta(None, false), // withdraw_receipt
+        AccountMeta::new(external_address, false),
+        AccountMeta::new_readonly(spl_token::id(), false),
+        optional_meta(None, false), // system_program
+        optional_meta(None, false), // rent_sysvar
+    ]
+}
+
+pub fn withdraw_from_memory(
+    depositor: Pubkey,
+    payer: Pubkey,
+    vm: Pubkey,
+    vm_omnibus: Option<Pubkey>,
+    vm_memory: Option<Pubkey>,
+    unlock_pda: Pubkey,
+    withdraw_receipt: Option<Pubkey>,
+    external_address: Pubkey,
+) -> Vec<AccountMeta> {
+    vec![
+        AccountMeta::new(depositor, true),
+        AccountMeta::new(payer, true),
+        AccountMeta::new(vm, false),
+        optional_meta(vm_omnibus, false),
+        optional_meta(vm_memory, false),
+        optional_meta(None, false), // vm_storage
+        optional_meta(None, false), // deposit_pda
+        optional_meta(None, false), // deposit_ata
+        AccountMeta::new(unlock_pda, false),
+        optional_meta(withdraw_receipt, false),
+        AccountMeta::new(external_address, false),
+        AccountMeta::new_readonly(spl_token::id(), false),
+        optional_readonly_meta(Some(system_program::id()), false),
+        optional_readonly_meta(Some(solana_program::sysvar::rent::id()), false),
+    ]
+}
+
+fn withdraw_from_storage(
+    depositor: Pubkey,
+    payer: Pubkey,
+    vm: Pubkey,
+    vm_omnibus: Option<Pubkey>,
+    vm_storage: Option<Pubkey>,
+    unlock_pda: Pubkey,
+    withdraw_receipt: Option<Pubkey>,
+    external_address: Pubkey,
+) -> Vec<AccountMeta> {
+    vec![
+        AccountMeta::new(depositor, true),
+        AccountMeta::new(payer, true),
+        AccountMeta::new(vm, false),
+        optional_meta(vm_omnibus, false),
+        optional_meta(None, false), // vm_memory
+        optional_meta(vm_storage, false),
+        optional_meta(None, false), // deposit_pda
+        optional_meta(None, false), // deposit_ata
+        AccountMeta::new(unlock_pda, false),
+        optional_meta(withdraw_receipt, false),
+        AccountMeta::new(external_address, false),
+        AccountMeta::new_readonly(spl_token::id(), false),
+        optional_readonly_meta(Some(system_program::id()), false),
+        optional_readonly_meta(Some(solana_program::sysvar::rent::id()), false),
+    ]
 }
