@@ -20,7 +20,7 @@ pub const MIXED_MEMORY_SECTORS: usize = 2;
 pub const MIXED_MEMORY_PAGES: usize = 255;
 
 pub const COMPACT_STATE_ITEMS: usize = 100;
-pub const COMPRESSED_STATE_DEPTH: usize = 24;
+pub const COMPRESSED_STATE_DEPTH: usize = 20;
 
-pub const RELAY_STATE_DEPTH: usize = 64;
+pub const RELAY_STATE_DEPTH: usize = 63;
 pub const RELAY_HISTORY_ITEMS: usize = 32;
