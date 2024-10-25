@@ -9,16 +9,19 @@ use solana_curve25519::{
 const ED25519_SIG_LEN: usize = 64;
 const ED25519_PUBKEY_LEN: usize = 32;
 
+/// Compressed base point
 const G: [u8; 32] = [
     88, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 
     102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102
 ];
 
+/// Scalar value -1
 const NEGATIVE_ONE: [u8; 32] = [
     236, 211, 245, 92, 26, 99, 18, 88, 214, 156, 247, 162, 222, 249, 222, 20, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16
 ];
 
+/// Verify an ed25519 signature.
 #[allow(non_snake_case)]
 pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), ProgramError> {
     // Normally, we could verify the signature using the Solana SDK or
@@ -31,10 +34,6 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
     // Roughly follows the dalek ed25519 crate, but with some changes for the
     // SVM. Refer to 
     // https://github.com/dalek-cryptography/curve25519-dalek/blob/0964f800ab2114a862543ca000291a6e3531c203/ed25519-dalek/src/verifying.rs#L401
-
-    // TODO: Not production ready yet, need to implement small order check and
-    // verify that this complies with exactly the same steps taken by dalek
-    // curves.
 
     if pubkey.len() != ED25519_PUBKEY_LEN {
         return Err(ProgramError::InvalidArgument);
@@ -54,12 +53,9 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
     let sig_R = PodEdwardsPoint(sig_lower);
     let sig_s = Scalar::from_canonical_bytes(sig_upper).unwrap();
 
-    /*
-    // TODO: implement the small order check
-    if signature_R.is_small_order() || pubkey_point.is_small_order() {
-        panic!("Signature verification failed: small order point");
+    if is_small_order(&sig_R) || is_small_order(&pubkey_point) {
+        return Err(ProgramError::InvalidAccountOwner);
     }
-    */
 
     let mut h: Sha512 = Sha512::new(); // <- Expensive, no system calls available yet.
     h.update(sig_R.0);
@@ -97,9 +93,79 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
 }
 
 
+/// Determine if this point is of small order.
+///
+/// # Return
+///
+/// * `true` if `self` is in the torsion subgroup \\( \mathcal E[8] \\);
+/// * `false` if `self` is not in the torsion subgroup \\( \mathcal E[8] \\).
+fn is_small_order(point: &PodEdwardsPoint) -> bool {
+    // Create a PodScalar representing the scalar value 8
+    let scalar_8 = scalar_from_u64(8);
+
+    // Multiply the point by the scalar 8
+    if let Some(result_point) = multiply_edwards(&scalar_8, point) {
+        // Compare the result to the identity point
+        result_point == identity()
+    } else {
+        // If multiplication failed, return false
+        false
+    }
+}
+
+/// Create the identity point (neutral element) in compressed form.
+fn identity() -> PodEdwardsPoint {
+    let mut bytes = [0u8; 32];
+    bytes[0] = 1; // The compressed identity point has first byte as 1
+    PodEdwardsPoint(bytes)
+}
+
+/// Create a PodScalar from a u64 integer.
+pub fn scalar_from_u64(n: u64) -> PodScalar {
+    let mut bytes = [0u8; 32];
+    bytes[..8].copy_from_slice(&n.to_le_bytes());
+    PodScalar(bytes)
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use curve25519_dalek::constants;
+    use std::ops::Neg;
+
+    #[test]
+    fn test_points() {
+        let base_point = constants::ED25519_BASEPOINT_POINT;
+        let compressed = base_point.compress();
+        let bytes = compressed.to_bytes();
+        assert_eq!(bytes, G);
+    }
+
+    #[test]
+    fn test_scalar() {
+        let one = Scalar::ONE;
+        let neg_one = one.neg();
+        let neg_one_bytes = neg_one.to_bytes();
+        assert_eq!(neg_one_bytes, NEGATIVE_ONE);
+    }
+
+    #[test]
+    fn test_small_order() {
+        // Base point (has large order)
+        let base_point_bytes = G;
+        let base_point = PodEdwardsPoint(base_point_bytes);
+        assert_eq!(is_small_order(&base_point), false);
+
+        // Torsion points (have small order)
+        for i in 0..8 {
+            let torsion_point = constants::EIGHT_TORSION[i];
+            let compressed = torsion_point.compress();
+            let torsion_point_bytes = compressed.to_bytes();
+            let torsion_point = PodEdwardsPoint(torsion_point_bytes);
+            assert_eq!(is_small_order(&torsion_point), true);
+        }
+    }
 
     #[test]
     fn test_hello_world() {
