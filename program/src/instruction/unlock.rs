@@ -84,10 +84,6 @@ pub fn process_unlock(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResul
     unlock_pda.state = TimelockState::Unlocked as u8;
 
     vm.advance_poh(CodeInstruction::UnlockIx, accounts, data);
-    vm.log_event(ChangeLogData::TimelockUnlock {  
-        owner: unlock_pda.owner,
-        address: unlock_pda.address,
-    });
 
     Ok(())
 }

@@ -93,7 +93,6 @@ pub fn process_init_timelock(accounts: &[AccountInfo<'_>], data: &[u8]) -> Progr
     try_write(vm_memory_info, args.account_index, &va)?;
 
     vm.advance_poh(CodeInstruction::InitTimelockIx, accounts, data);
-    vm.log_event(ChangeLogData::Create(va));
 
     Ok(())
 }

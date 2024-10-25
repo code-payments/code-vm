@@ -145,10 +145,5 @@ pub fn process_external_withdraw(
         &VirtualAccount::Nonce(vdn)
     )?;
 
-    vm.log_event(ChangeLogData::Withdraw { 
-        src: VirtualAccount::Timelock(src_vta),
-        dst: external_address_info.key.clone(),
-    });
-
     Ok(())
 }

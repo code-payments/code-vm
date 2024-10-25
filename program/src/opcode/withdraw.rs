@@ -128,10 +128,5 @@ pub fn process_withdraw(
         &VirtualAccount::Nonce(vdn)
     )?;
 
-    vm.log_event(ChangeLogData::Withdraw { 
-        src: VirtualAccount::Timelock(src_vta),
-        dst: dst_vta.nonce.into(), // <- Using nonce as it uniquely identifies the account.
-    });
-
     Ok(())
 }
