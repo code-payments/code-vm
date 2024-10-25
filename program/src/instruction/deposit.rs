@@ -102,10 +102,6 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     )?;
 
     vm.advance_poh(CodeInstruction::DepositIx, accounts, data);
-    vm.log_event(ChangeLogData::TimelockDeposit {
-        account: va,
-        amount: args.amount,
-    });
 
     Ok(())
 }

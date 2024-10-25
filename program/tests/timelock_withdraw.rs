@@ -142,7 +142,7 @@ fn run_withdraw_from_storage() {
         setup_svm_with_payer_and_vm(21);
 
     let name = "test";
-    let mem_layout = MemoryLayout::Mixed;
+    let mem_layout = MemoryLayout::Timelock;
 
     let (vm_memory, _) =
         create_and_resize_memory(&mut svm, &payer, vm_address, mem_layout, name);

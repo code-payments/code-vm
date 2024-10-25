@@ -145,11 +145,5 @@ pub fn process_external_transfer(
         &VirtualAccount::Nonce(vdn)
     )?;
 
-    vm.log_event(ChangeLogData::Transfer { 
-        src: VirtualAccount::Timelock(src_vta),
-        dst: external_address_info.key.clone(),
-        amount: args.amount,
-    });
-
     Ok(())
 }

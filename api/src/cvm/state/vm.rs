@@ -1,9 +1,7 @@
 use steel::*;
 
 use crate::{
-    cvm::{
-        ChangeLog, ChangeLogData, ChangeLogEvent, TokenPool
-    }, 
+    cvm::TokenPool, 
     instruction::CodeInstruction, 
     types::Hash, 
     utils
@@ -21,7 +19,6 @@ pub struct CodeVmAccount {
     pub bump: u8,
 
     _padding: [u8; 5],
-    pub changelog: ChangeLog,
 }
 
 impl CodeVmAccount {
@@ -62,15 +59,6 @@ impl CodeVmAccount {
         ]);
 
         self.advance_slot();
-    }
-
-    pub fn log_event(&mut self, data: ChangeLogData) {
-        let event = ChangeLogEvent {
-            id: self.poh,
-            seq: self.slot,
-            data: Some(data),
-        };
-        self.changelog.push(&event.to_bytes());
     }
 
     #[inline]

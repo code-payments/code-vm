@@ -63,7 +63,6 @@ pub fn process_init_nonce(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     try_write(vm_memory_info, args.account_index, &va)?;
 
     vm.advance_poh(CodeInstruction::InitNonceIx, accounts, data);
-    vm.log_event(ChangeLogData::Create(va));
 
     Ok(())
 }

@@ -64,11 +64,6 @@ pub fn process_compress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     try_delete(vm_memory_info, args.account_index)?;
 
     vm.advance_poh(CodeInstruction::CompressIx, accounts, data);
-    vm.log_event(ChangeLogData::Compress {
-        account: va,
-        storage: vm_storage_info.key.clone(),
-        signature: args.signature,
-    });
 
     Ok(())
 }

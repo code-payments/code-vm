@@ -128,11 +128,5 @@ pub fn process_transfer(
         &VirtualAccount::Nonce(vdn)
     )?;
 
-    vm.log_event(ChangeLogData::Transfer { 
-        src: VirtualAccount::Timelock(src_vta),
-        dst: dst_vta.nonce.into(), // <- Using nonce as it uniquely identifies the account.
-        amount: args.amount,
-    });
-
     Ok(())
 }

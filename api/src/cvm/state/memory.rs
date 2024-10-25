@@ -5,7 +5,6 @@ use crate::consts::*;
 use crate::cvm::{
     SimpleAllocator,
     MemoryAllocator,
-    PagedAllocator,
     VirtualDurableNonce,
     VirtualRelayAccount,
     VirtualTimelockAccount
@@ -14,18 +13,15 @@ use crate::cvm::{
 const TIMELOCK_SIZE: usize   = VirtualTimelockAccount::LEN + 1;
 const NONCE_SIZE: usize      = VirtualDurableNonce::LEN + 1;
 const RELAY_SIZE: usize      = VirtualRelayAccount::LEN + 1;
-const MIXED_PAGE_SIZE: usize = 32; // bytes
 
 pub type TimelockMemory = SimpleAllocator<COMPACT_STATE_ITEMS, TIMELOCK_SIZE>;
 pub type NonceMemory    = SimpleAllocator<COMPACT_STATE_ITEMS, NONCE_SIZE>;
 pub type RelayMemory    = SimpleAllocator<COMPACT_STATE_ITEMS, RELAY_SIZE>;
-pub type MixedMemory    = PagedAllocator<COMPACT_STATE_ITEMS, MIXED_MEMORY_SECTORS, MIXED_MEMORY_PAGES, MIXED_PAGE_SIZE>;
 
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, IntoPrimitive, TryFromPrimitive)]
 pub enum MemoryLayout {
     Unknown = 0,
-    Mixed,
     Timelock,
     Nonce,
     Relay,
@@ -34,7 +30,6 @@ pub enum MemoryLayout {
 impl MemoryLayout {
     pub fn get_size(&self) -> usize {
         match self {
-            MemoryLayout::Mixed => std::mem::size_of::<MixedMemory>(),
             MemoryLayout::Timelock => std::mem::size_of::<TimelockMemory>(),
             MemoryLayout::Nonce => std::mem::size_of::<NonceMemory>(),
             MemoryLayout::Relay => std::mem::size_of::<RelayMemory>(),
@@ -111,11 +106,6 @@ impl MemoryAccount {
                     bytemuck::from_bytes_mut(&mut data[offset..until])
                 })
             },
-            MemoryLayout::Mixed => {
-                RefMut::map(data, |data: &mut &mut [u8]| -> &mut MixedMemory {
-                    bytemuck::from_bytes_mut(&mut data[offset..until])
-                })
-            }
             _ => panic!("Invalid layout"),
         }
     }
@@ -138,9 +128,6 @@ impl MemoryAccount {
             },
             MemoryLayout::Relay => {
                 bytemuck::from_bytes(&data[offset..until]) as &RelayMemory
-            },
-            MemoryLayout::Mixed => {
-                bytemuck::from_bytes(&data[offset..until]) as &MixedMemory
             },
             _ => panic!("Invalid layout"),
         }

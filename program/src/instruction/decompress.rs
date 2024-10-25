@@ -113,11 +113,6 @@ pub fn process_decompress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     try_write(vm_memory_info, args.account_index, &va)?;
 
     vm.advance_poh(CodeInstruction::DecompressIx, accounts, data);
-    vm.log_event(ChangeLogData::Decompress {
-        account: va,
-        storage: vm_storage_info.key.clone(),
-        signature: args.signature,
-    });
 
     Ok(())
 }

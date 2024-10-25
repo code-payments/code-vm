@@ -77,11 +77,6 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     let vm = load_vm(ctx.vm_info)?;
 
     vm.advance_poh(CodeInstruction::WithdrawIx, accounts, data);
-    vm.log_event(ChangeLogData::TimelockWithdraw {
-        owner: ctx.depositor_info.key.clone(),
-        dst: ctx.external_address_info.key.clone(),
-        amount,
-    });
 
     Ok(())
 }

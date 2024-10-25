@@ -161,11 +161,5 @@ pub fn process_conditional_transfer(ctx: &ExecContext, data: &ExecIxData) -> Pro
         &VirtualAccount::Nonce(vdn)
     )?;
 
-    vm.log_event(ChangeLogData::Transfer {
-        src: VirtualAccount::Timelock(src_vta),
-        dst: external_address_info.key.clone(),
-        amount: args.amount,
-    });
-
     Ok(())
 }
