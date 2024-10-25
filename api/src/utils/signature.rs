@@ -152,6 +152,8 @@ mod tests {
 
     #[test]
     fn test_small_order() {
+        // Refer to https://github.com/dalek-cryptography/curve25519-dalek/blob/43a16f03d4c635a8836c23ac07244c116ea3aab8/curve25519-dalek/src/edwards.rs#L1992
+
         // Base point (has large order)
         let base_point_bytes = G;
         let base_point = PodEdwardsPoint(base_point_bytes);
