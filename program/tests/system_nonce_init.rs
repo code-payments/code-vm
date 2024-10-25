@@ -11,7 +11,7 @@ fn run_system_nonce_init() {
         setup_svm_with_payer_and_vm(21);
 
     let name = "test";
-    let layout = MemoryLayout::Mixed;
+    let layout = MemoryLayout::Nonce;
 
     let (vm_mem_address, _) =
         create_and_resize_memory(&mut svm, &payer, vm_address, layout, name);

@@ -330,7 +330,6 @@ pub fn try_write<'a>(
 
     check_condition(
         match layout {
-            MemoryLayout::Mixed => true, // Supports all virtual accounts types
             MemoryLayout::Timelock => account.is_timelock(),
             MemoryLayout::Relay => account.is_relay(),
             MemoryLayout::Nonce => account.is_nonce(),

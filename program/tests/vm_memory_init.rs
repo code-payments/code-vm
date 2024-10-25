@@ -10,7 +10,7 @@ fn run_mem_init_test() {
         setup_svm_with_payer_and_vm(21);
 
     let name = create_name("test");
-    let layout = MemoryLayout::Mixed;
+    let layout = MemoryLayout::Nonce;
 
     let (vm_mem_address, vm_mem_bump) = find_vm_memory_pda(&vm_address, &name);
 

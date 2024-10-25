@@ -11,7 +11,7 @@ fn run_system_account_compress() {
         setup_svm_with_payer_and_vm(21);
 
     let name = "test";
-    let mem_layout = MemoryLayout::Mixed;
+    let mem_layout = MemoryLayout::Nonce;
 
     let (vm_mem_address, _) =
         create_and_resize_memory(&mut svm, &payer, vm_address, mem_layout, name);
