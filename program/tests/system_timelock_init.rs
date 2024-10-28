@@ -63,7 +63,7 @@ fn run_system_timelock_init() {
     // Expected values
     let vta = VirtualTimelockAccount {
         owner: virtual_account_owner,
-        nonce,
+        instance: nonce,
         bump: virtual_timelock_bump,
         token_bump: virtual_vault_bump,
         unlock_bump: unlock_pda_bump,

@@ -108,7 +108,7 @@ pub fn process_transfer(
         .checked_add(args.amount)
         .ok_or(ProgramError::ArithmeticOverflow)?;
 
-    vdn.nonce = vm.get_current_poh();
+    vdn.value = vm.get_current_poh();
 
     try_write(
         src_mem_info,

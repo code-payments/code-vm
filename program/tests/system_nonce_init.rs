@@ -37,6 +37,6 @@ fn run_system_nonce_init() {
     );
 
     assert_eq!(vdn.address, nonce_address);
-    assert_eq!(vdn.nonce, vm.get_current_poh());
+    assert_eq!(vdn.value, vm.get_current_poh());
 
 }

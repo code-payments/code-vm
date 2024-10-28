@@ -131,7 +131,7 @@ pub fn process_external_transfer(
         .checked_sub(args.amount)
         .ok_or(ProgramError::ArithmeticOverflow)?;
 
-    vdn.nonce = vm.get_current_poh();
+    vdn.value = vm.get_current_poh();
 
     try_write(
         src_mem_info,

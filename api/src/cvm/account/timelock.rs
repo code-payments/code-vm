@@ -7,12 +7,12 @@ use crate::pdas;
 #[repr(C)]
 #[derive(BorshDeserialize, BorshSerialize, Clone, Copy, PartialEq, Debug)]
 pub struct VirtualTimelockAccount {
-    pub owner: Pubkey,
-    pub nonce: Hash,
+    pub owner: Pubkey,          // wallet owner of the derived timelock/vault addresses
+    pub instance: Hash,         // unique identifier for this virtual instance
 
-    pub token_bump: u8,
-    pub unlock_bump: u8,
-    pub withdraw_bump: u8,
+    pub token_bump: u8,         // bump seed for the token account  (derived from the owner)
+    pub unlock_bump: u8,        // bump seed for the unlock account (derived from the owner)
+    pub withdraw_bump: u8,      // bump seed for the withdraw receipt account (derived from the instance)
 
     pub balance: u64,
     pub bump: u8,
@@ -57,7 +57,7 @@ impl VirtualTimelockAccount {
     pub fn get_withdraw_receipt_address(&self, unlock_pda: &Pubkey, vm: &Pubkey) -> Pubkey {
         pdas::create_withdraw_receipt_address(
             unlock_pda, 
-            &self.nonce, 
+            &self.instance, 
             vm, 
             self.withdraw_bump
         )

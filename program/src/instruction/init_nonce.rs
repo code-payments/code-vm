@@ -55,7 +55,7 @@ pub fn process_init_nonce(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
 
     let vdn = VirtualDurableNonce {
         address: nonce_address,
-        nonce: vm.get_current_poh(),
+        value: vm.get_current_poh(),
     };
 
     let va = VirtualAccount::Nonce(vdn);
