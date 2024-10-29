@@ -1,0 +1,752 @@
+{
+  "address": "vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ",
+  "metadata": {
+    "name": "code_vm",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Code VM"
+  },
+  "instructions": [
+    {
+      "name": "initVm",
+      "discriminator": [1],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "omnibus",
+          "writable": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rentSysvar",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "lockDuration",
+          "type": "u8"
+        },
+        {
+          "name": "vmBump",
+          "type": "u8"
+        },
+        {
+          "name": "vmOmnibusBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "initMemory",
+      "discriminator": [2],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vmMemory",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rentSysvar",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": { "array": ["u8", 32] }
+        },
+        {
+          "name": "layout",
+          "type": "u8"
+        },
+        {
+          "name": "vmMemoryBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "resizeMemory",
+      "discriminator": [11],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vmMemory",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rentSysvar",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "accountSize",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "initStorage",
+      "discriminator": [3],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vmStorage",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rentSysvar",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": { "array": ["u8", 32] }
+        },
+        {
+          "name": "vmStorageBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "initNonce",
+      "discriminator": [5],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vmMemory",
+          "writable": true
+        },
+        {
+          "name": "virtualAccountOwner"
+        }
+      ],
+      "args": [
+        {
+          "name": "accountIndex",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "initTimelock",
+      "discriminator": [6],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vmMemory",
+          "writable": true
+        },
+        {
+          "name": "virtualAccountOwner"
+        }
+      ],
+      "args": [
+        {
+          "name": "accountIndex",
+          "type": "u16"
+        },
+        {
+          "name": "virtualTimelockBump",
+          "type": "u8"
+        },
+        {
+          "name": "virtualVaultBump",
+          "type": "u8"
+        },
+        {
+          "name": "unlockPdaBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "compress",
+      "discriminator": [9],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vmMemory",
+          "writable": true
+        },
+        {
+          "name": "vmStorage",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "accountIndex",
+          "type": "u16"
+        },
+        {
+          "name": "signature",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "decompress",
+      "discriminator": [10],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vmMemory",
+          "writable": true
+        },
+        {
+          "name": "vmStorage",
+          "writable": true
+        },
+        {
+          "name": "unlockPda",
+          "optional": true
+        },
+        {
+          "name": "withdrawReceipt",
+          "optional": true
+        }
+      ],
+      "args": [
+        {
+          "name": "accountIndex",
+          "type": "u16"
+        },
+        {
+          "name": "packedVa",
+          "type": { "vec": "u8" }
+        },
+        {
+          "name": "proof",
+          "type": { "vec": { "array": ["u8", 32] } }
+        },
+        {
+          "name": "signature",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "exec",
+      "discriminator": [8],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "memA",
+          "optional": true
+        },
+        {
+          "name": "memB",
+          "optional": true
+        },
+        {
+          "name": "memC",
+          "optional": true
+        },
+        {
+          "name": "memD",
+          "optional": true
+        },
+        {
+          "name": "vmOmnibus",
+          "optional": true
+        },
+        {
+          "name": "relay",
+          "optional": true
+        },
+        {
+          "name": "relayVault",
+          "optional": true
+        },
+        {
+          "name": "externalAddress",
+          "optional": true
+        },
+        {
+          "name": "tokenProgram",
+          "optional": true,
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "opcode",
+          "type": "u8"
+        },
+        {
+          "name": "memIndicies",
+          "type": { "vec": "u16" }
+        },
+        {
+          "name": "memBanks",
+          "type": { "vec": "u8" }
+        },
+        {
+          "name": "data",
+          "type": { "vec": "u8" }
+        }
+      ]
+    },
+    {
+      "name": "initRelay",
+      "discriminator": [4],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "relay",
+          "writable": true
+        },
+        {
+          "name": "relayVault",
+          "writable": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rentSysvar",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": { "array": ["u8", 32] }
+        },
+        {
+          "name": "relayBump",
+          "type": "u8"
+        },
+        {
+          "name": "relayVaultBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "snapshot",
+      "discriminator": [12],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "relay",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit",
+      "discriminator": [13],
+      "accounts": [
+        {
+          "name": "vmAuthority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vmMemory",
+          "writable": true
+        },
+        {
+          "name": "depositor"
+        },
+        {
+          "name": "depositPda",
+          "optional": true
+        },
+        {
+          "name": "depositAta",
+          "optional": true
+        },
+        {
+          "name": "omnibus",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "accountIndex",
+          "type": "u16"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "bump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "initUnlock",
+      "discriminator": [7],
+      "accounts": [
+        {
+          "name": "accountOwner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm"
+        },
+        {
+          "name": "unlockPda",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rentSysvar",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "unlock",
+      "discriminator": [15],
+      "accounts": [
+        {
+          "name": "accountOwner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm"
+        },
+        {
+          "name": "unlockPda",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "withdraw",
+      "discriminator": [14],
+      "accounts": [
+        {
+          "name": "depositor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm"
+        },
+        {
+          "name": "vmOmnibus",
+          "optional": true
+        },
+        {
+          "name": "vmMemory",
+          "optional": true
+        },
+        {
+          "name": "vmStorage",
+          "optional": true
+        },
+        {
+          "name": "depositPda",
+          "optional": true
+        },
+        {
+          "name": "depositAta",
+          "optional": true
+        },
+        {
+          "name": "unlockPda",
+          "writable": true
+        },
+        {
+          "name": "withdrawReceipt",
+          "optional": true
+        },
+        {
+          "name": "externalAddress"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111",
+          "optional": true
+        },
+        {
+          "name": "rentSysvar",
+          "address": "SysvarRent111111111111111111111111111111111",
+          "optional": true
+        }
+      ],
+      "args": [
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "MemoryAccount",
+      "discriminator": [2, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "name": "RelayAccount",
+      "discriminator": [4, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "name": "StorageAccount",
+      "discriminator": [3, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "name": "UnlockStateAccount",
+      "discriminator": [5, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "name": "CodeVmAccount",
+      "discriminator": [1, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "name": "WithdrawReceiptAccount",
+      "discriminator": [6, 0, 0, 0, 0, 0, 0, 0]
+    }
+  ],
+  "types": [
+    {
+      "name": "MemoryAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "vm", "type": "pubkey" },
+          { "name": "name", "type": { "array": ["u8", 32] } },
+          { "name": "bump", "type": "u8" },
+          { "name": "layout", "type": "u8" },
+          { "name": "padding", "type": { "array": ["u8", 6] } }
+        ]
+      }
+    },
+    {
+      "name": "RelayAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "vm", "type": "pubkey" },
+          { "name": "name", "type": { "array": ["u8", 32] } },
+          { "name": "treasuryVault", "type": "pubkey" },
+          { "name": "treasuryVaultBump", "type": "u8" },
+          { "name": "bump", "type": "u8" },
+          { "name": "numLevels", "type": "u8" },
+          { "name": "numHistory", "type": "u8" },
+          { "name": "padding", "type": { "array": ["u8", 4] } }
+        ]
+      }
+    },
+    {
+      "name": "StorageAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "vm", "type": "pubkey" },
+          { "name": "name", "type": { "array": ["u8", 32] } },
+          { "name": "bump", "type": "u8" },
+          { "name": "depth", "type": "u8" },
+          { "name": "padding", "type": { "array": ["u8", 6] } }
+        ]
+      }
+    },
+    {
+      "name": "UnlockStateAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "vm", "type": "pubkey" },
+          { "name": "owner", "type": "pubkey" },
+          { "name": "address", "type": "pubkey" },
+          { "name": "unlockAt", "type": "i64" },
+          { "name": "bump", "type": "u8" },
+          { "name": "state", "type": "u8" },
+          { "name": "padding", "type": { "array": ["u8", 6] } }
+        ]
+      }
+    },
+    {
+      "name": "CodeVmAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "authority", "type": "pubkey" },
+          { "name": "mint", "type": "pubkey" },
+          { "name": "slot", "type": "u64" },
+          { "name": "poh", "type": { "array": ["u8", 32] } },
+          { "name": "omnibusVault", "type": "pubkey" },
+          { "name": "omnibusVaultBump", "type": "u8" },
+          { "name": "lockDuration", "type": "u8" },
+          { "name": "bump", "type": "u8" },
+          { "name": "padding", "type": { "array": ["u8", 5] } }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawReceiptAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "unlockPda", "type": "pubkey" },
+          { "name": "nonce", "type": { "array": ["u8", 32] } },
+          { "name": "amount", "type": "u64" },
+          { "name": "bump", "type": "u8" },
+          { "name": "padding", "type": { "array": ["u8", 7] } }
+        ]
+      }
+    }
+  ]
+}
