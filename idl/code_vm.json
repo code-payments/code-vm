@@ -1,245 +1,1637 @@
 {
+  "accounts": [
+    {
+      "name": "CodeVmAccount",
+      "discriminator": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "MemoryAccount",
+      "discriminator": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "RelayAccount",
+      "discriminator": [
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "StorageAccount",
+      "discriminator": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "UnlockStateAccount",
+      "discriminator": [
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "WithdrawReceiptAccount",
+      "discriminator": [
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
   "address": "vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ",
-  "metadata": {
-    "name": "code_vm",
-    "version": "0.1.0",
-    "spec": "0.1.0",
-    "description": "Code VM"
+  "default": {
+    "address": "vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ",
+    "metadata": {
+      "name": "code_vm",
+      "version": "0.1.0",
+      "spec": "0.1.0",
+      "description": "Code VM"
+    },
+    "instructions": [
+      {
+        "name": "compress",
+        "discriminator": [
+          9
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_memory",
+            "writable": true
+          },
+          {
+            "name": "vm_storage",
+            "writable": true
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "CompressArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "decompress",
+        "discriminator": [
+          10
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_memory",
+            "writable": true
+          },
+          {
+            "name": "vm_storage",
+            "writable": true
+          },
+          {
+            "name": "unlock_pda"
+          },
+          {
+            "name": "withdraw_receipt"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "DecompressArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "deposit",
+        "discriminator": [
+          13
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_memory",
+            "writable": true
+          },
+          {
+            "name": "depositor"
+          },
+          {
+            "name": "deposit_pda"
+          },
+          {
+            "name": "deposit_ata",
+            "writable": true
+          },
+          {
+            "name": "omnibus",
+            "writable": true
+          },
+          {
+            "name": "token_program"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "DepositArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "exec",
+        "discriminator": [
+          8
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "mem_a",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "mem_b",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "mem_c",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "mem_d",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "vm_omnibus",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "relay",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "relay_vault",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "external_address",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "token_program",
+            "optional": true,
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "ExecArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "init_memory",
+        "discriminator": [
+          2
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_memory",
+            "writable": true
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent",
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "InitMemoryArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "init_nonce",
+        "discriminator": [
+          5
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_memory",
+            "writable": true
+          },
+          {
+            "name": "virtual_account_owner"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "InitNonceArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "init_relay",
+        "discriminator": [
+          4
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "relay",
+            "writable": true
+          },
+          {
+            "name": "relay_vault",
+            "writable": true
+          },
+          {
+            "name": "mint"
+          },
+          {
+            "name": "token_program",
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent",
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "InitRelayArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "init_storage",
+        "discriminator": [
+          3
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_storage",
+            "writable": true
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent",
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "InitStorageArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "init_timelock",
+        "discriminator": [
+          6
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_memory",
+            "writable": true
+          },
+          {
+            "name": "virtual_account_owner"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "InitTimelockArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "init_unlock",
+        "discriminator": [
+          7
+        ],
+        "accounts": [
+          {
+            "name": "account_owner",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "payer",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "unlock_pda",
+            "writable": true
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent_sysvar",
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "InitUnlockArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "init_vm",
+        "discriminator": [
+          1
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "omnibus",
+            "writable": true
+          },
+          {
+            "name": "mint"
+          },
+          {
+            "name": "token_program",
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent",
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "InitVmArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "resize_memory",
+        "discriminator": [
+          11
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_memory",
+            "writable": true
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent_sysvar",
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "ResizeMemoryArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "snapshot",
+        "discriminator": [
+          12
+        ],
+        "accounts": [
+          {
+            "name": "vm_authority",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "relay",
+            "writable": true
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "SnapshotArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "unlock",
+        "discriminator": [
+          15
+        ],
+        "accounts": [
+          {
+            "name": "account_owner",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "payer",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "unlock_pda",
+            "writable": true
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "UnlockArgs"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "withdraw",
+        "discriminator": [
+          14
+        ],
+        "accounts": [
+          {
+            "name": "depositor",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "payer",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "vm",
+            "writable": true
+          },
+          {
+            "name": "vm_omnibus",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "vm_memory",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "vm_storage",
+            "optional": true
+          },
+          {
+            "name": "deposit_pda",
+            "optional": true
+          },
+          {
+            "name": "deposit_ata",
+            "writable": true,
+            "optional": true
+          },
+          {
+            "name": "unlock_pda"
+          },
+          {
+            "name": "withdraw_receipt",
+            "optional": true
+          },
+          {
+            "name": "external_address",
+            "writable": true
+          },
+          {
+            "name": "token_program",
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          },
+          {
+            "name": "system_program",
+            "optional": true,
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent_sysvar",
+            "optional": true,
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "_data",
+            "type": {
+              "defined": {
+                "name": "WithdrawArgs"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "accounts": [
+      {
+        "name": "CodeVmAccount",
+        "discriminator": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "MemoryAccount",
+        "discriminator": [
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "RelayAccount",
+        "discriminator": [
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "StorageAccount",
+        "discriminator": [
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "UnlockStateAccount",
+        "discriminator": [
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "WithdrawReceiptAccount",
+        "discriminator": [
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "types": [
+      {
+        "name": "CodeVmAccount",
+        "repr": {
+          "kind": "c",
+          "align": 8
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "authority",
+              "type": "pubkey"
+            },
+            {
+              "name": "mint",
+              "type": "pubkey"
+            },
+            {
+              "name": "slot",
+              "type": "u64"
+            },
+            {
+              "name": "poh",
+              "type": {
+                "defined": {
+                  "name": "Hash"
+                }
+              }
+            },
+            {
+              "name": "omnibus",
+              "type": {
+                "defined": {
+                  "name": "TokenPool"
+                }
+              }
+            },
+            {
+              "name": "lock_duration",
+              "type": "u8"
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            },
+            {
+              "name": "_padding",
+              "type": {
+                "array": [
+                  "u8",
+                  5
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "CompressArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "account_index",
+              "type": "u16"
+            },
+            {
+              "name": "signature",
+              "type": {
+                "defined": {
+                  "name": "Signature"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "DecompressArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "data",
+              "type": {
+                "defined": {
+                  "name": "DecompressArgsData"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "DecompressArgsData",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "account_index",
+              "type": "u16"
+            },
+            {
+              "name": "packed_va",
+              "type": "bytes"
+            },
+            {
+              "name": "proof",
+              "type": {
+                "vec": {
+                  "defined": {
+                    "name": "Hash"
+                  }
+                }
+              }
+            },
+            {
+              "name": "signature",
+              "type": {
+                "defined": {
+                  "name": "Signature"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "DepositArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "account_index",
+              "type": "u16"
+            },
+            {
+              "name": "amount",
+              "type": "u64"
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "ExecArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "data",
+              "type": {
+                "defined": {
+                  "name": "ExecArgsData"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "ExecArgsData",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "opcode",
+              "type": "u8"
+            },
+            {
+              "name": "mem_indicies",
+              "type": {
+                "vec": "u16"
+              }
+            },
+            {
+              "name": "mem_banks",
+              "type": "bytes"
+            },
+            {
+              "name": "data",
+              "type": "bytes"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Hash",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "value",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "InitMemoryArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "name",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "layout",
+              "type": "u8"
+            },
+            {
+              "name": "vm_memory_bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "InitNonceArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "account_index",
+              "type": "u16"
+            }
+          ]
+        }
+      },
+      {
+        "name": "InitRelayArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "name",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "relay_bump",
+              "type": "u8"
+            },
+            {
+              "name": "relay_vault_bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "InitStorageArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "name",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "vm_storage_bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "InitTimelockArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "account_index",
+              "type": "u16"
+            },
+            {
+              "name": "virtual_timelock_bump",
+              "type": "u8"
+            },
+            {
+              "name": "virtual_vault_bump",
+              "type": "u8"
+            },
+            {
+              "name": "unlock_pda_bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "InitUnlockArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": []
+        }
+      },
+      {
+        "name": "InitVmArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "lock_duration",
+              "type": "u8"
+            },
+            {
+              "name": "vm_bump",
+              "type": "u8"
+            },
+            {
+              "name": "vm_omnibus_bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "MemoryAccount",
+        "repr": {
+          "kind": "c",
+          "align": 8
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "vm",
+              "type": "pubkey"
+            },
+            {
+              "name": "name",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            },
+            {
+              "name": "layout",
+              "type": "u8"
+            },
+            {
+              "name": "_padding",
+              "type": {
+                "array": [
+                  "u8",
+                  6
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "RelayAccount",
+        "repr": {
+          "kind": "c",
+          "align": 8
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "vm",
+              "type": "pubkey"
+            },
+            {
+              "name": "name",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "treasury",
+              "type": {
+                "defined": {
+                  "name": "TokenPool"
+                }
+              }
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            },
+            {
+              "name": "num_levels",
+              "type": "u8"
+            },
+            {
+              "name": "num_history",
+              "type": "u8"
+            },
+            {
+              "name": "_padding",
+              "type": {
+                "array": [
+                  "u8",
+                  4
+                ]
+              }
+            },
+            {
+              "name": "recent_roots",
+              "type": {
+                "array": [
+                  "u8",
+                  1032
+                ]
+              }
+            },
+            {
+              "name": "history",
+              "type": {
+                "array": [
+                  "u8",
+                  4136
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "ResizeMemoryArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "account_size",
+              "type": "u32"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Signature",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "value",
+              "type": {
+                "array": [
+                  "u8",
+                  64
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "SnapshotArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": []
+        }
+      },
+      {
+        "name": "StorageAccount",
+        "repr": {
+          "kind": "c",
+          "align": 8
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "vm",
+              "type": "pubkey"
+            },
+            {
+              "name": "name",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            },
+            {
+              "name": "depth",
+              "type": "u8"
+            },
+            {
+              "name": "_padding",
+              "type": {
+                "array": [
+                  "u8",
+                  6
+                ]
+              }
+            },
+            {
+              "name": "compressed_state",
+              "type": {
+                "array": [
+                  "u8",
+                  1576
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "TokenPool",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "vault",
+              "type": "pubkey"
+            },
+            {
+              "name": "vault_bump",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "UnlockArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": []
+        }
+      },
+      {
+        "name": "UnlockStateAccount",
+        "repr": {
+          "kind": "c",
+          "align": 8
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "vm",
+              "type": "pubkey"
+            },
+            {
+              "name": "owner",
+              "type": "pubkey"
+            },
+            {
+              "name": "address",
+              "type": "pubkey"
+            },
+            {
+              "name": "unlock_at",
+              "type": "i64"
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            },
+            {
+              "name": "state",
+              "type": "u8"
+            },
+            {
+              "name": "_padding",
+              "type": {
+                "array": [
+                  "u8",
+                  6
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "WithdrawArgs",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "data",
+              "type": {
+                "defined": {
+                  "name": "WithdrawArgsData"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "WithdrawArgsData",
+        "repr": {
+          "kind": "rust"
+        },
+        "type": {
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "FromMemory",
+              "fields": [
+                {
+                  "name": "account_index",
+                  "type": "u16"
+                }
+              ]
+            },
+            {
+              "name": "FromStorage",
+              "fields": [
+                {
+                  "name": "packed_va",
+                  "type": "bytes"
+                },
+                {
+                  "name": "proof",
+                  "type": {
+                    "vec": {
+                      "defined": {
+                        "name": "Hash"
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "signature",
+                  "type": {
+                    "defined": {
+                      "name": "Signature"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "FromDeposit",
+              "fields": [
+                {
+                  "name": "bump",
+                  "type": "u8"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "WithdrawReceiptAccount",
+        "repr": {
+          "kind": "c",
+          "align": 8
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "unlock_pda",
+              "type": "pubkey"
+            },
+            {
+              "name": "nonce",
+              "type": {
+                "defined": {
+                  "name": "Hash"
+                }
+              }
+            },
+            {
+              "name": "amount",
+              "type": "u64"
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            },
+            {
+              "name": "_padding",
+              "type": {
+                "array": [
+                  "u8",
+                  7
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
   },
   "instructions": [
     {
-      "name": "initVm",
-      "discriminator": [1],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "omnibus",
-          "writable": true
-        },
-        {
-          "name": "mint"
-        },
-        {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        },
-        {
-          "name": "rentSysvar",
-          "address": "SysvarRent111111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "lockDuration",
-          "type": "u8"
-        },
-        {
-          "name": "vmBump",
-          "type": "u8"
-        },
-        {
-          "name": "vmOmnibusBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "initMemory",
-      "discriminator": [2],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "vmMemory",
-          "writable": true
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        },
-        {
-          "name": "rentSysvar",
-          "address": "SysvarRent111111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "name",
-          "type": { "array": ["u8", 32] }
-        },
-        {
-          "name": "layout",
-          "type": "u8"
-        },
-        {
-          "name": "vmMemoryBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "resizeMemory",
-      "discriminator": [11],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "vmMemory",
-          "writable": true
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        },
-        {
-          "name": "rentSysvar",
-          "address": "SysvarRent111111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "accountSize",
-          "type": "u32"
-        }
-      ]
-    },
-    {
-      "name": "initStorage",
-      "discriminator": [3],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "vmStorage",
-          "writable": true
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        },
-        {
-          "name": "rentSysvar",
-          "address": "SysvarRent111111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "name",
-          "type": { "array": ["u8", 32] }
-        },
-        {
-          "name": "vmStorageBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "initNonce",
-      "discriminator": [5],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "vmMemory",
-          "writable": true
-        },
-        {
-          "name": "virtualAccountOwner"
-        }
-      ],
-      "args": [
-        {
-          "name": "accountIndex",
-          "type": "u16"
-        }
-      ]
-    },
-    {
-      "name": "initTimelock",
-      "discriminator": [6],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "vmMemory",
-          "writable": true
-        },
-        {
-          "name": "virtualAccountOwner"
-        }
-      ],
-      "args": [
-        {
-          "name": "accountIndex",
-          "type": "u16"
-        },
-        {
-          "name": "virtualTimelockBump",
-          "type": "u8"
-        },
-        {
-          "name": "virtualVaultBump",
-          "type": "u8"
-        },
-        {
-          "name": "unlockPdaBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "compress",
-      "discriminator": [9],
+      "discriminator": [
+        9
+      ],
       "accounts": [
         {
-          "name": "vmAuthority",
+          "name": "vm_authority",
           "writable": true,
           "signer": true
         },
@@ -248,31 +1640,33 @@
           "writable": true
         },
         {
-          "name": "vmMemory",
+          "name": "vm_memory",
           "writable": true
         },
         {
-          "name": "vmStorage",
+          "name": "vm_storage",
           "writable": true
         }
       ],
       "args": [
         {
-          "name": "accountIndex",
-          "type": "u16"
-        },
-        {
-          "name": "signature",
-          "type": "bytes"
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "CompressArgs"
+            }
+          }
         }
       ]
     },
     {
       "name": "decompress",
-      "discriminator": [10],
+      "discriminator": [
+        10
+      ],
       "accounts": [
         {
-          "name": "vmAuthority",
+          "name": "vm_authority",
           "writable": true,
           "signer": true
         },
@@ -281,189 +1675,39 @@
           "writable": true
         },
         {
-          "name": "vmMemory",
+          "name": "vm_memory",
           "writable": true
         },
         {
-          "name": "vmStorage",
+          "name": "vm_storage",
           "writable": true
         },
         {
-          "name": "unlockPda",
-          "optional": true
+          "name": "unlock_pda"
         },
         {
-          "name": "withdrawReceipt",
-          "optional": true
+          "name": "withdraw_receipt"
         }
       ],
       "args": [
         {
-          "name": "accountIndex",
-          "type": "u16"
-        },
-        {
-          "name": "packedVa",
-          "type": { "vec": "u8" }
-        },
-        {
-          "name": "proof",
-          "type": { "vec": { "array": ["u8", 32] } }
-        },
-        {
-          "name": "signature",
-          "type": "bytes"
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "DecompressArgs"
+            }
+          }
         }
       ]
-    },
-    {
-      "name": "exec",
-      "discriminator": [8],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "memA",
-          "optional": true
-        },
-        {
-          "name": "memB",
-          "optional": true
-        },
-        {
-          "name": "memC",
-          "optional": true
-        },
-        {
-          "name": "memD",
-          "optional": true
-        },
-        {
-          "name": "vmOmnibus",
-          "optional": true
-        },
-        {
-          "name": "relay",
-          "optional": true
-        },
-        {
-          "name": "relayVault",
-          "optional": true
-        },
-        {
-          "name": "externalAddress",
-          "optional": true
-        },
-        {
-          "name": "tokenProgram",
-          "optional": true,
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-        }
-      ],
-      "args": [
-        {
-          "name": "opcode",
-          "type": "u8"
-        },
-        {
-          "name": "memIndicies",
-          "type": { "vec": "u16" }
-        },
-        {
-          "name": "memBanks",
-          "type": { "vec": "u8" }
-        },
-        {
-          "name": "data",
-          "type": { "vec": "u8" }
-        }
-      ]
-    },
-    {
-      "name": "initRelay",
-      "discriminator": [4],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "relay",
-          "writable": true
-        },
-        {
-          "name": "relayVault",
-          "writable": true
-        },
-        {
-          "name": "mint"
-        },
-        {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        },
-        {
-          "name": "rentSysvar",
-          "address": "SysvarRent111111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "name",
-          "type": { "array": ["u8", 32] }
-        },
-        {
-          "name": "relayBump",
-          "type": "u8"
-        },
-        {
-          "name": "relayVaultBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "snapshot",
-      "discriminator": [12],
-      "accounts": [
-        {
-          "name": "vmAuthority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm",
-          "writable": true
-        },
-        {
-          "name": "relay",
-          "writable": true
-        }
-      ],
-      "args": []
     },
     {
       "name": "deposit",
-      "discriminator": [13],
+      "discriminator": [
+        13
+      ],
       "accounts": [
         {
-          "name": "vmAuthority",
+          "name": "vm_authority",
           "writable": true,
           "signer": true
         },
@@ -472,83 +1716,314 @@
           "writable": true
         },
         {
-          "name": "vmMemory",
+          "name": "vm_memory",
           "writable": true
         },
         {
           "name": "depositor"
         },
         {
-          "name": "depositPda",
-          "optional": true
+          "name": "deposit_pda"
         },
         {
-          "name": "depositAta",
-          "optional": true
+          "name": "deposit_ata",
+          "writable": true
         },
         {
           "name": "omnibus",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "DepositArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "exec",
+      "discriminator": [
+        8
+      ],
+      "accounts": [
+        {
+          "name": "vm_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "mem_a",
           "writable": true,
           "optional": true
         },
         {
-          "name": "tokenProgram",
+          "name": "mem_b",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "mem_c",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "mem_d",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "vm_omnibus",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "relay",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "relay_vault",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "external_address",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "token_program",
+          "optional": true,
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         }
       ],
       "args": [
         {
-          "name": "accountIndex",
-          "type": "u16"
-        },
-        {
-          "name": "amount",
-          "type": "u64"
-        },
-        {
-          "name": "bump",
-          "type": "u8"
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "ExecArgs"
+            }
+          }
         }
       ]
     },
     {
-      "name": "initUnlock",
-      "discriminator": [7],
+      "name": "init_memory",
+      "discriminator": [
+        2
+      ],
       "accounts": [
         {
-          "name": "accountOwner",
+          "name": "vm_authority",
           "writable": true,
           "signer": true
         },
         {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "vm"
-        },
-        {
-          "name": "unlockPda",
+          "name": "vm",
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "vm_memory",
+          "writable": true
+        },
+        {
+          "name": "system_program",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "rentSysvar",
+          "name": "rent",
           "address": "SysvarRent111111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "InitMemoryArgs"
+            }
+          }
+        }
+      ]
     },
     {
-      "name": "unlock",
-      "discriminator": [15],
+      "name": "init_nonce",
+      "discriminator": [
+        5
+      ],
       "accounts": [
         {
-          "name": "accountOwner",
+          "name": "vm_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vm_memory",
+          "writable": true
+        },
+        {
+          "name": "virtual_account_owner"
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "InitNonceArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "init_relay",
+      "discriminator": [
+        4
+      ],
+      "accounts": [
+        {
+          "name": "vm_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "relay",
+          "writable": true
+        },
+        {
+          "name": "relay_vault",
+          "writable": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "InitRelayArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "init_storage",
+      "discriminator": [
+        3
+      ],
+      "accounts": [
+        {
+          "name": "vm_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vm_storage",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "InitStorageArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "init_timelock",
+      "discriminator": [
+        6
+      ],
+      "accounts": [
+        {
+          "name": "vm_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vm_memory",
+          "writable": true
+        },
+        {
+          "name": "virtual_account_owner"
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "InitTimelockArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "init_unlock",
+      "discriminator": [
+        7
+      ],
+      "accounts": [
+        {
+          "name": "account_owner",
           "writable": true,
           "signer": true
         },
@@ -558,18 +2033,190 @@
           "signer": true
         },
         {
-          "name": "vm"
+          "name": "vm",
+          "writable": true
         },
         {
-          "name": "unlockPda",
+          "name": "unlock_pda",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent_sysvar",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "InitUnlockArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "init_vm",
+      "discriminator": [
+        1
+      ],
+      "accounts": [
+        {
+          "name": "vm_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "omnibus",
+          "writable": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "InitVmArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "resize_memory",
+      "discriminator": [
+        11
+      ],
+      "accounts": [
+        {
+          "name": "vm_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "vm_memory",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent_sysvar",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "ResizeMemoryArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "snapshot",
+      "discriminator": [
+        12
+      ],
+      "accounts": [
+        {
+          "name": "vm_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "relay",
           "writable": true
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "SnapshotArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "unlock",
+      "discriminator": [
+        15
+      ],
+      "accounts": [
+        {
+          "name": "account_owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vm",
+          "writable": true
+        },
+        {
+          "name": "unlock_pda",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "UnlockArgs"
+            }
+          }
+        }
+      ]
     },
     {
       "name": "withdraw",
-      "discriminator": [14],
+      "discriminator": [
+        14
+      ],
       "accounts": [
         {
           "name": "depositor",
@@ -582,169 +2229,856 @@
           "signer": true
         },
         {
-          "name": "vm"
-        },
-        {
-          "name": "vmOmnibus",
-          "optional": true
-        },
-        {
-          "name": "vmMemory",
-          "optional": true
-        },
-        {
-          "name": "vmStorage",
-          "optional": true
-        },
-        {
-          "name": "depositPda",
-          "optional": true
-        },
-        {
-          "name": "depositAta",
-          "optional": true
-        },
-        {
-          "name": "unlockPda",
+          "name": "vm",
           "writable": true
         },
         {
-          "name": "withdrawReceipt",
+          "name": "vm_omnibus",
+          "writable": true,
           "optional": true
         },
         {
-          "name": "externalAddress"
+          "name": "vm_memory",
+          "writable": true,
+          "optional": true
         },
         {
-          "name": "tokenProgram",
+          "name": "vm_storage",
+          "optional": true
+        },
+        {
+          "name": "deposit_pda",
+          "optional": true
+        },
+        {
+          "name": "deposit_ata",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "unlock_pda"
+        },
+        {
+          "name": "withdraw_receipt",
+          "optional": true
+        },
+        {
+          "name": "external_address",
+          "writable": true
+        },
+        {
+          "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111",
-          "optional": true
+          "name": "system_program",
+          "optional": true,
+          "address": "11111111111111111111111111111111"
         },
         {
-          "name": "rentSysvar",
-          "address": "SysvarRent111111111111111111111111111111111",
-          "optional": true
+          "name": "rent_sysvar",
+          "optional": true,
+          "address": "SysvarRent111111111111111111111111111111111"
         }
       ],
       "args": [
+        {
+          "name": "_data",
+          "type": {
+            "defined": {
+              "name": "WithdrawArgs"
+            }
+          }
+        }
       ]
     }
   ],
-  "accounts": [
-    {
-      "name": "MemoryAccount",
-      "discriminator": [2, 0, 0, 0, 0, 0, 0, 0]
-    },
-    {
-      "name": "RelayAccount",
-      "discriminator": [4, 0, 0, 0, 0, 0, 0, 0]
-    },
-    {
-      "name": "StorageAccount",
-      "discriminator": [3, 0, 0, 0, 0, 0, 0, 0]
-    },
-    {
-      "name": "UnlockStateAccount",
-      "discriminator": [5, 0, 0, 0, 0, 0, 0, 0]
-    },
-    {
-      "name": "CodeVmAccount",
-      "discriminator": [1, 0, 0, 0, 0, 0, 0, 0]
-    },
-    {
-      "name": "WithdrawReceiptAccount",
-      "discriminator": [6, 0, 0, 0, 0, 0, 0, 0]
-    }
-  ],
+  "metadata": {
+    "name": "code_vm",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Code VM"
+  },
   "types": [
     {
-      "name": "MemoryAccount",
+      "name": "CodeVmAccount",
+      "repr": {
+        "kind": "c",
+        "align": 8
+      },
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "vm", "type": "pubkey" },
-          { "name": "name", "type": { "array": ["u8", 32] } },
-          { "name": "bump", "type": "u8" },
-          { "name": "layout", "type": "u8" },
-          { "name": "padding", "type": { "array": ["u8", 6] } }
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "slot",
+            "type": "u64"
+          },
+          {
+            "name": "poh",
+            "type": {
+              "defined": {
+                "name": "Hash"
+              }
+            }
+          },
+          {
+            "name": "omnibus",
+            "type": {
+              "defined": {
+                "name": "TokenPool"
+              }
+            }
+          },
+          {
+            "name": "lock_duration",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CompressArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "account_index",
+            "type": "u16"
+          },
+          {
+            "name": "signature",
+            "type": {
+              "defined": {
+                "name": "Signature"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DecompressArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "data",
+            "type": {
+              "defined": {
+                "name": "DecompressArgsData"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DecompressArgsData",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "account_index",
+            "type": "u16"
+          },
+          {
+            "name": "packed_va",
+            "type": "bytes"
+          },
+          {
+            "name": "proof",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Hash"
+                }
+              }
+            }
+          },
+          {
+            "name": "signature",
+            "type": {
+              "defined": {
+                "name": "Signature"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "account_index",
+            "type": "u16"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExecArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "data",
+            "type": {
+              "defined": {
+                "name": "ExecArgsData"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExecArgsData",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "opcode",
+            "type": "u8"
+          },
+          {
+            "name": "mem_indicies",
+            "type": {
+              "vec": "u16"
+            }
+          },
+          {
+            "name": "mem_banks",
+            "type": "bytes"
+          },
+          {
+            "name": "data",
+            "type": "bytes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Hash",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitMemoryArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "layout",
+            "type": "u8"
+          },
+          {
+            "name": "vm_memory_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitNonceArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "account_index",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitRelayArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "relay_bump",
+            "type": "u8"
+          },
+          {
+            "name": "relay_vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitStorageArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "vm_storage_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitTimelockArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "account_index",
+            "type": "u16"
+          },
+          {
+            "name": "virtual_timelock_bump",
+            "type": "u8"
+          },
+          {
+            "name": "virtual_vault_bump",
+            "type": "u8"
+          },
+          {
+            "name": "unlock_pda_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitUnlockArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "InitVmArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lock_duration",
+            "type": "u8"
+          },
+          {
+            "name": "vm_bump",
+            "type": "u8"
+          },
+          {
+            "name": "vm_omnibus_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MemoryAccount",
+      "repr": {
+        "kind": "c",
+        "align": 8
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vm",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "layout",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          }
         ]
       }
     },
     {
       "name": "RelayAccount",
+      "repr": {
+        "kind": "c",
+        "align": 8
+      },
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "vm", "type": "pubkey" },
-          { "name": "name", "type": { "array": ["u8", 32] } },
-          { "name": "treasuryVault", "type": "pubkey" },
-          { "name": "treasuryVaultBump", "type": "u8" },
-          { "name": "bump", "type": "u8" },
-          { "name": "numLevels", "type": "u8" },
-          { "name": "numHistory", "type": "u8" },
-          { "name": "padding", "type": { "array": ["u8", 4] } }
+          {
+            "name": "vm",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "treasury",
+            "type": {
+              "defined": {
+                "name": "TokenPool"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "num_levels",
+            "type": "u8"
+          },
+          {
+            "name": "num_history",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          },
+          {
+            "name": "recent_roots",
+            "type": {
+              "array": [
+                "u8",
+                1032
+              ]
+            }
+          },
+          {
+            "name": "history",
+            "type": {
+              "array": [
+                "u8",
+                4136
+              ]
+            }
+          }
         ]
+      }
+    },
+    {
+      "name": "ResizeMemoryArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "account_size",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Signature",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SnapshotArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": []
       }
     },
     {
       "name": "StorageAccount",
+      "repr": {
+        "kind": "c",
+        "align": 8
+      },
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "vm", "type": "pubkey" },
-          { "name": "name", "type": { "array": ["u8", 32] } },
-          { "name": "bump", "type": "u8" },
-          { "name": "depth", "type": "u8" },
-          { "name": "padding", "type": { "array": ["u8", 6] } }
+          {
+            "name": "vm",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "depth",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "compressed_state",
+            "type": {
+              "array": [
+                "u8",
+                1576
+              ]
+            }
+          }
         ]
+      }
+    },
+    {
+      "name": "TokenPool",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UnlockArgs",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": []
       }
     },
     {
       "name": "UnlockStateAccount",
+      "repr": {
+        "kind": "c",
+        "align": 8
+      },
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "vm", "type": "pubkey" },
-          { "name": "owner", "type": "pubkey" },
-          { "name": "address", "type": "pubkey" },
-          { "name": "unlockAt", "type": "i64" },
-          { "name": "bump", "type": "u8" },
-          { "name": "state", "type": "u8" },
-          { "name": "padding", "type": { "array": ["u8", 6] } }
+          {
+            "name": "vm",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "address",
+            "type": "pubkey"
+          },
+          {
+            "name": "unlock_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "state",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          }
         ]
       }
     },
     {
-      "name": "CodeVmAccount",
+      "name": "WithdrawArgs",
+      "repr": {
+        "kind": "c"
+      },
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "authority", "type": "pubkey" },
-          { "name": "mint", "type": "pubkey" },
-          { "name": "slot", "type": "u64" },
-          { "name": "poh", "type": { "array": ["u8", 32] } },
-          { "name": "omnibusVault", "type": "pubkey" },
-          { "name": "omnibusVaultBump", "type": "u8" },
-          { "name": "lockDuration", "type": "u8" },
-          { "name": "bump", "type": "u8" },
-          { "name": "padding", "type": { "array": ["u8", 5] } }
+          {
+            "name": "data",
+            "type": {
+              "defined": {
+                "name": "WithdrawArgsData"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawArgsData",
+      "repr": {
+        "kind": "rust"
+      },
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "FromMemory",
+            "fields": [
+              {
+                "name": "account_index",
+                "type": "u16"
+              }
+            ]
+          },
+          {
+            "name": "FromStorage",
+            "fields": [
+              {
+                "name": "packed_va",
+                "type": "bytes"
+              },
+              {
+                "name": "proof",
+                "type": {
+                  "vec": {
+                    "defined": {
+                      "name": "Hash"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "signature",
+                "type": {
+                  "defined": {
+                    "name": "Signature"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "FromDeposit",
+            "fields": [
+              {
+                "name": "bump",
+                "type": "u8"
+              }
+            ]
+          }
         ]
       }
     },
     {
       "name": "WithdrawReceiptAccount",
+      "repr": {
+        "kind": "c",
+        "align": 8
+      },
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "unlockPda", "type": "pubkey" },
-          { "name": "nonce", "type": { "array": ["u8", 32] } },
-          { "name": "amount", "type": "u64" },
-          { "name": "bump", "type": "u8" },
-          { "name": "padding", "type": { "array": ["u8", 7] } }
+          {
+            "name": "unlock_pda",
+            "type": "pubkey"
+          },
+          {
+            "name": "nonce",
+            "type": {
+              "defined": {
+                "name": "Hash"
+              }
+            }
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          }
         ]
       }
     }
