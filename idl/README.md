@@ -1,6 +1,6 @@
 # Code VM IDL
-This is not the actual program, but a shell that can be used to generate the IDL
-for the Code VM. 
+This is not the actual program, it is a dummy program that can be used to 
+generate the IDL for the [real](https://github.com/code-payments/code-vm/tree/main/program) Code VM. 
 
 ## What is an IDL?
 An IDL can be used to generate clients in various languages and is used by
