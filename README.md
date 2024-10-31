@@ -42,7 +42,7 @@ questions or feedback.
 | --- | --- | --- | --- |
 | Preview Release | Released | v0.1.0 | Aug 9th, 2024 |
 | Optimized Release | Pending | v0.2.0 | Oct 24th, 2024 |
-| IDLs | Pending | - | - |
+| IDLs | [Released](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | v0.0.1 | Oct 30th, 2024 |
 | Golang/JS Clients | Pending | - | - |
 | Indexer Service | [Released](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
 | Code VM Explorer | - | - | - |
