@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "types": ["mocha", "chai"],
+    "typeRoots": ["./node_modules/@types"],
+    "lib": ["es2015"],
+    "module": "NodeNext",
+    "target": "es6",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "resolvePackageJsonImports": true,
+    "moduleResolution": "NodeNext"
+  }
+}
