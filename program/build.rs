@@ -14,7 +14,7 @@ fn main() {
 
     // Compress the IDL file to a zip file.
     let out_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = PathBuf::from(out_dir).join("codama.idl.zip");
+    let dest_path = PathBuf::from(out_dir).join("idl.zip");
 
     compress_idl(&idl_path, &dest_path);
 }
