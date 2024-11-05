@@ -1,5 +1,6 @@
 use steel::*;
 use sha2::{ Digest, Sha512 };
+use std::mem::MaybeUninit;
 use curve25519_dalek::scalar::Scalar;
 use solana_curve25519::{
     edwards::{ add_edwards, multiply_edwards, PodEdwardsPoint },
@@ -44,11 +45,7 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
     }
     
     let pubkey_point = PodEdwardsPoint(pubkey[..ED25519_PUBKEY_LEN].try_into().unwrap());
-    
-    let mut sig_lower: [u8; 32] = [0u8; 32];
-    let mut sig_upper: [u8; 32] = [0u8; 32];
-    sig_lower.copy_from_slice(&sig[..32]);
-    sig_upper.copy_from_slice(&sig[32..]);
+    let (sig_lower, sig_upper) = split_signature(sig.try_into().unwrap());
 
     let sig_R = PodEdwardsPoint(sig_lower);
     let sig_s = Scalar::from_canonical_bytes(sig_upper).unwrap();
@@ -89,6 +86,30 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
         Ok(())
     } else {
         Err(ProgramError::InvalidAccountOwner)
+    }
+}
+
+
+/// Split the signature into two 32-byte arrays.
+#[inline(always)]
+fn split_signature(sig: &[u8; 64]) -> ([u8; 32], [u8; 32]) {
+    let mut sig_lower: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
+    let mut sig_upper: MaybeUninit<[u8; 32]> = MaybeUninit::uninit();
+
+    // SAFETY: The length of `sig` is 64 bytes, we're copying 32 bytes into
+    // `sig_lower` and `sig_upper` respectively.
+    unsafe {
+        std::ptr::copy_nonoverlapping(
+            sig.as_ptr(), 
+            sig_lower.as_mut_ptr() as *mut u8, 
+            32);
+
+        std::ptr::copy_nonoverlapping(
+            sig.as_ptr().add(32), 
+            sig_upper.as_mut_ptr() as *mut u8, 
+            32);
+
+        (sig_lower.assume_init(), sig_upper.assume_init())
     }
 }
 
@@ -135,7 +156,7 @@ mod tests {
     use std::ops::Neg;
 
     #[test]
-    fn test_points() {
+    fn test_base_point() {
         let base_point = constants::ED25519_BASEPOINT_POINT;
         let compressed = base_point.compress();
         let bytes = compressed.to_bytes();
@@ -143,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn test_scalar() {
+    fn test_neg_one() {
         let one = Scalar::ONE;
         let neg_one = one.neg();
         let neg_one_bytes = neg_one.to_bytes();
