@@ -5,8 +5,8 @@ use crate::types::Hash;
 #[repr(C)]
 #[derive(BorshDeserialize, BorshSerialize, Clone, Copy, PartialEq, Debug)]
 pub struct VirtualDurableNonce {
-    pub address: Pubkey,
-    pub nonce: Hash,
+    pub address: Pubkey,    // Unlike a real durable nonce, this value is off-curve and owned by the VM authority
+    pub value: Hash,        // The current nonce value (auto-advanced when used)
 }
 
 impl VirtualDurableNonce {

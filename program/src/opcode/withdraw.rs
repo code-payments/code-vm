@@ -109,7 +109,7 @@ pub fn process_withdraw(
         .checked_add(amount)
         .ok_or(ProgramError::ArithmeticOverflow)?;
 
-    vdn.nonce = vm.get_current_poh();
+    vdn.value = vm.get_current_poh();
 
     try_delete(
         src_mem_info,

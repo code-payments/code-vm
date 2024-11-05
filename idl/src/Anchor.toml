@@ -1,0 +1,18 @@
+[toolchain]
+
+[features]
+resolution = true
+skip-lint = true
+
+[programs.localnet]
+code_vm = "vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+wallet = "keypair-owner.json"
+cluster = "http://127.0.0.1:8899"
+
+[scripts]
+test = "echo \"Error: no test specified\" && exit 1"

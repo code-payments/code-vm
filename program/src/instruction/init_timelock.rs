@@ -81,7 +81,7 @@ pub fn process_init_timelock(accounts: &[AccountInfo<'_>], data: &[u8]) -> Progr
 
     let vta = VirtualTimelockAccount {
         owner,
-        nonce,
+        instance: nonce,
         bump: args.virtual_timelock_bump,
         token_bump: args.virtual_vault_bump,
         unlock_bump: args.unlock_pda_bump,

@@ -19,7 +19,8 @@ pub fn compact_transfer_message(
         src_timelock_address.as_ref(),
         dst_timelock_address.as_ref(),
         &amount.to_le_bytes(),
-        vdn.nonce.as_ref(),
+        vdn.address.as_ref(),
+        vdn.value.as_ref(), // this value is auto-advanced upon use
     ];
 
     utils::hashv(message)

@@ -136,7 +136,7 @@ fn process_withdraw_from_memory(
 
     try_delete(vm_memory_info, account_index)?;
 
-    ctx.create_receipt(&vta.nonce)?;
+    ctx.create_receipt(&vta.instance)?;
 
     Ok(())
 }
@@ -194,7 +194,7 @@ fn process_withdraw_from_storage(
         ]],
     )?;
 
-    ctx.create_receipt(&vta.nonce)?;
+    ctx.create_receipt(&vta.instance)?;
 
     Ok(())
 }

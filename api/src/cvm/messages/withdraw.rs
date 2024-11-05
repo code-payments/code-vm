@@ -17,7 +17,8 @@ pub fn compact_withdraw_message(
         b"withdraw_and_close",
         src_timelock_address.as_ref(),
         dst_timelock_address.as_ref(),
-        vdn.nonce.as_ref(),
+        vdn.address.as_ref(),
+        vdn.value.as_ref(), // this value is auto-advanced upon use
     ];
 
     utils::hashv(message)
