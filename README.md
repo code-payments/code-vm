@@ -26,9 +26,7 @@ global, and private.
 
 | Program | Mainnet | Audited By | Audit Report | Version | Commit |
 | --- | --- | --- | --- | --- | --- |
-| [timelock](https://github.com/code-wallet/code-program-library/tree/main/timelock) | [time2Z2...A1W2YnJ](https://explorer.solana.com/address/time2Z2SCnn3qYg3ULKVtdkh8YmZ5jFdKicnA1W2YnJ) | OtterSec | [Completed](https://github.com/code-wallet/code-program-library/tree/main/security/audits/getcode_timelock_audit_final.pdf) | v0.1.0 | [3d78dcf](https://github.com/code-wallet/code-program-library/commit/3d78dcf2201cdc047aed7a247e59522a5198e1a8) |
-| [splitter](https://github.com/code-wallet/code-program-library/tree/main/splitter) | [spLit2e...cUjwpwW](https://explorer.solana.com/address/spLit2eb13Tz93if6aJM136nUWki5PVUsoEjcUjwpwW) | OtterSec | [Completed](https://github.com/code-wallet/code-program-library/tree/main/security/audits/getcode_splitter_audit_final.pdf) | v0.1.0 | [3d78dcf](https://github.com/code-wallet/code-program-library/commit/3d78dcf2201cdc047aed7a247e59522a5198e1a8) |
-|[code_vm](https://github.com/code-payments/code-vm/tree/main/programs/code-vm/src) | tbd | OtterSec | pre-audit phase | tbd | tbd |
+|[code_vm](https://github.com/code-payments/code-vm/tree/main/programs/code-vm/src) | [vmT2hAx...epBKCJZ](https://explorer.solana.com/address/vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ) | OtterSec | pre-audit phase | tbd | tbd |
 
 ## Release Schedule
 
@@ -43,18 +41,13 @@ questions or feedback.
 | Preview Release | Released | v0.1.0 | Aug 9th, 2024 |
 | Optimized Release | Pending | v0.2.0 | Oct 24th, 2024 |
 | IDLs | [Released](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | v0.0.1 | Oct 30th, 2024 |
-| Golang/JS Clients | Pending | - | - |
 | Indexer Service | [Released](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
 | Code VM Explorer | - | - | - |
-| Sequencer Integration | Pending | - | - |
-| Mobile App Integration | - | - | - |
+| Sequencer Integration | Wip | - | - |
+| Mobile App Integration | Wip | - | - |
 | Documentation | - | - | - |
-| Audit | - | - | - |
-| Bugfix Release | - | - | - |
-| Devnet | tbd | - | - |
-| Testnet | tbd | - | - |
-| Mainnet-beta | tbd | v1.0.0 | tbd |
-
+| Audit | Wip | - | - |
+| Mainnet-beta | Deployed | v0.0.1-alpha | tbd |
 
 
 ## Quick Start
