@@ -3,7 +3,12 @@ mod instruction;
 use instruction::*;
 
 use code_vm_api::prelude::*;
+use solana_include_idl::{include_idl, parse::IdlType};
 use steel::*;
+
+// Include the compressed IDL in an ELF section on the program binary.
+// Ref: https://github.com/regolith-labs/ore/pull/105
+include_idl!(IdlType::Codama, concat!(env!("OUT_DIR"), "/codama.idl.zip"));
 
 pub fn process_instruction(
     program_id: &Pubkey,

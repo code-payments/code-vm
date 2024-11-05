@@ -676,6 +676,7 @@ dependencies = [
  "litesvm-token",
  "pretty-hex",
  "rand 0.8.5",
+ "solana-include-idl",
  "solana-program 1.18.26",
  "solana-sdk",
  "spl-associated-token-account 2.3.0",
@@ -2621,6 +2622,15 @@ dependencies = [
  "quote",
  "rustc_version",
  "syn 2.0.79",
+]
+
+[[package]]
+name = "solana-include-idl"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "754cc8fce28c62e67593ef317d715567b4610abfce1fa9ffa1d94f6eed8ad701"
+dependencies = [
+ "flate2",
 ]
 
 [[package]]
