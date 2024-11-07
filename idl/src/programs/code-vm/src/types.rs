@@ -42,15 +42,15 @@ pub struct MerkleTree<const N: usize> {
 #[repr(u8)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Debug)]
 pub enum VirtualAccount {
+    Nonce = 0,
     Timelock = 1,
-    DurableNonce = 2,
-    Relay = 3,
+    Relay = 2,
 }
 
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Debug)]
 pub struct VirtualTimelockAccount {
-    kind: VirtualAccount,
+    _type: VirtualAccount,
 
     pub owner: Pubkey,
     pub instance: Hash,
@@ -66,7 +66,7 @@ pub struct VirtualTimelockAccount {
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Debug)]
 pub struct VirtualDurableNonce {
-    kind: VirtualAccount,
+    _type: VirtualAccount,
 
     pub address: Pubkey,
     pub value: Hash,
@@ -75,7 +75,7 @@ pub struct VirtualDurableNonce {
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Debug)]
 pub struct VirtualRelayAccount {
-    kind: VirtualAccount,
+    _type: VirtualAccount,
 
     pub target: Pubkey,
     pub destination: Pubkey,
@@ -99,7 +99,8 @@ pub struct SimpleAllocator<const N: usize, T> {
 #[repr(u8)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Debug)]
 pub enum AccountData {
-    Nonce(SimpleAllocator<{NUM_ACCOUNTS}, VirtualDurableNonce>) = 1,
-    Timelock(SimpleAllocator<{NUM_ACCOUNTS}, VirtualTimelockAccount>) = 2,
-    Relay(SimpleAllocator<{NUM_ACCOUNTS}, VirtualRelayAccount>) = 3,
+    Unknown = 0,
+    Timelock(SimpleAllocator<{NUM_ACCOUNTS}, VirtualTimelockAccount>),
+    Nonce(SimpleAllocator<{NUM_ACCOUNTS}, VirtualDurableNonce>),
+    Relay(SimpleAllocator<{NUM_ACCOUNTS}, VirtualRelayAccount>),
 }

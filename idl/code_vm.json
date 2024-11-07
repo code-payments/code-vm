@@ -840,6 +840,92 @@
     ],
     "types": [
       {
+        "name": "AccountData",
+        "repr": {
+          "kind": "rust"
+        },
+        "type": {
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Unknown"
+            },
+            {
+              "name": "Timelock",
+              "fields": [
+                {
+                  "defined": {
+                    "name": "SimpleAllocator",
+                    "generics": [
+                      {
+                        "kind": "const",
+                        "value": "100"
+                      },
+                      {
+                        "kind": "type",
+                        "type": {
+                          "defined": {
+                            "name": "VirtualTimelockAccount"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Nonce",
+              "fields": [
+                {
+                  "defined": {
+                    "name": "SimpleAllocator",
+                    "generics": [
+                      {
+                        "kind": "const",
+                        "value": "100"
+                      },
+                      {
+                        "kind": "type",
+                        "type": {
+                          "defined": {
+                            "name": "VirtualDurableNonce"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Relay",
+              "fields": [
+                {
+                  "defined": {
+                    "name": "SimpleAllocator",
+                    "generics": [
+                      {
+                        "kind": "const",
+                        "value": "100"
+                      },
+                      {
+                        "kind": "type",
+                        "type": {
+                          "defined": {
+                            "name": "VirtualRelayAccount"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
         "name": "CodeVmAccount",
         "repr": {
           "kind": "c",
@@ -1222,6 +1308,23 @@
         }
       },
       {
+        "name": "ItemState",
+        "repr": {
+          "kind": "rust"
+        },
+        "type": {
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Empty"
+            },
+            {
+              "name": "Allocated"
+            }
+          ]
+        }
+      },
+      {
         "name": "MemoryAccount",
         "repr": {
           "kind": "c",
@@ -1248,16 +1351,20 @@
               "type": "u8"
             },
             {
-              "name": "layout",
-              "type": "u8"
-            },
-            {
               "name": "_padding",
               "type": {
                 "array": [
                   "u8",
                   6
                 ]
+              }
+            },
+            {
+              "name": "data",
+              "type": {
+                "defined": {
+                  "name": "AccountData"
+                }
               }
             }
           ]
@@ -1364,6 +1471,56 @@
                 "array": [
                   "u8",
                   64
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "SimpleAllocator",
+        "repr": {
+          "kind": "c"
+        },
+        "generics": [
+          {
+            "kind": "const",
+            "name": "N",
+            "type": "usize"
+          },
+          {
+            "kind": "type",
+            "name": "T"
+          }
+        ],
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "state",
+              "type": {
+                "array": [
+                  {
+                    "defined": {
+                      "name": "ItemState"
+                    }
+                  },
+                  {
+                    "generic": "N"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "data",
+              "type": {
+                "array": [
+                  {
+                    "generic": "T"
+                  },
+                  {
+                    "generic": "N"
+                  }
                 ]
               }
             }
@@ -1501,6 +1658,135 @@
                   6
                 ]
               }
+            }
+          ]
+        }
+      },
+      {
+        "name": "VirtualAccount",
+        "repr": {
+          "kind": "rust"
+        },
+        "type": {
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Nonce"
+            },
+            {
+              "name": "Timelock"
+            },
+            {
+              "name": "Relay"
+            }
+          ]
+        }
+      },
+      {
+        "name": "VirtualDurableNonce",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "_type",
+              "type": {
+                "defined": {
+                  "name": "VirtualAccount"
+                }
+              }
+            },
+            {
+              "name": "address",
+              "type": "pubkey"
+            },
+            {
+              "name": "value",
+              "type": {
+                "defined": {
+                  "name": "Hash"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "VirtualRelayAccount",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "_type",
+              "type": {
+                "defined": {
+                  "name": "VirtualAccount"
+                }
+              }
+            },
+            {
+              "name": "target",
+              "type": "pubkey"
+            },
+            {
+              "name": "destination",
+              "type": "pubkey"
+            }
+          ]
+        }
+      },
+      {
+        "name": "VirtualTimelockAccount",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "_type",
+              "type": {
+                "defined": {
+                  "name": "VirtualAccount"
+                }
+              }
+            },
+            {
+              "name": "owner",
+              "type": "pubkey"
+            },
+            {
+              "name": "instance",
+              "type": {
+                "defined": {
+                  "name": "Hash"
+                }
+              }
+            },
+            {
+              "name": "token_bump",
+              "type": "u8"
+            },
+            {
+              "name": "unlock_bump",
+              "type": "u8"
+            },
+            {
+              "name": "withdraw_bump",
+              "type": "u8"
+            },
+            {
+              "name": "balance",
+              "type": "u64"
+            },
+            {
+              "name": "bump",
+              "type": "u8"
             }
           ]
         }
@@ -2301,6 +2587,92 @@
   },
   "types": [
     {
+      "name": "AccountData",
+      "repr": {
+        "kind": "rust"
+      },
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Unknown"
+          },
+          {
+            "name": "Timelock",
+            "fields": [
+              {
+                "defined": {
+                  "name": "SimpleAllocator",
+                  "generics": [
+                    {
+                      "kind": "const",
+                      "value": "100"
+                    },
+                    {
+                      "kind": "type",
+                      "type": {
+                        "defined": {
+                          "name": "VirtualTimelockAccount"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Nonce",
+            "fields": [
+              {
+                "defined": {
+                  "name": "SimpleAllocator",
+                  "generics": [
+                    {
+                      "kind": "const",
+                      "value": "100"
+                    },
+                    {
+                      "kind": "type",
+                      "type": {
+                        "defined": {
+                          "name": "VirtualDurableNonce"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Relay",
+            "fields": [
+              {
+                "defined": {
+                  "name": "SimpleAllocator",
+                  "generics": [
+                    {
+                      "kind": "const",
+                      "value": "100"
+                    },
+                    {
+                      "kind": "type",
+                      "type": {
+                        "defined": {
+                          "name": "VirtualRelayAccount"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "CodeVmAccount",
       "repr": {
         "kind": "c",
@@ -2683,6 +3055,23 @@
       }
     },
     {
+      "name": "ItemState",
+      "repr": {
+        "kind": "rust"
+      },
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Empty"
+          },
+          {
+            "name": "Allocated"
+          }
+        ]
+      }
+    },
+    {
       "name": "MemoryAccount",
       "repr": {
         "kind": "c",
@@ -2709,16 +3098,20 @@
             "type": "u8"
           },
           {
-            "name": "layout",
-            "type": "u8"
-          },
-          {
             "name": "_padding",
             "type": {
               "array": [
                 "u8",
                 6
               ]
+            }
+          },
+          {
+            "name": "data",
+            "type": {
+              "defined": {
+                "name": "AccountData"
+              }
             }
           }
         ]
@@ -2825,6 +3218,56 @@
               "array": [
                 "u8",
                 64
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SimpleAllocator",
+      "repr": {
+        "kind": "c"
+      },
+      "generics": [
+        {
+          "kind": "const",
+          "name": "N",
+          "type": "usize"
+        },
+        {
+          "kind": "type",
+          "name": "T"
+        }
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "state",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "ItemState"
+                  }
+                },
+                {
+                  "generic": "N"
+                }
+              ]
+            }
+          },
+          {
+            "name": "data",
+            "type": {
+              "array": [
+                {
+                  "generic": "T"
+                },
+                {
+                  "generic": "N"
+                }
               ]
             }
           }
@@ -2962,6 +3405,135 @@
                 6
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "VirtualAccount",
+      "repr": {
+        "kind": "rust"
+      },
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Nonce"
+          },
+          {
+            "name": "Timelock"
+          },
+          {
+            "name": "Relay"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VirtualDurableNonce",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "_type",
+            "type": {
+              "defined": {
+                "name": "VirtualAccount"
+              }
+            }
+          },
+          {
+            "name": "address",
+            "type": "pubkey"
+          },
+          {
+            "name": "value",
+            "type": {
+              "defined": {
+                "name": "Hash"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "VirtualRelayAccount",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "_type",
+            "type": {
+              "defined": {
+                "name": "VirtualAccount"
+              }
+            }
+          },
+          {
+            "name": "target",
+            "type": "pubkey"
+          },
+          {
+            "name": "destination",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VirtualTimelockAccount",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "_type",
+            "type": {
+              "defined": {
+                "name": "VirtualAccount"
+              }
+            }
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "instance",
+            "type": {
+              "defined": {
+                "name": "Hash"
+              }
+            }
+          },
+          {
+            "name": "token_bump",
+            "type": "u8"
+          },
+          {
+            "name": "unlock_bump",
+            "type": "u8"
+          },
+          {
+            "name": "withdraw_bump",
+            "type": "u8"
+          },
+          {
+            "name": "balance",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
