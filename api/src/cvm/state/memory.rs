@@ -14,9 +14,9 @@ const TIMELOCK_SIZE: usize   = VirtualTimelockAccount::LEN + 1;
 const NONCE_SIZE: usize      = VirtualDurableNonce::LEN + 1;
 const RELAY_SIZE: usize      = VirtualRelayAccount::LEN + 1;
 
-pub type TimelockMemory = SimpleAllocator<COMPACT_STATE_ITEMS, TIMELOCK_SIZE>;
-pub type NonceMemory    = SimpleAllocator<COMPACT_STATE_ITEMS, NONCE_SIZE>;
-pub type RelayMemory    = SimpleAllocator<COMPACT_STATE_ITEMS, RELAY_SIZE>;
+pub type TimelockMemory = SimpleAllocator<NUM_ACCOUNTS, TIMELOCK_SIZE>;
+pub type NonceMemory    = SimpleAllocator<NUM_ACCOUNTS, NONCE_SIZE>;
+pub type RelayMemory    = SimpleAllocator<NUM_ACCOUNTS, RELAY_SIZE>;
 
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, IntoPrimitive, TryFromPrimitive)]

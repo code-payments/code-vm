@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
-use crate::{Hash, Signature};
+use crate::{Hash, Signature, MAX_NAME_LEN};
 
-pub const MAX_NAME_LEN: usize = 32;
 
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]

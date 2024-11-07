@@ -859,7 +859,7 @@
                     "generics": [
                       {
                         "kind": "const",
-                        "value": "100"
+                        "value": "1000"
                       },
                       {
                         "kind": "type",
@@ -883,7 +883,7 @@
                     "generics": [
                       {
                         "kind": "const",
-                        "value": "100"
+                        "value": "1000"
                       },
                       {
                         "kind": "type",
@@ -907,7 +907,7 @@
                     "generics": [
                       {
                         "kind": "const",
-                        "value": "100"
+                        "value": "1000"
                       },
                       {
                         "kind": "type",
@@ -921,6 +921,64 @@
                   }
                 }
               ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "CircularBuffer",
+        "repr": {
+          "kind": "c"
+        },
+        "generics": [
+          {
+            "kind": "const",
+            "name": "N",
+            "type": "usize"
+          },
+          {
+            "kind": "const",
+            "name": "M",
+            "type": "usize"
+          }
+        ],
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "items",
+              "type": {
+                "array": [
+                  {
+                    "array": [
+                      "u8",
+                      {
+                        "generic": "M"
+                      }
+                    ]
+                  },
+                  {
+                    "generic": "N"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "offset",
+              "type": "u8"
+            },
+            {
+              "name": "num_items",
+              "type": "u8"
+            },
+            {
+              "name": "_padding",
+              "type": {
+                "array": [
+                  "u8",
+                  6
+                ]
+              }
             }
           ]
         }
@@ -1371,6 +1429,66 @@
         }
       },
       {
+        "name": "MerkleTree",
+        "repr": {
+          "kind": "c"
+        },
+        "generics": [
+          {
+            "kind": "const",
+            "name": "N",
+            "type": "usize"
+          }
+        ],
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "root",
+              "type": {
+                "defined": {
+                  "name": "Hash"
+                }
+              }
+            },
+            {
+              "name": "filled_subtrees",
+              "type": {
+                "array": [
+                  {
+                    "defined": {
+                      "name": "Hash"
+                    }
+                  },
+                  {
+                    "generic": "N"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "zero_values",
+              "type": {
+                "array": [
+                  {
+                    "defined": {
+                      "name": "Hash"
+                    }
+                  },
+                  {
+                    "generic": "N"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "next_index",
+              "type": "u64"
+            }
+          ]
+        }
+      },
+      {
         "name": "RelayAccount",
         "repr": {
           "kind": "c",
@@ -1424,19 +1542,33 @@
             {
               "name": "recent_roots",
               "type": {
-                "array": [
-                  "u8",
-                  1032
-                ]
+                "defined": {
+                  "name": "CircularBuffer",
+                  "generics": [
+                    {
+                      "kind": "const",
+                      "value": "32"
+                    },
+                    {
+                      "kind": "const",
+                      "value": "32"
+                    }
+                  ]
+                }
               }
             },
             {
               "name": "history",
               "type": {
-                "array": [
-                  "u8",
-                  4136
-                ]
+                "defined": {
+                  "name": "MerkleTree",
+                  "generics": [
+                    {
+                      "kind": "const",
+                      "value": "64"
+                    }
+                  ]
+                }
               }
             }
           ]
@@ -1579,10 +1711,15 @@
             {
               "name": "compressed_state",
               "type": {
-                "array": [
-                  "u8",
-                  1576
-                ]
+                "defined": {
+                  "name": "MerkleTree",
+                  "generics": [
+                    {
+                      "kind": "const",
+                      "value": "24"
+                    }
+                  ]
+                }
               }
             }
           ]
@@ -2606,7 +2743,7 @@
                   "generics": [
                     {
                       "kind": "const",
-                      "value": "100"
+                      "value": "1000"
                     },
                     {
                       "kind": "type",
@@ -2630,7 +2767,7 @@
                   "generics": [
                     {
                       "kind": "const",
-                      "value": "100"
+                      "value": "1000"
                     },
                     {
                       "kind": "type",
@@ -2654,7 +2791,7 @@
                   "generics": [
                     {
                       "kind": "const",
-                      "value": "100"
+                      "value": "1000"
                     },
                     {
                       "kind": "type",
@@ -2668,6 +2805,64 @@
                 }
               }
             ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "CircularBuffer",
+      "repr": {
+        "kind": "c"
+      },
+      "generics": [
+        {
+          "kind": "const",
+          "name": "N",
+          "type": "usize"
+        },
+        {
+          "kind": "const",
+          "name": "M",
+          "type": "usize"
+        }
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "items",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    {
+                      "generic": "M"
+                    }
+                  ]
+                },
+                {
+                  "generic": "N"
+                }
+              ]
+            }
+          },
+          {
+            "name": "offset",
+            "type": "u8"
+          },
+          {
+            "name": "num_items",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
           }
         ]
       }
@@ -3118,6 +3313,66 @@
       }
     },
     {
+      "name": "MerkleTree",
+      "repr": {
+        "kind": "c"
+      },
+      "generics": [
+        {
+          "kind": "const",
+          "name": "N",
+          "type": "usize"
+        }
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "root",
+            "type": {
+              "defined": {
+                "name": "Hash"
+              }
+            }
+          },
+          {
+            "name": "filled_subtrees",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Hash"
+                  }
+                },
+                {
+                  "generic": "N"
+                }
+              ]
+            }
+          },
+          {
+            "name": "zero_values",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Hash"
+                  }
+                },
+                {
+                  "generic": "N"
+                }
+              ]
+            }
+          },
+          {
+            "name": "next_index",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "RelayAccount",
       "repr": {
         "kind": "c",
@@ -3171,19 +3426,33 @@
           {
             "name": "recent_roots",
             "type": {
-              "array": [
-                "u8",
-                1032
-              ]
+              "defined": {
+                "name": "CircularBuffer",
+                "generics": [
+                  {
+                    "kind": "const",
+                    "value": "32"
+                  },
+                  {
+                    "kind": "const",
+                    "value": "32"
+                  }
+                ]
+              }
             }
           },
           {
             "name": "history",
             "type": {
-              "array": [
-                "u8",
-                4136
-              ]
+              "defined": {
+                "name": "MerkleTree",
+                "generics": [
+                  {
+                    "kind": "const",
+                    "value": "64"
+                  }
+                ]
+              }
             }
           }
         ]
@@ -3326,10 +3595,15 @@
           {
             "name": "compressed_state",
             "type": {
-              "array": [
-                "u8",
-                1576
-              ]
+              "defined": {
+                "name": "MerkleTree",
+                "generics": [
+                  {
+                    "kind": "const",
+                    "value": "24"
+                  }
+                ]
+              }
             }
           }
         ]

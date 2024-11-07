@@ -47,8 +47,8 @@ pub struct RelayAccount {
 
     _padding: [u8; 4],
 
-    pub recent_roots: [u8; std::mem::size_of::<RelayHistory>()],
-    pub history: [u8; std::mem::size_of::<RelayTree>()],
+    pub recent_roots: RelayHistory,
+    pub history: RelayTree,
 }
 
 #[account]
@@ -62,7 +62,7 @@ pub struct StorageAccount {
 
     _padding: [u8; 6],
 
-    pub compressed_state: [u8; std::mem::size_of::<CompressedState>()],
+    pub compressed_state: CompressedState,
 }
 
 #[account]

@@ -15,12 +15,8 @@ pub const VM_TIMELOCK_VAULT: &[u8]    = b"timelock_vault";
 pub const MERKLE_TREE_SEED: &[u8]     = b"merkletree";
 
 pub const MAX_NAME_LEN: usize = 32;
+pub const NUM_ACCOUNTS: usize = 1000;
 
-pub const MIXED_MEMORY_SECTORS: usize = 2;
-pub const MIXED_MEMORY_PAGES: usize = 255;
-
-pub const COMPACT_STATE_ITEMS: usize = 100;
 pub const COMPRESSED_STATE_DEPTH: usize = 20;
-
 pub const RELAY_STATE_DEPTH: usize = 63;
 pub const RELAY_HISTORY_ITEMS: usize = 32;

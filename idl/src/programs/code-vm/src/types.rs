@@ -1,6 +1,5 @@
 use anchor_lang::prelude::*;
-
-const NUM_ACCOUNTS: usize = 100;
+use crate::NUM_ACCOUNTS;
 
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Debug)]
