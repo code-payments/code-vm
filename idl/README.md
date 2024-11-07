@@ -30,10 +30,30 @@ dependencies:
 make idl
 ```
 
-You'll find the generated IDL in the `target/idl` directory. Note that you'll
+You'll find the generated IDL [here](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) in the `target/idl` directory. Note that you'll
 see some errors thrown by Anchor, but you can ignore them.
 
 ## Using the IDL
+
+There are many ways to make use of the IDL, however, one way is to decode accounts.
+
+You can pull the IDL directly from the program if you'd like using something like this:
+
+```js
+    const url = "https://api.mainnet-beta.solana.com";
+    const idl = await anchor.Program.fetchIdl("vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ", getProvider(url));
+    const coder = new BorshAccountsCoder(idl);
+
+    const rawData = Buffer.from(/* your account data here */, "base64");
+
+    const account = idl.accounts?.find((accountType: any) =>
+        (rawData as Buffer).slice(0, 8).equals(coder.accountDiscriminator(accountType.name))
+    );
+    const accountDef = idl.types.find((type: any) => type.name === account.name);
+    const decodedAccount = coder.decode(account.name, rawData);
+```
+
+## Running tests
 
 Unlike with a standard Anchor program, you can't use `anchor test` to test the
 IDL. It would automatically replace our correct IDL with one that has different
@@ -50,7 +70,13 @@ vitest run ./tests/vm.test.ts --testTimeout 25000 --bail 1
 
 ## ImHex Pattern
 
-In addition to the IDL, we're also using the ImHex pattern to allow you to
+In addition to the IDL, we're also including a ImHex [pattern](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.hexpat) to allow you to
 decode accounts. Currently, the explorers don't support single byte
 discriminators, so we're using the ImHex pattern to decode the accounts while
 testing. You can learn more about ImHex [here](https://imhex.werwolv.net/).
+
+For example, here is a [memory account](https://github.com/code-payments/code-vm/blob/main/api/src/cvm/state/memory.rs#L43C12-L43C25) decoded:
+
+![image](https://github.com/user-attachments/assets/f2184e1f-8c1f-4774-a88b-8a169e72ebff)
+
+
