@@ -47,3 +47,10 @@ Once you have those, you can run a test script using the following command:
 ```bash
 vitest run ./tests/vm.test.ts --testTimeout 25000 --bail 1
 ```
+
+## ImHex Pattern
+
+In addition to the IDL, we're also using the ImHex pattern to allow you to
+decode accounts. Currently, the explorers don't support single byte
+discriminators, so we're using the ImHex pattern to decode the accounts while
+testing. You can learn more about ImHex [here](https://imhex.werwolv.net/).
