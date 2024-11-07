@@ -47,6 +47,9 @@ pub struct MemoryAccount {
 
     _padding: [u8; 6],
 
+    // The layout can be combined with _data like this (when not using zeroable)
+    // https://github.com/code-payments/code-vm/blob/main/idl/src/programs/code-vm/src/state.rs#L33
+    
     pub layout: u8,
     _data: PhantomData<dyn MemoryAllocator>,
 }
