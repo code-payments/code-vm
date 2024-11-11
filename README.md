@@ -2,7 +2,7 @@
 ![license][license-image]
 ![version][version-image]
 
-[version-image]: https://img.shields.io/badge/version-0.1.0-blue.svg?style=flat
+[version-image]: https://img.shields.io/badge/version-0.2.0-blue.svg?style=flat
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
 
 The Code Virtual Machine (Code VM) is a program that runs on the Solana
@@ -39,7 +39,7 @@ questions or feedback.
 | Milestone | Status | Version | Date |
 | --- | --- | --- | --- |
 | Preview Release | Released | v0.1.0 | Aug 9th, 2024 |
-| Optimized Release | Pending | v0.2.0 | Oct 24th, 2024 |
+| Optimized Release | Released | v0.2.0 | Oct 24th, 2024 |
 | IDLs | [Released](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | v0.0.1 | Oct 30th, 2024 |
 | Indexer Service | [Released](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
 | Code VM Explorer | - | - | - |
