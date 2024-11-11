@@ -7,7 +7,6 @@
 #define RELAY_STATE_DEPTH 63
 #define RELAY_HISTORY_ITEMS 32
 
-// Enums
 enum AccountType : u8 {
     CodeVmAccount = 1,
     MemoryAccount = 2,
@@ -36,6 +35,7 @@ enum AccountDataType : u8 {
 };
 
 // Type Definitions
+
 struct Pubkey {
     u8 value[32];
 };
@@ -53,13 +53,11 @@ struct TokenPool {
     u8 vault_bump;
 };
 
-// SimpleAllocator Template
 struct SimpleAllocator<T, auto N> {
     ItemState state[N];
     T data[N];
 };
 
-// Virtual Accounts
 struct VirtualTimelockAccount {
     VirtualAccount _type;
     Pubkey owner;
@@ -83,7 +81,6 @@ struct VirtualRelayAccount {
     Pubkey destination;
 };
 
-// AccountData
 struct AccountData {
     AccountDataType type;
 
@@ -98,7 +95,6 @@ struct AccountData {
     }
 };
 
-// CodeVmAccount
 struct CodeVmAccount {
     Pubkey authority;
     Pubkey mint;
@@ -110,7 +106,6 @@ struct CodeVmAccount {
     u8 _padding[5]; // To align to 8 bytes
 };
 
-// MemoryAccount
 struct MemoryAccount {
     Pubkey vm;
     u8 name[MAX_NAME_LEN];
@@ -119,7 +114,6 @@ struct MemoryAccount {
     AccountData data;
 };
 
-// RelayHistory and RelayTree Types
 struct RelayHistory {
     Hash items[RELAY_HISTORY_ITEMS];
     u8 offset;
@@ -134,7 +128,6 @@ struct RelayTree {
     u64 next_index;
 };
 
-// RelayAccount
 struct RelayAccount {
     Pubkey vm;
     u8 name[MAX_NAME_LEN];
@@ -153,9 +146,7 @@ struct CompressedState {
     Hash zero_values[COMPRESSED_STATE_DEPTH];
     u64 next_index;
 };
-    
 
-// StorageAccount
 struct StorageAccount {
     Pubkey vm;
     u8 name[MAX_NAME_LEN];
@@ -165,7 +156,6 @@ struct StorageAccount {
     CompressedState state;
 };
 
-// UnlockStateAccount
 struct UnlockStateAccount {
     Pubkey vm;
     Pubkey owner;
@@ -176,7 +166,6 @@ struct UnlockStateAccount {
     u8 _padding[6];
 };
 
-// WithdrawReceiptAccount
 struct WithdrawReceiptAccount {
     Pubkey unlock_pda;
     Hash nonce;
@@ -185,7 +174,6 @@ struct WithdrawReceiptAccount {
     u8 _padding[7];
 };
 
-// Account
 struct Account {
     AccountType _type;
     u8 _padding[7];
