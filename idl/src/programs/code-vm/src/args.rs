@@ -34,7 +34,7 @@ pub struct InitStorageArgs {
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
 pub struct ExecArgs {
-    data: ExecArgsData,
+    pub data: ExecArgsData,
 }
 
 #[repr(C)]
@@ -71,7 +71,7 @@ pub struct CompressArgs {
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
 pub struct DecompressArgs {
-    data: DecompressArgsData,
+    pub data: DecompressArgsData,
 }
 
 #[repr(C)]
@@ -118,7 +118,7 @@ pub struct UnlockArgs {
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
 pub struct WithdrawArgs {
-    data: WithdrawArgsData,
+    pub data: WithdrawArgsData,
 }
 
 #[repr(u8)]

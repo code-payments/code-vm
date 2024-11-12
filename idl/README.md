@@ -11,9 +11,9 @@ Anchor is the most popular framework, so we're using it to generate the IDL for
 the Code VM. Using `shank` would have required marking up our actual program
 code, which we didn't want to do.
 
-Currently, there is no standard way to generate IDLs for Solana programs. See
-[RFC-00008](https://forum.solana.com/t/srfc-00008-idl-standard/66) for more
-information.
+Note, as of this writing, there is no "standard" way to generate IDLs for Solana
+programs. See [RFC-00008](https://forum.solana.com/t/srfc-00008-idl-standard/66)
+for more information.
 
 ## Requirements
 
@@ -30,8 +30,10 @@ dependencies:
 make idl
 ```
 
-You'll find the generated IDL [here](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) in the `target/idl` directory. Note that you'll
-see some errors thrown by Anchor, but you can ignore them.
+You'll find the generated IDL
+[here](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) in
+the `target/idl` directory. Note that you'll see some errors thrown by Anchor,
+but you can ignore them.
 
 ## Using the IDL
 
@@ -68,15 +70,26 @@ Once you have those, you can run a test script using the following command:
 vitest run ./tests/vm.test.ts --testTimeout 25000 --bail 1
 ```
 
-## ImHex Pattern
+## ImHex Patterns
 
-In addition to the IDL, we're also including a ImHex [pattern](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.hexpat) to allow you to
-decode accounts. Currently, the explorers don't support single byte
-discriminators, so we're using the ImHex pattern to decode the accounts while
-testing. You can learn more about ImHex [here](https://imhex.werwolv.net/).
+In addition to the IDL, we're also including two ImHex pattern files that you
+can use to decode accounts and instructions inside the ImHex editor. You can
+learn more about ImHex [here](https://imhex.werwolv.net/).
 
-For example, here is a [memory account](https://github.com/code-payments/code-vm/blob/main/api/src/cvm/state/memory.rs#L43C12-L43C25) decoded:
+### Instructions
+
+The first pattern file is for decoding instructions and opcodes. You can find the pattern
+[here](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.instructions.hexpat).
+
+For example, here is a decoded [transfer](https://github.com/code-payments/code-vm/blob/main/program/src/opcode/transfer.rs):
+
+![image](https://github.com/user-attachments/assets/111180c5-2652-4603-9d75-1c3fee3d267b)
+
+### Accounts
+
+We also have a pattern file for decoding accounts. You can find the pattern
+[here](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.hexpat).
+
+For example, here is a decoded [memory account](https://github.com/code-payments/code-vm/blob/main/api/src/cvm/state/memory.rs#L43C12-L43C25):
 
 ![image](https://github.com/user-attachments/assets/f2184e1f-8c1f-4774-a88b-8a169e72ebff)
-
-
