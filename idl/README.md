@@ -88,7 +88,7 @@ For example, here is a decoded [transfer](https://github.com/code-payments/code-
 ### Accounts
 
 We also have a pattern file for decoding accounts. You can find the pattern
-[here](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.hexpat).
+[here](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.accounts.hexpat).
 
 For example, here is a decoded [memory account](https://github.com/code-payments/code-vm/blob/main/api/src/cvm/state/memory.rs#L43C12-L43C25):
 
