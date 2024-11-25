@@ -1,7 +1,7 @@
 #pragma endian little
 
 #define MAX_NAME_LEN 32
-#define NUM_ACCOUNTS 1000
+#define NUM_ACCOUNTS 32000
 
 #define COMPRESSED_STATE_DEPTH 20
 #define RELAY_STATE_DEPTH 63

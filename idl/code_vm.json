@@ -859,7 +859,7 @@
                     "generics": [
                       {
                         "kind": "const",
-                        "value": "1000"
+                        "value": "32000"
                       },
                       {
                         "kind": "type",
@@ -883,7 +883,7 @@
                     "generics": [
                       {
                         "kind": "const",
-                        "value": "1000"
+                        "value": "32000"
                       },
                       {
                         "kind": "type",
@@ -907,7 +907,7 @@
                     "generics": [
                       {
                         "kind": "const",
-                        "value": "1000"
+                        "value": "32000"
                       },
                       {
                         "kind": "type",
@@ -2743,7 +2743,7 @@
                   "generics": [
                     {
                       "kind": "const",
-                      "value": "1000"
+                      "value": "32000"
                     },
                     {
                       "kind": "type",
@@ -2767,7 +2767,7 @@
                   "generics": [
                     {
                       "kind": "const",
-                      "value": "1000"
+                      "value": "32000"
                     },
                     {
                       "kind": "type",
@@ -2791,7 +2791,7 @@
                   "generics": [
                     {
                       "kind": "const",
-                      "value": "1000"
+                      "value": "32000"
                     },
                     {
                       "kind": "type",
