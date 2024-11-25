@@ -43,7 +43,7 @@ You can pull the IDL directly from the program if you'd like using something lik
 
 ```js
     const url = "https://api.mainnet-beta.solana.com";
-    const idl = await anchor.Program.fetchIdl("vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ", getProvider(url));
+    const idl = await anchor.Program.fetchIdl("vmZ1WUq8SxjBWcaeTCvgJRZbS84R61uniFsQy5YMRTJ", getProvider(url));
     const coder = new BorshAccountsCoder(idl);
 
     const rawData = Buffer.from(/* your account data here */, "base64");

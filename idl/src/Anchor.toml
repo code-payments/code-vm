@@ -5,7 +5,7 @@ resolution = true
 skip-lint = true
 
 [programs.localnet]
-code_vm = "vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ"
+code_vm = "vmZ1WUq8SxjBWcaeTCvgJRZbS84R61uniFsQy5YMRTJ"
 
 [registry]
 url = "https://api.apr.dev"

@@ -26,7 +26,7 @@ global, and private.
 
 | Program | Mainnet | Audited By | Audit Report | Version | Commit |
 | --- | --- | --- | --- | --- | --- |
-|[code_vm](https://github.com/code-payments/code-vm/tree/main/programs/code-vm/src) | [vmT2hAx...epBKCJZ](https://explorer.solana.com/address/vmT2hAx4N2U6DyjYxgQHER4VGC8tHJCfHNsSepBKCJZ) | OtterSec | pre-audit phase | tbd | tbd |
+|[code_vm](https://github.com/code-payments/code-vm/tree/main/programs/code-vm/src) | [vmZ1WU...5YMRTJ](https://explorer.solana.com/address/vmZ1WUq8SxjBWcaeTCvgJRZbS84R61uniFsQy5YMRTJ) | OtterSec | pre-audit phase | tbd | tbd |
 
 ## Release Schedule
 
