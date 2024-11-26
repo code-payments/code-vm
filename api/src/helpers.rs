@@ -285,8 +285,8 @@ pub fn check_is_empty<'a>(
 
     let data = &vm_memory.data.borrow();
     let info = MemoryAccount::unpack(data);
-    let n = info.num_accounts as usize;
-    let m = info.account_size as usize;
+    let n = info.get_capacity();
+    let m = info.get_account_size();
     let offset = MemoryAccount::get_size();
     let data = data.split_at(offset).1;
     let mem = SliceAllocator::try_from_slice(data, n, m)?;

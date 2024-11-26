@@ -1,24 +1,26 @@
 use steel::*;
-use crate::{consts::*, types::SliceAllocator};
+use std::marker::PhantomData;
+use crate::{
+    consts::*, 
+    types::SliceAllocator
+};
 
-#[repr(C, align(8))]
+// Using packed instead of align(8) to keep compatibility with older
+// versions of the program
+
+#[repr(C, packed)] 
 #[derive(Clone, Copy, Debug, PartialEq, Pod, Zeroable)]
 pub struct MemoryAccount {
     pub vm: Pubkey,
     pub name: [u8; MAX_NAME_LEN],
     pub bump: u8,
 
-    _padding1: [u8; 7],
-
-    // The layout can be combined with _data like this (when not using zeroable)
-    // https://github.com/code-payments/code-vm/blob/main/idl/src/programs/code-vm/src/state.rs#L33
-    
+    pub version: u8,
     pub num_accounts: u32,
     pub account_size: u16,
 
-    _padding2: [u8; 2],
-
-    //_data: PhantomData<Vec<u8>>,
+    // Data starts at 72 bytes into the account
+    _data: PhantomData<[u8]>,
 }
 
 impl MemoryAccount {
@@ -39,5 +41,13 @@ impl MemoryAccount {
         let data = info.data.borrow();
         let info = MemoryAccount::unpack(&data);
         (info.num_accounts as usize, info.account_size as usize)
+    }
+
+    pub fn get_capacity(&self) -> usize {
+        self.num_accounts as usize
+    }
+
+    pub fn get_account_size(&self) -> usize {
+        self.account_size as usize
     }
 }
