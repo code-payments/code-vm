@@ -1,5 +1,5 @@
 use steel::*;
-use std::marker::PhantomData;
+use std::{cell::{Ref, RefMut}, marker::PhantomData};
 use crate::{
     consts::*, 
     types::SliceAllocator
@@ -41,6 +41,36 @@ impl MemoryAccount {
         let data = info.data.borrow();
         let info = MemoryAccount::unpack(&data);
         (info.num_accounts as usize, info.account_size as usize)
+    }
+
+    pub fn get_data<'a>(info: &'a AccountInfo) 
+        -> Result<Ref<'a, [u8]>, ProgramError> {
+
+        let data = info.data.borrow();
+        let offset = MemoryAccount::get_size();
+
+        // Map the `Ref` to a subslice, preserving the borrow
+        let data = Ref::map(data, |d| {
+            let (_, data) = d.split_at(offset);
+            data
+        });
+
+        Ok(data)
+    }
+
+    pub fn get_data_mut<'a>(info: &'a AccountInfo) 
+        -> Result<RefMut<'a, [u8]>, ProgramError> {
+
+        let data = info.data.borrow_mut();
+        let offset = MemoryAccount::get_size();
+
+        // Map the `RefMut` to a subslice, preserving the mutable borrow
+        let data = RefMut::map(data, |d| {
+            let (_, data) = d.split_at_mut(offset);
+            data
+        });
+
+        Ok(data)
     }
 
     pub fn get_capacity(&self) -> usize {

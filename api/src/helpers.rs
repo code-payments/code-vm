@@ -283,13 +283,9 @@ pub fn check_is_empty<'a>(
     account_index: u16,
 ) -> ProgramResult {
 
-    let data = &vm_memory.data.borrow();
-    let info = MemoryAccount::unpack(data);
-    let n = info.get_capacity();
-    let m = info.get_account_size();
-    let offset = MemoryAccount::get_size();
-    let data = data.split_at(offset).1;
-    let mem = SliceAllocator::try_from_slice(data, n, m)?;
+    let (n, m) = MemoryAccount::get_capacity_and_size(vm_memory);
+    let data = MemoryAccount::get_data(vm_memory)?;
+    let mem = SliceAllocator::try_from_slice(& *data, n, m)?;
 
     check_condition(
         mem.is_empty(account_index),
@@ -304,13 +300,9 @@ pub fn try_read<'a>(
     account_index: u16,
 ) -> Result<VirtualAccount, ProgramError> {
 
-    let data = &vm_memory.data.borrow();
-    let info = MemoryAccount::unpack(data);
-    let n = info.num_accounts as usize;
-    let m = info.account_size as usize;
-    let offset = MemoryAccount::get_size();
-    let data = data.split_at(offset).1;
-    let mem = SliceAllocator::try_from_slice(data, n, m)?;
+    let (n, m) = MemoryAccount::get_capacity_and_size(vm_memory);
+    let data = MemoryAccount::get_data(vm_memory)?;
+    let mem = SliceAllocator::try_from_slice(& *data, n, m)?;
 
     check_condition(
         mem.has_item(account_index),
@@ -333,11 +325,9 @@ pub fn try_write<'a>(
     account: &VirtualAccount,
 ) -> ProgramResult {
 
-    let (capacity, max_item_size) = MemoryAccount::get_capacity_and_size(vm_memory);
-    let mut data = vm_memory.data.borrow_mut();
-    let offset = MemoryAccount::get_size();
-    let data = data.split_at_mut(offset).1;
-    let mut mem = SliceAllocatorMut::try_from_slice_mut(data, capacity, max_item_size)?;
+    let (n, m) = MemoryAccount::get_capacity_and_size(vm_memory);
+    let mut data = MemoryAccount::get_data_mut(vm_memory)?;
+    let mut mem = SliceAllocatorMut::try_from_slice_mut(&mut *data, n, m)?;
     
     let data = &account.pack();
 
@@ -354,11 +344,9 @@ pub fn try_delete<'a>(
     account_index: u16,
 ) -> ProgramResult {
 
-    let (capacity, max_item_size) = MemoryAccount::get_capacity_and_size(vm_memory);
-    let mut data = vm_memory.data.borrow_mut();
-    let offset = MemoryAccount::get_size();
-    let data = data.split_at_mut(offset).1;
-    let mut mem = SliceAllocatorMut::try_from_slice_mut(&mut *data, capacity, max_item_size)?;
+    let (n, m) = MemoryAccount::get_capacity_and_size(vm_memory);
+    let mut data = MemoryAccount::get_data_mut(vm_memory)?;
+    let mut mem = SliceAllocatorMut::try_from_slice_mut(&mut *data, n, m)?;
 
     if mem.has_item(account_index) {
         mem.try_free_item(account_index)?;
