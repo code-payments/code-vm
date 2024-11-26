@@ -15,3 +15,6 @@ bs58.workspace = true
 sha2.workspace = true
 solana-curve25519.workspace = true
 curve25519-dalek.workspace = true
+
+[dev-dependencies]
+solana-sdk = "1.18"
