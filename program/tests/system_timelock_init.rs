@@ -11,10 +11,11 @@ fn run_system_timelock_init() {
         setup_svm_with_payer_and_vm(21);
 
     let name = "test";
-    let layout = MemoryLayout::Timelock;
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
 
     let (vm_mem_address, _) =
-        create_and_resize_memory(&mut svm, &payer, vm_address, layout, name);
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
 
     let vm = get_vm_account(&svm, vm_address);
 
@@ -57,11 +58,11 @@ fn run_system_timelock_init() {
         unlock_pda_bump,
     ).is_ok());
 
-    let mem_account = svm.get_account(&vm_mem_address).unwrap();
-    let paged_mem = MemoryAccount::into_indexed_memory(&mem_account.data);
+    // Actual values
+    let actual = get_virtual_timelock(&svm, vm_mem_address, account_index);
 
     // Expected values
-    let vta = VirtualTimelockAccount {
+    let expected = VirtualTimelockAccount {
         owner: virtual_account_owner,
         instance: nonce,
         bump: virtual_timelock_bump,
@@ -70,11 +71,6 @@ fn run_system_timelock_init() {
         withdraw_bump,
         balance: 0,
     };
-    let expected = VirtualAccount::Timelock(vta);
-
-    // Actual nonce values
-    let data = paged_mem.read_item(account_index).unwrap();
-    let actual = VirtualAccount::unpack(&data).unwrap();
 
     assert_eq!(expected, actual);
 

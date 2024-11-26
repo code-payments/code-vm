@@ -46,39 +46,35 @@ pub fn get_unlock_state(svm: &LiteSVM, unlock_address: Pubkey) -> UnlockStateAcc
     UnlockStateAccount::unpack(&account.data)
 }
 
-pub fn get_virtual_nonce(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> VirtualDurableNonce {
+pub fn get_virtual_account_data(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> Option<Vec<u8>> {
     let info = svm.get_account(&vm_memory).unwrap();
     let mem_account = MemoryAccount::unpack(&info.data);
     let capacity = mem_account.num_accounts as usize;
     let max_item_size = mem_account.account_size as usize;
 
-    let mem = SliceAllocator::try_from_slice(&info.data, capacity, max_item_size).unwrap();
-    let data = mem.read_item(account_index).unwrap();
-    let va = VirtualAccount::unpack(&data).unwrap();
+    let offset = MemoryAccount::get_size();
+    let data = info.data.split_at(offset).1;
+    let mem = SliceAllocator::try_from_slice(data, capacity, max_item_size).unwrap();
+    mem.read_item(account_index)
+}
+
+pub fn get_virtual_account(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> VirtualAccount {
+    let data = get_virtual_account_data(svm, vm_memory, account_index).unwrap();
+    VirtualAccount::unpack(&data).unwrap()
+}
+
+pub fn get_virtual_nonce(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> VirtualDurableNonce {
+    let va = get_virtual_account(svm, vm_memory, account_index);
     va.into_inner_nonce().unwrap()
 }
 
 pub fn get_virtual_timelock(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> VirtualTimelockAccount {
-    let info = svm.get_account(&vm_memory).unwrap();
-    let mem_account = MemoryAccount::unpack(&info.data);
-    let capacity = mem_account.num_accounts as usize;
-    let max_item_size = mem_account.account_size as usize;
-
-    let mem = SliceAllocator::try_from_slice(&info.data, capacity, max_item_size).unwrap();
-    let data = mem.read_item(account_index).unwrap();
-    let va = VirtualAccount::unpack(&data).unwrap();
+    let va = get_virtual_account(svm, vm_memory, account_index);
     va.into_inner_timelock().unwrap()
 }
 
 pub fn get_virtual_relay(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> VirtualRelayAccount {
-    let info = svm.get_account(&vm_memory).unwrap();
-    let mem_account = MemoryAccount::unpack(&info.data);
-    let capacity = mem_account.num_accounts as usize;
-    let max_item_size = mem_account.account_size as usize;
-
-    let mem = SliceAllocator::try_from_slice(&info.data, capacity, max_item_size).unwrap();
-    let data = mem.read_item(account_index).unwrap();
-    let va = VirtualAccount::unpack(&data).unwrap();
+    let va = get_virtual_account(svm, vm_memory, account_index);
     va.into_inner_relay().unwrap()
 }
 

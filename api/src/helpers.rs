@@ -284,13 +284,15 @@ pub fn check_is_empty<'a>(
 ) -> ProgramResult {
 
     let data = &vm_memory.data.borrow();
-    let mem = MemoryAccount::unpack(data);
-    let capacity = mem.num_accounts as usize;
-    let max_item_size = mem.account_size as usize;
-    let reader = SliceAllocator::try_from_slice(data, capacity, max_item_size)?;
+    let info = MemoryAccount::unpack(data);
+    let n = info.num_accounts as usize;
+    let m = info.account_size as usize;
+    let offset = MemoryAccount::get_size();
+    let data = data.split_at(offset).1;
+    let mem = SliceAllocator::try_from_slice(data, n, m)?;
 
     check_condition(
-        reader.is_empty(account_index),
+        mem.is_empty(account_index),
         "the virtual account is already allocated",
     )?;
 
@@ -304,9 +306,11 @@ pub fn try_read<'a>(
 
     let data = &vm_memory.data.borrow();
     let info = MemoryAccount::unpack(data);
-    let capacity = info.num_accounts as usize;
-    let max_item_size = info.account_size as usize;
-    let mem = SliceAllocator::try_from_slice(data, capacity, max_item_size)?;
+    let n = info.num_accounts as usize;
+    let m = info.account_size as usize;
+    let offset = MemoryAccount::get_size();
+    let data = data.split_at(offset).1;
+    let mem = SliceAllocator::try_from_slice(data, n, m)?;
 
     check_condition(
         mem.has_item(account_index),
@@ -331,7 +335,9 @@ pub fn try_write<'a>(
 
     let (capacity, max_item_size) = MemoryAccount::get_capacity_and_size(vm_memory);
     let mut data = vm_memory.data.borrow_mut();
-    let mut mem = SliceAllocatorMut::try_from_slice_mut(&mut *data, capacity, max_item_size)?;
+    let offset = MemoryAccount::get_size();
+    let data = data.split_at_mut(offset).1;
+    let mut mem = SliceAllocatorMut::try_from_slice_mut(data, capacity, max_item_size)?;
     
     let data = &account.pack();
 
@@ -347,8 +353,11 @@ pub fn try_delete<'a>(
     vm_memory: &AccountInfo<'_>,
     account_index: u16,
 ) -> ProgramResult {
+
     let (capacity, max_item_size) = MemoryAccount::get_capacity_and_size(vm_memory);
     let mut data = vm_memory.data.borrow_mut();
+    let offset = MemoryAccount::get_size();
+    let data = data.split_at_mut(offset).1;
     let mut mem = SliceAllocatorMut::try_from_slice_mut(&mut *data, capacity, max_item_size)?;
 
     if mem.has_item(account_index) {

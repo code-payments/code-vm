@@ -11,8 +11,8 @@ fn run_transfer() {
     let mut ctx = TestContext::new(21);
 
     // Create memory accounts
-    let mem_a = ctx.create_memory(MemoryLayout::Nonce, "mem_nonce_0");
-    let mem_b = ctx.create_memory(MemoryLayout::Timelock, "mem_timelock_0");
+    let mem_a = ctx.create_memory(100, VirtualDurableNonce::LEN + 1, "mem_nonce_0");
+    let mem_b = ctx.create_memory(100, VirtualTimelockAccount::LEN + 1, "mem_timelock_0");
 
     // Create timelock accounts
     let vta_a_ctx = ctx.create_timelock_account(mem_b, 0);
@@ -63,8 +63,8 @@ fn run_transfer_to_external() {
     let mut ctx = TestContext::new(21);
 
     // Create memory accounts
-    let mem_a = ctx.create_memory(MemoryLayout::Nonce, "mem_nonce_0");
-    let mem_b = ctx.create_memory(MemoryLayout::Timelock, "mem_timelock_0");
+    let mem_a = ctx.create_memory(100, VirtualDurableNonce::LEN + 1, "mem_nonce_0");
+    let mem_b = ctx.create_memory(100, VirtualTimelockAccount::LEN + 1, "mem_timelock_0");
 
     // Create timelock account
     let vta_a_ctx = ctx.create_timelock_account(mem_b, 0);
@@ -117,8 +117,8 @@ fn run_withdraw() {
     let mut ctx = TestContext::new(21);
 
     // Create memory accounts
-    let mem_a = ctx.create_memory(MemoryLayout::Nonce, "mem_nonce_0");
-    let mem_b = ctx.create_memory(MemoryLayout::Timelock, "mem_timelock_0");
+    let mem_a = ctx.create_memory(100, VirtualDurableNonce::LEN + 1, "mem_nonce_0");
+    let mem_b = ctx.create_memory(100, VirtualTimelockAccount::LEN + 1, "mem_timelock_0");
 
     // Create timelock accounts
     let vta_a_ctx = ctx.create_timelock_account(mem_b, 0);
@@ -167,8 +167,8 @@ fn run_withdraw_to_external() {
     let mut ctx = TestContext::new(21);
 
     // Create memory accounts
-    let mem_a = ctx.create_memory(MemoryLayout::Nonce, "mem_nonce_0");
-    let mem_b = ctx.create_memory(MemoryLayout::Timelock, "mem_timelock_0");
+    let mem_a = ctx.create_memory(100, VirtualDurableNonce::LEN + 1, "mem_nonce_0");
+    let mem_b = ctx.create_memory(100, VirtualTimelockAccount::LEN + 1, "mem_timelock_0");
 
     // Create timelock account
     let vta_a_ctx = ctx.create_timelock_account(mem_b, 0);

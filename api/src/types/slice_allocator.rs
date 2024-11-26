@@ -25,6 +25,10 @@ impl<'a> SliceAllocator<'a> {
         let state_size = Self::get_state_size(capacity);
         let data_size: usize = Self::get_data_size(capacity, max_item_size);
 
+        println!("capacity: {}, max_item_size: {}", capacity, max_item_size);
+        println!("state_size: {}, data_size: {}", state_size, data_size);
+        println!("slice.len(): {}", slice.len());
+
         if slice.len() < state_size + data_size {
             return Err(ProgramError::InvalidArgument);
         }

@@ -14,9 +14,9 @@ fn run_relay_transfer() {
     let relay_ctx = ctx.create_relay("relay_0", 10_00);
 
     // Create our virtual memory accounts
-    let mem_a = ctx.create_memory(MemoryLayout::Nonce, "mem_nonce_0");
-    let mem_b = ctx.create_memory(MemoryLayout::Timelock, "mem_timelock_0");
-    let mem_c = ctx.create_memory(MemoryLayout::Relay, "mem_relay_0");
+    let mem_a = ctx.create_memory(100, VirtualDurableNonce::LEN + 1, "mem_nonce_0");
+    let mem_b = ctx.create_memory(100, VirtualTimelockAccount::LEN + 1, "mem_timelock_0");
+    let mem_c = ctx.create_memory(100, VirtualRelayAccount::LEN + 1, "mem_relay_0");
 
     // Create some virtual accounts
     let vta_a_index = 7;

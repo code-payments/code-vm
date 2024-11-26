@@ -1,5 +1,4 @@
 use steel::*;
-use std::marker::PhantomData;
 use crate::{consts::*, types::SliceAllocator};
 
 #[repr(C, align(8))]
@@ -19,7 +18,7 @@ pub struct MemoryAccount {
 
     _padding2: [u8; 2],
 
-    _data: PhantomData<Vec<u8>>,
+    //_data: PhantomData<Vec<u8>>,
 }
 
 impl MemoryAccount {
@@ -36,15 +35,9 @@ impl MemoryAccount {
         Self::try_from_bytes(data).unwrap().clone()
     }
 
-    pub fn unpack_mut(data: &mut [u8]) -> &mut Self {
-        let data = &mut data[..Self::get_size()];
-        Self::try_from_bytes_mut(data).unwrap()
-    }
-
     pub fn get_capacity_and_size(info: &AccountInfo) -> (usize, usize) {
         let data = info.data.borrow();
         let info = MemoryAccount::unpack(&data);
         (info.num_accounts as usize, info.account_size as usize)
     }
-
 }

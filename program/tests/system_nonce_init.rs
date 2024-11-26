@@ -11,10 +11,11 @@ fn run_system_nonce_init() {
         setup_svm_with_payer_and_vm(21);
 
     let name = "test";
-    let layout = MemoryLayout::Nonce;
+    let capacity = 100;
+    let account_size = VirtualDurableNonce::LEN+1;
 
     let (vm_mem_address, _) =
-        create_and_resize_memory(&mut svm, &payer, vm_address, layout, name);
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
 
     let vm = get_vm_account(&svm, vm_address);
 
@@ -22,13 +23,8 @@ fn run_system_nonce_init() {
     let account_index = 0;
     assert!(tx_create_virtual_nonce(&mut svm, &payer, vm_address, vm_mem_address, virtual_account_owner, account_index).is_ok());
 
-    let mem_account = svm.get_account(&vm_mem_address).unwrap();
-    let paged_mem = MemoryAccount::into_indexed_memory(&mem_account.data);
-
     // Actual nonce values
-    let data = paged_mem.read_item(account_index).unwrap();
-    let va = VirtualAccount::unpack(&data).unwrap();
-    let vdn = va.into_inner_nonce().unwrap();
+    let vdn = get_virtual_nonce(&svm, vm_mem_address, account_index);
 
     // Expected nonce values
     let seed = virtual_account_owner;

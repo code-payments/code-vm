@@ -11,10 +11,11 @@ fn run_system_account_decompress() {
         setup_svm_with_payer_and_vm(21);
 
     let name = "test";
-    let mem_layout = MemoryLayout::Nonce;
+    let capacity = 100;
+    let account_size = VirtualDurableNonce::LEN+1;
 
     let (vm_mem_address, _) =
-        create_and_resize_memory(&mut svm, &payer, vm_address, mem_layout, name);
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
 
     let (vm_storage_address, _) =
         create_storage_account(&mut svm, &payer, vm_address, name);
@@ -23,11 +24,7 @@ fn run_system_account_decompress() {
     let account_index = 0;
     assert!(tx_create_virtual_nonce(&mut svm, &payer, vm_address, vm_mem_address, virtual_account_owner, account_index).is_ok());
 
-    let account = svm.get_account(&vm_mem_address).unwrap();
-    let compact_mem = MemoryAccount::into_indexed_memory(&account.data);
-    let data = compact_mem.read_item(account_index).unwrap();
-
-    let va = VirtualAccount::unpack(&data).unwrap();
+    let va = get_virtual_account(&svm, vm_mem_address, account_index);
     let va_hash = va.get_hash();
 
     let sig = Signature::new(payer.sign_message(va_hash.as_ref()).as_ref());
@@ -43,9 +40,8 @@ fn run_system_account_decompress() {
         sig
     ).is_ok());
 
-    let account = svm.get_account(&vm_mem_address).unwrap();
-    let compact_mem = MemoryAccount::into_indexed_memory(&account.data);
-    assert!(compact_mem.is_empty(account_index));
+    let data = get_virtual_account_data(&svm, vm_mem_address, account_index);
+    assert!(data.is_none());
 
     let compressed_mem = get_storage_account(&svm, vm_storage_address).compressed_state;
     let mut expected = MerkleTree::<{StorageAccount::MERKLE_TREE_DEPTH}>::new(&[
@@ -79,12 +75,12 @@ fn run_system_account_decompress() {
     assert!(expected.try_remove(&proof, sig_hash).is_ok());
     assert_eq!(expected.get_root(), compressed_mem.get_root());
 
-    let account = svm.get_account(&vm_mem_address).unwrap();
-    let compact_mem = MemoryAccount::into_indexed_memory(&account.data);
-    assert!(compact_mem.is_empty(0));
-    assert!(compact_mem.has_item(account_index));
+    let old_index = get_virtual_account_data(&svm, vm_mem_address, 0);
+    let new_index = get_virtual_account_data(&svm, vm_mem_address, account_index);
 
-    let data = compact_mem.read_item(account_index).unwrap();
-    let va = VirtualAccount::unpack(&data).unwrap();
-    assert!(va.into_inner_nonce().is_some());
+    assert!(old_index.is_none());
+    assert!(new_index.is_some());
+
+    let va = get_virtual_account(&svm, vm_mem_address, account_index);
+    assert!(va.is_nonce());
 }
