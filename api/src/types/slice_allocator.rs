@@ -21,13 +21,8 @@ impl<'a> SliceAllocator<'a> {
         capacity: usize,
         max_item_size: usize,
     ) -> Result<Self, ProgramError> {
-        // Calculate the size required for the state section
         let state_size = Self::get_state_size(capacity);
         let data_size: usize = Self::get_data_size(capacity, max_item_size);
-
-        println!("capacity: {}, max_item_size: {}", capacity, max_item_size);
-        println!("state_size: {}, data_size: {}", state_size, data_size);
-        println!("slice.len(): {}", slice.len());
 
         if slice.len() < state_size + data_size {
             return Err(ProgramError::InvalidArgument);
@@ -107,7 +102,6 @@ impl<'a> SliceAllocatorMut<'a> {
         capacity: usize,
         max_item_size: usize,
     ) -> Result<Self, ProgramError> {
-        // Calculate the size required for the state section
         let state_size = SliceAllocator::get_state_size(capacity);
         let data_size: usize = SliceAllocator::get_data_size(capacity, max_item_size);
 
@@ -208,112 +202,130 @@ impl<'a> SliceAllocatorMut<'a> {
 
 #[cfg(test)]
 mod tests {
-    use std::mem::size_of;
     use super::*;
 
-    const CAPACITY: usize = 10;
-    const MAX_ITEM_SIZE: usize = 32;
+    #[test]
+    fn test_slice_allocator_creation() {
+        let capacity = 4;
+        let item_size = 8;
+        let total_size = SliceAllocator::get_size(capacity, item_size);
+        let buffer = vec![0u8; total_size];
 
-    fn get_test_buf() -> Vec<u8> {
-        let state_size = CAPACITY * size_of::<ItemState>();
-        let data_size = CAPACITY * MAX_ITEM_SIZE;
-        let total_size = state_size + data_size;
-        vec![0; total_size]
+        let allocator = SliceAllocator::try_from_slice(&buffer, capacity, item_size);
+        assert!(allocator.is_ok());
+        let allocator = allocator.unwrap();
+
+        assert_eq!(allocator.capacity(), capacity);
     }
 
     #[test]
-    fn test_small_item() {
-        let mut buf = get_test_buf();
-        let mut mem = SliceAllocatorMut::try_from_slice_mut(buf.as_mut_slice(), CAPACITY, MAX_ITEM_SIZE).unwrap();
+    fn test_slice_allocator_mut_creation() {
+        let capacity = 4;
+        let item_size = 8;
+        let total_size = SliceAllocator::get_size(capacity, item_size);
+        let mut buffer = vec![0u8; total_size];
 
-        assert!(mem.capacity() == CAPACITY);
+        let allocator = SliceAllocatorMut::try_from_slice_mut(&mut buffer, capacity, item_size);
+        assert!(allocator.is_ok());
+        let allocator = allocator.unwrap();
 
-        let item_index = 0;
-        let item_data = [1, 2, 3, 4, 5];
-
-        assert!(mem.read_item(item_index).is_none());
-        assert!(mem.try_alloc_item(item_index as u16, item_data.len()).is_ok());
-        assert!(mem.read_item(item_index).is_some());
-        assert!(mem.try_write_item(item_index as u16, &item_data).is_ok());
-
-        let read_data = mem.read_item(item_index).unwrap();
-        assert_eq!(read_data.as_slice()[..5], item_data);
+        assert_eq!(allocator.capacity(), capacity);
     }
 
     #[test]
-    fn test_alloc_fail_for_out_of_bounds() {
-        let mut buf = get_test_buf();
-        let mut mem = SliceAllocatorMut::try_from_slice_mut(buf.as_mut_slice(), CAPACITY, MAX_ITEM_SIZE).unwrap();
+    fn test_read_empty_item() {
+        let capacity = 4;
+        let item_size = 8;
+        let total_size = SliceAllocator::get_size(capacity, item_size);
+        let buffer = vec![0u8; total_size];
 
-        // Attempting to allocate an item beyond the capacity should fail
-        assert!(mem.try_alloc_item(CAPACITY as u16, 10).is_err());
+        let allocator = SliceAllocator::try_from_slice(&buffer, capacity, item_size).unwrap();
+        assert!(allocator.is_empty(0));
+        assert!(!allocator.has_item(0));
     }
 
     #[test]
-    fn test_alloc_fail_for_large_data_size() {
-        let mut buf = get_test_buf();
-        let mut mem = SliceAllocatorMut::try_from_slice_mut(buf.as_mut_slice(), CAPACITY, MAX_ITEM_SIZE).unwrap();
+    fn test_alloc_and_free_item() {
+        let capacity = 4;
+        let item_size = 8;
+        let total_size = SliceAllocator::get_size(capacity, item_size);
+        let mut buffer = vec![0u8; total_size];
 
-        // Attempting to allocate an item with data size larger than MAX_ITEM_SIZE should fail
-        assert!(mem.try_alloc_item(0, MAX_ITEM_SIZE + 1).is_err());
+        let mut allocator = SliceAllocatorMut::try_from_slice_mut(&mut buffer, capacity, item_size).unwrap();
+
+        assert!(allocator.is_empty(1));
+        assert!(allocator.try_alloc_item(1, item_size).is_ok());
+        assert!(!allocator.is_empty(1));
+        assert!(allocator.has_item(1));
+
+        assert!(allocator.try_free_item(1).is_ok());
+        assert!(allocator.is_empty(1));
     }
 
     #[test]
-    fn test_write_fail_to_unallocated_item() {
-        let mut buf = get_test_buf();
-        let mut mem = SliceAllocatorMut::try_from_slice_mut(buf.as_mut_slice(), CAPACITY, MAX_ITEM_SIZE).unwrap();
+    fn test_write_and_read_item() {
+        let capacity = 4;
+        let item_size = 8;
+        let total_size = SliceAllocator::get_size(capacity, item_size);
+        let mut buffer = vec![0u8; total_size];
+        let data = vec![1, 2, 3, 4, 5, 6, 7, 8];
 
-        let item_data = [1, 2, 3];
+        let mut allocator = SliceAllocatorMut::try_from_slice_mut(&mut buffer, capacity, item_size).unwrap();
+        allocator.try_alloc_item(2, data.len()).unwrap();
+        allocator.try_write_item(2, &data).unwrap();
 
-        // Writing to an unallocated item should fail
-        assert!(mem.try_write_item(0, &item_data).is_err());
+        let read_data = allocator.read_item(2).unwrap();
+        assert_eq!(read_data, data);
     }
 
     #[test]
-    fn test_free_item() {
-        let mut buf = get_test_buf();
-        let mut mem = SliceAllocatorMut::try_from_slice_mut(buf.as_mut_slice(), CAPACITY, MAX_ITEM_SIZE).unwrap();
+    fn test_invalid_allocation() {
+        let capacity = 4;
+        let item_size = 8;
+        let total_size = SliceAllocator::get_size(capacity, item_size);
+        let mut buffer = vec![0u8; total_size];
 
-        let item_index = 1;
-        let item_data = [10, 20, 30, 40, 50];
+        let mut allocator = SliceAllocatorMut::try_from_slice_mut(&mut buffer, capacity, item_size).unwrap();
 
-        // Allocate and write to the item
-        assert!(mem.try_alloc_item(item_index, item_data.len()).is_ok());
-        assert!(mem.try_write_item(item_index, &item_data).is_ok());
+        // Exceeding capacity
+        assert!(allocator.try_alloc_item(5, item_size).is_err());
 
-        // Free the item
-        assert!(mem.try_free_item(item_index).is_ok());
+        // Allocating an already used item
+        allocator.try_alloc_item(1, item_size).unwrap();
+        assert!(allocator.try_alloc_item(1, item_size).is_err());
 
-        // Reading from a freed item should return None
-        assert!(mem.read_item(item_index).is_none());
-
-        // The state should be set to empty
-        assert!(mem.is_empty(item_index));
+        // Allocating with oversized data
+        assert!(allocator.try_alloc_item(2, item_size + 1).is_err());
     }
 
     #[test]
-    fn test_realloc_item_after_free() {
-        let mut buf = get_test_buf();
-        let mut mem = SliceAllocatorMut::try_from_slice_mut(buf.as_mut_slice(), CAPACITY, MAX_ITEM_SIZE).unwrap();
+    fn test_invalid_write() {
+        let capacity = 4;
+        let item_size = 8;
+        let total_size = SliceAllocator::get_size(capacity, item_size);
+        let mut buffer = vec![0u8; total_size];
+        let data = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-        let item_index = 2;
-        let item_data1 = [10, 20, 30];
-        let item_data2 = [5, 15, 25, 35];
+        let mut allocator = SliceAllocatorMut::try_from_slice_mut(&mut buffer, capacity, item_size).unwrap();
 
-        // Allocate and write to the item
-        assert!(mem.try_alloc_item(item_index, item_data1.len()).is_ok());
-        assert!(mem.try_write_item(item_index, &item_data1).is_ok());
+        // Writing to an empty item
+        assert!(allocator.try_write_item(1, &data).is_err());
 
-        // Free the item
-        assert!(mem.try_free_item(item_index).is_ok());
-
-        // Reallocate and write new data
-        assert!(mem.try_alloc_item(item_index, item_data2.len()).is_ok());
-        assert!(mem.try_write_item(item_index, &item_data2).is_ok());
-
-        // Reading from the item should return the new data
-        let read_data = mem.read_item(item_index).unwrap();
-        assert_eq!(read_data.as_slice()[..item_data2.len()], item_data2);
+        // Writing oversized data
+        allocator.try_alloc_item(1, item_size).unwrap();
+        assert!(allocator.try_write_item(1, &data).is_err());
     }
 
+    #[test]
+    fn test_read_invalid_item() {
+        let capacity = 4;
+        let item_size = 8;
+        let total_size = SliceAllocator::get_size(capacity, item_size);
+        let buffer = vec![0u8; total_size];
+
+        let allocator = SliceAllocator::try_from_slice(&buffer, capacity, item_size).unwrap();
+
+        // Reading an out-of-bounds index
+        assert!(allocator.read_item(5).is_none());
+    }
 }
