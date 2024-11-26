@@ -10,11 +10,12 @@ fn run_mem_init_test() {
         setup_svm_with_payer_and_vm(21);
 
     let name = create_name("test");
-    let layout = MemoryLayout::Nonce;
+    let capacity = 100;
+    let account_size = VirtualDurableNonce::LEN+1;
 
     let (vm_mem_address, vm_mem_bump) = find_vm_memory_pda(&vm_address, &name);
 
-    assert!(tx_create_memory(&mut svm, &payer, vm_address, layout, "test").is_ok());
+    assert!(tx_create_memory(&mut svm, &payer, vm_address, capacity, account_size, "test").is_ok());
 
     let mem_account = svm.get_account(&vm_mem_address).unwrap();
     assert!(mem_account.data.len() == MemoryAccount::get_size());
@@ -22,7 +23,8 @@ fn run_mem_init_test() {
     let memory = get_memory_account(&svm, vm_mem_address);
     assert!(memory.vm == vm_address);
     assert!(memory.bump == vm_mem_bump);
-    assert!(MemoryLayout::try_from(memory.layout).unwrap() == layout);
+    assert!(memory.num_accounts == capacity as u32);
+    assert!(memory.account_size == account_size as u16);
     assert!(memory.name == name);
 
     let vm = get_vm_account(&svm, vm_address);

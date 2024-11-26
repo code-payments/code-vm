@@ -27,8 +27,9 @@ use steel::*;
     Instruction data:
 
     0. name: [u8; 32]       - The name of this memory module.
-    1. layout: u8           - The preferred layout for this memory module (sets the page size).
-    2. vm_memory_bump: u8   - The bump seed for the this memory account.
+    1. num_accounts: u32    - The number of accounts that can be stored in this memory module.
+    2. account_size: u16    - The size of each account in this memory module.
+    3. vm_memory_bump: u8   - The bump seed for the this memory account.
 */
 pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
     let args = InitMemoryIx::try_from_bytes(data)?;
@@ -41,11 +42,6 @@ pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
     ] = accounts else {
         return Err(ProgramError::NotEnoughAccountKeys);        
     };
-
-    check_condition(
-        MemoryLayout::try_from(args.layout).is_ok(),
-        "layout is not a valid memory layout",
-    )?;
 
     check_signer(vm_authority_info)?;
     check_mut(vm_info)?;
@@ -86,7 +82,8 @@ pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
     memory.name = args.name;
     memory.vm = vm_info.key.clone();
     memory.bump = args.vm_memory_bump;
-    memory.layout = args.layout;
+    memory.num_accounts = args.num_accounts;
+    memory.account_size = args.account_size;
 
     vm.advance_poh(CodeInstruction::InitMemoryIx, accounts, data);
 

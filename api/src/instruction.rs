@@ -62,7 +62,8 @@ pub struct InitVmIx {
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct InitMemoryIx {
     pub name: [u8; MAX_NAME_LEN],
-    pub layout: u8,
+    pub num_accounts: u32,
+    pub account_size: u16,
     pub vm_memory_bump: u8,
 }
 

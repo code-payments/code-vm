@@ -47,24 +47,36 @@ pub fn get_unlock_state(svm: &LiteSVM, unlock_address: Pubkey) -> UnlockStateAcc
 }
 
 pub fn get_virtual_nonce(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> VirtualDurableNonce {
-    let mem_account = svm.get_account(&vm_memory).unwrap();
-    let mem = MemoryAccount::into_indexed_memory(&mem_account.data);
+    let info = svm.get_account(&vm_memory).unwrap();
+    let mem_account = MemoryAccount::unpack(&info.data);
+    let capacity = mem_account.num_accounts as usize;
+    let max_item_size = mem_account.account_size as usize;
+
+    let mem = SliceAllocator::try_from_slice(&info.data, capacity, max_item_size).unwrap();
     let data = mem.read_item(account_index).unwrap();
     let va = VirtualAccount::unpack(&data).unwrap();
     va.into_inner_nonce().unwrap()
 }
 
 pub fn get_virtual_timelock(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> VirtualTimelockAccount {
-    let mem_account = svm.get_account(&vm_memory).unwrap();
-    let mem = MemoryAccount::into_indexed_memory(&mem_account.data);
+    let info = svm.get_account(&vm_memory).unwrap();
+    let mem_account = MemoryAccount::unpack(&info.data);
+    let capacity = mem_account.num_accounts as usize;
+    let max_item_size = mem_account.account_size as usize;
+
+    let mem = SliceAllocator::try_from_slice(&info.data, capacity, max_item_size).unwrap();
     let data = mem.read_item(account_index).unwrap();
     let va = VirtualAccount::unpack(&data).unwrap();
     va.into_inner_timelock().unwrap()
 }
 
 pub fn get_virtual_relay(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> VirtualRelayAccount {
-    let mem_account = svm.get_account(&vm_memory).unwrap();
-    let mem = MemoryAccount::into_indexed_memory(&mem_account.data);
+    let info = svm.get_account(&vm_memory).unwrap();
+    let mem_account = MemoryAccount::unpack(&info.data);
+    let capacity = mem_account.num_accounts as usize;
+    let max_item_size = mem_account.account_size as usize;
+
+    let mem = SliceAllocator::try_from_slice(&info.data, capacity, max_item_size).unwrap();
     let data = mem.read_item(account_index).unwrap();
     let va = VirtualAccount::unpack(&data).unwrap();
     va.into_inner_relay().unwrap()
@@ -145,15 +157,16 @@ pub fn create_and_resize_memory(
     svm: &mut LiteSVM,
     payer: &Keypair,
     vm_address: Pubkey,
-    layout: MemoryLayout,
+    capacity: usize,
+    account_size: usize,
     name: &str,
 ) -> (Pubkey, u8) {
-    assert!(tx_create_memory(svm, payer, vm_address, layout, name).is_ok());
+    assert!(tx_create_memory(svm, payer, vm_address, capacity, account_size, name).is_ok());
 
     let (mem_address, mem_bump) = find_vm_memory_pda(&vm_address, &create_name(name));
 
     // Increase account size until it reaches the required size for the layout
-    let required_size = MemoryAccount::get_size_with_data(layout);
+    let required_size = MemoryAccount::get_size_with_data(capacity, account_size);
     loop {
         let mem_account = svm.get_account(&mem_address).unwrap();
         let current = mem_account.data.len();
@@ -241,12 +254,13 @@ pub fn tx_create_memory(
     svm: &mut LiteSVM,
     payer: &Keypair,
     vm_address: Pubkey,
-    layout: MemoryLayout,
+    capacity: usize,
+    account_size: usize,
     name: &str,
 ) -> TransactionResult {
     let payer_pk = payer.pubkey();
     let blockhash = svm.latest_blockhash();
-    let ix = vm_memory_init(payer_pk, vm_address, layout, name);
+    let ix = vm_memory_init(payer_pk, vm_address, capacity, account_size, name);
     let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer], blockhash);
 
     send_tx(svm, tx)
