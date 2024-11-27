@@ -4,14 +4,9 @@ use solana_program::msg;
 use crate::{
     consts::*, 
     cvm::{
-        CodeVmAccount, 
-        MemoryAccount, 
-        MemoryLayout, 
-        RelayAccount, 
-        StorageAccount, 
-        VirtualAccount, 
+        CodeVmAccount, MemoryAccount, RelayAccount, StorageAccount, VirtualAccount 
     },
-    types::Hash,
+    types::{Hash, SliceAllocator, SliceAllocatorMut},
 };
 
 pub fn optional_meta(account: Option<Pubkey>, is_signer: bool) -> AccountMeta {
@@ -287,8 +282,10 @@ pub fn check_is_empty<'a>(
     vm_memory: &AccountInfo<'_>,
     account_index: u16,
 ) -> ProgramResult {
-    let mem = 
-        MemoryAccount::get_indexed_memory_mut(vm_memory)?;
+
+    let (n, m) = MemoryAccount::get_capacity_and_size(vm_memory);
+    let data = MemoryAccount::get_data(vm_memory)?;
+    let mem = SliceAllocator::try_from_slice(& *data, n, m)?;
 
     check_condition(
         mem.is_empty(account_index),
@@ -302,8 +299,10 @@ pub fn try_read<'a>(
     vm_memory: &AccountInfo<'_>,
     account_index: u16,
 ) -> Result<VirtualAccount, ProgramError> {
-    let mem = 
-        MemoryAccount::get_indexed_memory_mut(vm_memory)?;
+
+    let (n, m) = MemoryAccount::get_capacity_and_size(vm_memory);
+    let data = MemoryAccount::get_data(vm_memory)?;
+    let mem = SliceAllocator::try_from_slice(& *data, n, m)?;
 
     check_condition(
         mem.has_item(account_index),
@@ -325,21 +324,10 @@ pub fn try_write<'a>(
     account_index: u16,
     account: &VirtualAccount,
 ) -> ProgramResult {
-    let layout = 
-        MemoryAccount::get_layout(vm_memory);
 
-    check_condition(
-        match layout {
-            MemoryLayout::Timelock => account.is_timelock(),
-            MemoryLayout::Relay => account.is_relay(),
-            MemoryLayout::Nonce => account.is_nonce(),
-            _ => false,
-        },
-        "the virtual account does not match the memory layout",
-    )?;
-
-    let mut mem = 
-        MemoryAccount::get_indexed_memory_mut(vm_memory)?;
+    let (n, m) = MemoryAccount::get_capacity_and_size(vm_memory);
+    let mut data = MemoryAccount::get_data_mut(vm_memory)?;
+    let mut mem = SliceAllocatorMut::try_from_slice_mut(&mut *data, n, m)?;
     
     let data = &account.pack();
 
@@ -355,8 +343,10 @@ pub fn try_delete<'a>(
     vm_memory: &AccountInfo<'_>,
     account_index: u16,
 ) -> ProgramResult {
-    let mut mem = 
-        MemoryAccount::get_indexed_memory_mut(vm_memory)?;
+
+    let (n, m) = MemoryAccount::get_capacity_and_size(vm_memory);
+    let mut data = MemoryAccount::get_data_mut(vm_memory)?;
+    let mut mem = SliceAllocatorMut::try_from_slice_mut(&mut *data, n, m)?;
 
     if mem.has_item(account_index) {
         mem.try_free_item(account_index)?;

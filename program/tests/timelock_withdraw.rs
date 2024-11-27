@@ -13,8 +13,12 @@ fn run_withdraw_from_deposit_pda() {
     let (mut svm, payer, mint_owner, mint_pk, vm_address) =
         setup_svm_with_payer_and_vm(21);
 
+    let name = "test";
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
+
     let (vm_memory, _) =
-        create_and_resize_memory(&mut svm, &payer, vm_address, MemoryLayout::Timelock, "test");
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
 
     let amount = 1000;
     let account_index = 7;
@@ -79,8 +83,12 @@ fn run_withdraw_from_memory() {
     let (mut svm, payer, _mint_owner, mint_pk, vm_address) =
         setup_svm_with_payer_and_vm(21);
 
+    let name = "test";
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
+
     let (vm_memory, _) =
-        create_and_resize_memory(&mut svm, &payer, vm_address, MemoryLayout::Timelock, "test");
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
 
     let account_index = 7;
 
@@ -142,10 +150,11 @@ fn run_withdraw_from_storage() {
         setup_svm_with_payer_and_vm(21);
 
     let name = "test";
-    let mem_layout = MemoryLayout::Timelock;
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
 
     let (vm_memory, _) =
-        create_and_resize_memory(&mut svm, &payer, vm_address, mem_layout, name);
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
 
     let (vm_storage, _) =
         create_storage_account(&mut svm, &payer, vm_address, name);

@@ -14,7 +14,8 @@ pub struct InitVmArgs {
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
 pub struct InitMemoryArgs {
     pub name: [u8; MAX_NAME_LEN],
-    pub layout: u8,
+    pub num_accounts: u32,
+    pub account_size: u16,
     pub vm_memory_bump: u8,
 }
 

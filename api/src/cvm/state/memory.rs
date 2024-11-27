@@ -1,57 +1,26 @@
 use steel::*;
-use std::cell::RefMut;
-use std::marker::PhantomData;
-use crate::consts::*;
-use crate::cvm::{
-    SimpleAllocator,
-    MemoryAllocator,
-    VirtualDurableNonce,
-    VirtualRelayAccount,
-    VirtualTimelockAccount
+use std::{cell::{Ref, RefMut}, marker::PhantomData};
+use crate::{
+    consts::*, 
+    types::SliceAllocator
 };
 
-const TIMELOCK_SIZE: usize   = VirtualTimelockAccount::LEN + 1;
-const NONCE_SIZE: usize      = VirtualDurableNonce::LEN + 1;
-const RELAY_SIZE: usize      = VirtualRelayAccount::LEN + 1;
+// Using packed instead of align(8) to keep compatibility with older
+// versions of the program
 
-pub type TimelockMemory = SimpleAllocator<NUM_ACCOUNTS, TIMELOCK_SIZE>;
-pub type NonceMemory    = SimpleAllocator<NUM_ACCOUNTS, NONCE_SIZE>;
-pub type RelayMemory    = SimpleAllocator<NUM_ACCOUNTS, RELAY_SIZE>;
-
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, PartialEq, IntoPrimitive, TryFromPrimitive)]
-pub enum MemoryLayout {
-    Unknown = 0,
-    Timelock,
-    Nonce,
-    Relay,
-}
-
-impl MemoryLayout {
-    pub fn get_size(&self) -> usize {
-        match self {
-            MemoryLayout::Timelock => std::mem::size_of::<TimelockMemory>(),
-            MemoryLayout::Nonce => std::mem::size_of::<NonceMemory>(),
-            MemoryLayout::Relay => std::mem::size_of::<RelayMemory>(),
-            _ => panic!("Invalid layout"),
-        }
-    }
-}
-
-#[repr(C, align(8))]
+#[repr(C, packed)] 
 #[derive(Clone, Copy, Debug, PartialEq, Pod, Zeroable)]
 pub struct MemoryAccount {
     pub vm: Pubkey,
     pub name: [u8; MAX_NAME_LEN],
     pub bump: u8,
 
-    _padding: [u8; 6],
+    pub version: u8,
+    pub account_size: u16,
+    pub num_accounts: u32,
 
-    // The layout can be combined with _data like this (when not using zeroable)
-    // https://github.com/code-payments/code-vm/blob/main/idl/src/programs/code-vm/src/state.rs#L33
-    
-    pub layout: u8,
-    _data: PhantomData<dyn MemoryAllocator>,
+    // Data starts at 72 bytes into the account
+    _data: PhantomData<[u8]>,
 }
 
 impl MemoryAccount {
@@ -59,8 +28,8 @@ impl MemoryAccount {
         8 + std::mem::size_of::<Self>()
     }
 
-    pub fn get_size_with_data(layout: MemoryLayout) -> usize {
-        Self::get_size() + layout.get_size()
+    pub fn get_size_with_data(num_accounts: usize, account_size: usize) -> usize {
+        Self::get_size() + SliceAllocator::get_size(num_accounts, account_size)
     }
 
     pub fn unpack(data: &[u8]) -> Self {
@@ -68,72 +37,47 @@ impl MemoryAccount {
         Self::try_from_bytes(data).unwrap().clone()
     }
 
-    pub fn unpack_mut(data: &mut [u8]) -> &mut Self {
-        let data = &mut data[..Self::get_size()];
-        Self::try_from_bytes_mut(data).unwrap()
+    pub fn get_capacity_and_size(info: &AccountInfo) -> (usize, usize) {
+        let data = info.data.borrow();
+        let info = MemoryAccount::unpack(&data);
+        (info.num_accounts as usize, info.account_size as usize)
     }
 
-    pub fn get_layout<'a>(info: &'a AccountInfo) -> MemoryLayout {
-        let data = info.try_borrow_data().unwrap();
-        let memory = MemoryAccount::unpack(&data);
-        MemoryLayout::try_from(memory.layout).unwrap()
+    pub fn get_data<'a>(info: &'a AccountInfo) 
+        -> Result<Ref<'a, [u8]>, ProgramError> {
+
+        let data = info.data.borrow();
+        let offset = MemoryAccount::get_size();
+
+        // Map the `Ref` to a subslice, preserving the borrow
+        let data = Ref::map(data, |d| {
+            let (_, data) = d.split_at(offset);
+            data
+        });
+
+        Ok(data)
     }
 
-    pub fn get_indexed_memory_mut<'a>(info: &'a AccountInfo) 
-        -> Result<RefMut<'a, dyn MemoryAllocator>, ProgramError> {
-        let data = info.try_borrow_mut_data()?;
-        Ok(Self::into_indexed_memory_mut(data))
+    pub fn get_data_mut<'a>(info: &'a AccountInfo) 
+        -> Result<RefMut<'a, [u8]>, ProgramError> {
+
+        let data = info.data.borrow_mut();
+        let offset = MemoryAccount::get_size();
+
+        // Map the `RefMut` to a subslice, preserving the mutable borrow
+        let data = RefMut::map(data, |d| {
+            let (_, data) = d.split_at_mut(offset);
+            data
+        });
+
+        Ok(data)
     }
 
-    pub fn into_indexed_memory_mut<'a>(
-        data: RefMut<'a, &mut [u8]>
-    ) -> RefMut<'a, dyn MemoryAllocator> {
-
-        let memory = MemoryAccount::unpack(&data);
-        let layout = MemoryLayout::try_from(memory.layout).unwrap();
-        let offset: usize = MemoryAccount::get_size();
-        let until = Self::get_size_with_data(layout);
-
-        match layout {
-            MemoryLayout::Timelock => {
-                RefMut::map(data, |data: &mut &mut [u8]| -> &mut TimelockMemory {
-                    bytemuck::from_bytes_mut(&mut data[offset..until])
-                })
-            },
-            MemoryLayout::Nonce => {
-                RefMut::map(data, |data: &mut &mut [u8]| -> &mut NonceMemory {
-                    bytemuck::from_bytes_mut(&mut data[offset..until])
-                })
-            },
-            MemoryLayout::Relay => {
-                RefMut::map(data, |data: &mut &mut [u8]| -> &mut RelayMemory {
-                    bytemuck::from_bytes_mut(&mut data[offset..until])
-                })
-            },
-            _ => panic!("Invalid layout"),
-        }
+    pub fn get_capacity(&self) -> usize {
+        self.num_accounts as usize
     }
 
-    pub fn into_indexed_memory<'a>(
-        data: &'a [u8]
-    ) -> &'a dyn MemoryAllocator {
-
-        let memory = MemoryAccount::unpack(&data);
-        let layout = MemoryLayout::try_from(memory.layout).unwrap();
-        let offset: usize = MemoryAccount::get_size();
-        let until = Self::get_size_with_data(layout);
-
-        match layout {
-            MemoryLayout::Timelock => {
-                bytemuck::from_bytes(&data[offset..until]) as &TimelockMemory
-            },
-            MemoryLayout::Nonce => {
-                bytemuck::from_bytes(&data[offset..until]) as &NonceMemory
-            },
-            MemoryLayout::Relay => {
-                bytemuck::from_bytes(&data[offset..until]) as &RelayMemory
-            },
-            _ => panic!("Invalid layout"),
-        }
+    pub fn get_account_size(&self) -> usize {
+        self.account_size as usize
     }
 }

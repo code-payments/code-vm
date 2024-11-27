@@ -3,7 +3,6 @@ use bytemuck::{Pod, Zeroable};
 use std::fmt::Debug;
 
 use super::hash::Hash;
-use super::ZeroCopy;
 use crate::helpers::check_condition;
 use crate::utils;
 
@@ -16,7 +15,6 @@ pub struct MerkleTree<const N: usize> {
     next_index: u64,
 }
 
-impl<const N: usize> ZeroCopy for MerkleTree<N> {}
 unsafe impl<const N: usize> Zeroable for MerkleTree<N> {}
 unsafe impl<const N: usize> Pod for MerkleTree<N> {}
 

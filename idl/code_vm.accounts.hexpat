@@ -1,7 +1,6 @@
 #pragma endian little
 
 #define MAX_NAME_LEN 32
-#define NUM_ACCOUNTS 32000
 
 #define COMPRESSED_STATE_DEPTH 20
 #define RELAY_STATE_DEPTH 63
@@ -16,22 +15,15 @@ enum AccountType : u8 {
     WithdrawReceiptAccount = 6,
 };
 
-enum VirtualAccount : u8 {
-    Nonce = 0,
-    Timelock = 1,
-    Relay = 2,
-};
-
 enum ItemState : u8 {
-    Empty = 0,
-    Allocated = 1,
+    Free = 0,
+    Used = 1,
 };
 
 enum AccountDataType : u8 {
-    Unknown = 0,
+    Nonce = 0,
     Timelock = 1,
-    Nonce = 2,
-    Relay = 3,
+    Relay = 2,
 };
 
 // Type Definitions
@@ -53,13 +45,12 @@ struct TokenPool {
     u8 vault_bump;
 };
 
-struct SimpleAllocator<T, auto N> {
+struct SliceAllocator<T, auto N> {
     ItemState state[N];
     T data[N];
 };
 
 struct VirtualTimelockAccount {
-    VirtualAccount _type;
     Pubkey owner;
     Hash instance;
     u8 token_bump;
@@ -70,29 +61,38 @@ struct VirtualTimelockAccount {
 };
 
 struct VirtualDurableNonce {
-    VirtualAccount _type;
     Pubkey address;
     Hash value;
 };
 
 struct VirtualRelayAccount {
-    VirtualAccount _type;
     Pubkey target;
     Pubkey destination;
 };
 
-struct AccountData {
+struct VirtualAccount {
     AccountDataType type;
 
-    if (type == AccountDataType::Timelock) {
-        SimpleAllocator<VirtualTimelockAccount, NUM_ACCOUNTS> allocator;
+    if (type == AccountDataType::Nonce) {
+        VirtualDurableNonce data;
     }
-    else if (type == AccountDataType::Nonce) {
-        SimpleAllocator<VirtualDurableNonce, NUM_ACCOUNTS> allocator;
+    else if (type == AccountDataType::Timelock) {
+        VirtualTimelockAccount data;
     }
     else if (type == AccountDataType::Relay) {
-        SimpleAllocator<VirtualRelayAccount, NUM_ACCOUNTS> allocator;
+        VirtualRelayAccount data;
     }
+};
+
+struct AccountDataHeader {
+    u8 version;
+    u16 account_size;
+    u32 num_accounts;
+};
+
+struct AccountData {
+    AccountDataHeader header;
+    SliceAllocator<VirtualAccount, header.num_accounts> allocator;
 };
 
 struct CodeVmAccount {
@@ -110,7 +110,7 @@ struct MemoryAccount {
     Pubkey vm;
     u8 name[MAX_NAME_LEN];
     u8 bump;
-    u8 _padding[6];
+
     AccountData data;
 };
 

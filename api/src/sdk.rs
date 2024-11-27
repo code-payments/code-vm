@@ -31,10 +31,10 @@ pub fn vm_init(vm_authority: Pubkey, mint: Pubkey, lock_duration: u8) -> Instruc
 pub fn vm_memory_init(
     vm_authority: Pubkey,
     vm: Pubkey,
-    layout: MemoryLayout,
+    num_accounts: usize,
+    account_size: usize,
     name: &str,
 ) -> Instruction {
-    let layout = layout as u8;
     let name = create_name(name);
     let (vm_memory, vm_memory_bump) = find_vm_memory_pda(&vm, &name);
 
@@ -48,7 +48,8 @@ pub fn vm_memory_init(
             AccountMeta::new_readonly(solana_program::sysvar::rent::id(), false),
         ],
         data: InitMemoryIx {
-            layout,
+            num_accounts: num_accounts as u32,
+            account_size: account_size as u16,
             name,
             vm_memory_bump,
         }

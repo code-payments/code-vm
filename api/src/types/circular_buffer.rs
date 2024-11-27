@@ -1,7 +1,5 @@
 use bytemuck::{Pod, Zeroable};
 
-use crate::types::ZeroCopy;
-
 #[repr(C, align(8))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct CircularBuffer<const N: usize, const M: usize> {
@@ -10,9 +8,6 @@ pub struct CircularBuffer<const N: usize, const M: usize> {
     pub num_items: u8,
     _padding: [u8; 6],
 }
-
-impl <const N: usize, const M: usize> 
-  ZeroCopy for CircularBuffer<N, M> {}
 
 unsafe impl <const N: usize, const M: usize> 
   Zeroable for CircularBuffer<N, M> {}

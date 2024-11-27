@@ -62,8 +62,10 @@ pub fn process_resize(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResul
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
     let memory = load_memory(vm_memory_info, vm_info)?;
 
-    let layout = MemoryLayout::try_from(memory.layout).unwrap();
-    let max_size = MemoryAccount::get_size_with_data(layout);
+    let capacity = memory.num_accounts as usize;
+    let account_size = memory.account_size as usize;
+
+    let max_size = MemoryAccount::get_size_with_data(capacity, account_size);
     check_condition(
         args.account_size as usize <= max_size,
         "account_size must be less than or equal to the maximum size for this type of memory account",

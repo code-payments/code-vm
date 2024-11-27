@@ -32,12 +32,13 @@ impl TestContext {
         }
     }
 
-    pub fn create_memory(&mut self, layout: MemoryLayout, name: &str) -> Pubkey {
+    pub fn create_memory(&mut self, capacity: usize, account_size: usize, name: &str) -> Pubkey {
         let (mem, _) = create_and_resize_memory(
             &mut self.svm,
             &self.payer,
             self.vm_address,
-            layout,
+            capacity,
+            account_size,
             name,
         );
         mem

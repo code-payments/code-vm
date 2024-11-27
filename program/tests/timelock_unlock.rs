@@ -10,8 +10,12 @@ fn run_unlock() {
     let (mut svm, payer, _mint_owner, _mint_pk, vm_address) =
         setup_svm_with_payer_and_vm(21);
 
+    let name = "test";
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
+
     let (vm_memory, _) =
-        create_and_resize_memory(&mut svm, &payer, vm_address, MemoryLayout::Timelock, "test");
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
 
     let (vta, vta_key) = 
         create_timelock(&mut svm, &payer, vm_address, vm_memory, 0);

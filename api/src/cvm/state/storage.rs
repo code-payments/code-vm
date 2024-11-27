@@ -32,11 +32,6 @@ impl StorageAccount {
         let data = &data[..Self::get_size()];
         Self::try_from_bytes(data).unwrap().clone()
     }
-
-    pub fn unpack_mut(data: &mut [u8]) -> &mut Self {
-        let data = &mut data[..Self::get_size()];
-        Self::try_from_bytes_mut(data).unwrap()
-    }
 }
 
 
