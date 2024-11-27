@@ -16,8 +16,8 @@ enum AccountType : u8 {
 };
 
 enum ItemState : u8 {
-    Empty = 0,
-    Allocated = 1,
+    Free = 0,
+    Used = 1,
 };
 
 enum AccountDataType : u8 {
@@ -50,20 +50,6 @@ struct SliceAllocator<T, auto N> {
     T data[N];
 };
 
-struct VirtualAccount {
-    AccountDataType type;
-
-    if (type == VirtualAccountType::Nonce) {
-        VirtualDurableNonce data;
-    }
-    else if (type == VirtualAccountType::Timelock) {
-        VirtualTimelockAccount data;
-    }
-    else if (type == VirtualAccountType::Relay) {
-        VirtualRelayAccount data;
-    }
-}
-
 struct VirtualTimelockAccount {
     Pubkey owner;
     Hash instance;
@@ -84,9 +70,29 @@ struct VirtualRelayAccount {
     Pubkey destination;
 };
 
-struct AccountData {
+struct VirtualAccount {
+    AccountDataType type;
+
+    if (type == AccountDataType::Nonce) {
+        VirtualDurableNonce data;
+    }
+    else if (type == AccountDataType::Timelock) {
+        VirtualTimelockAccount data;
+    }
+    else if (type == AccountDataType::Relay) {
+        VirtualRelayAccount data;
+    }
+};
+
+struct AccountDataHeader {
+    u8 version;
+    u16 account_size;
     u32 num_accounts;
-    SliceAllocator<VirtualAccount, num_accounts> allocator;
+};
+
+struct AccountData {
+    AccountDataHeader header;
+    SliceAllocator<VirtualAccount, header.num_accounts> allocator;
 };
 
 struct CodeVmAccount {
@@ -105,8 +111,6 @@ struct MemoryAccount {
     u8 name[MAX_NAME_LEN];
     u8 bump;
 
-    u8 version;
-    u16 account_size;
     AccountData data;
 };
 

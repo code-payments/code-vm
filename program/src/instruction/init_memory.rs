@@ -84,6 +84,7 @@ pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
     memory.bump = args.vm_memory_bump;
     memory.num_accounts = args.num_accounts as u32;
     memory.account_size = args.account_size as u16;
+    memory.version = 1;
 
     vm.advance_poh(CodeInstruction::InitMemoryIx, accounts, data);
 
