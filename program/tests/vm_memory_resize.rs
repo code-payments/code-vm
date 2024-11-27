@@ -10,7 +10,7 @@ fn run_mem_resize_test() {
         setup_svm_with_payer_and_vm(21);
 
     let name = "test";
-    let capacity = 32_000;
+    let capacity = 1000;
     let account_size = VirtualDurableNonce::LEN+1;
 
     let (vm_mem_address, _) =

@@ -91,7 +91,7 @@ impl MemoryAccount {
 
     pub fn get_capacity(&self) -> usize {
         match self.get_version() {
-            MemoryVersion::Legacy => 32_000,
+            MemoryVersion::Legacy => NUM_ACCOUNTS,
             MemoryVersion::V1 => {
                 let packed: &PackedInfoV1 = bytemuck::from_bytes(&self.packed_info);
                 packed.num_accounts as usize
@@ -103,9 +103,13 @@ impl MemoryAccount {
         match self.get_version() {
             MemoryVersion::Legacy => {
                 let packed: &PackedInfoLegacy = bytemuck::from_bytes(&self.packed_info);
+
+                // Values pulled from:
+                // https://github.com/code-payments/code-vm/blob/acf276fce3e6858aa70e40dc99c6905f9bd655b9/api/src/cvm/state/memory.rs#L30
+
                 match packed.layout {
-                    1 => VirtualDurableNonce::LEN + 1,
-                    2 => VirtualTimelockAccount::LEN + 1,
+                    1 => VirtualTimelockAccount::LEN + 1,
+                    2 => VirtualDurableNonce::LEN + 1,
                     3 => VirtualRelayAccount::LEN + 1,
                     _ => panic!("Invalid layout"),
                 }
