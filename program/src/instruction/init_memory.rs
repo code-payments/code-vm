@@ -79,12 +79,12 @@ pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
 
     let memory = vm_memory_info.to_account_mut::<MemoryAccount>(&code_vm_api::ID)?;
 
+    memory.version = 1;
     memory.name = args.name;
     memory.vm = vm_info.key.clone();
     memory.bump = args.vm_memory_bump;
-    memory.num_accounts = args.num_accounts as u32;
-    memory.account_size = args.account_size as u16;
-    memory.version = 1;
+    memory.set_account_size(args.account_size);
+    memory.set_num_accounts(args.num_accounts);
 
     vm.advance_poh(CodeInstruction::InitMemoryIx, accounts, data);
 

@@ -62,8 +62,8 @@ pub fn process_resize(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResul
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
     let memory = load_memory(vm_memory_info, vm_info)?;
 
-    let capacity = memory.num_accounts as usize;
-    let account_size = memory.account_size as usize;
+    let capacity = memory.get_capacity();
+    let account_size = memory.get_account_size();
 
     let max_size = MemoryAccount::get_size_with_data(capacity, account_size);
     check_condition(

@@ -24,8 +24,8 @@ fn run_mem_init_test() {
     assert!(memory.vm == vm_address);
     assert!(memory.bump == vm_mem_bump);
     assert!(memory.version == 1);
-    assert!(memory.num_accounts == capacity as u32);
-    assert!(memory.account_size == account_size as u16);
+    assert!(memory.get_capacity() == capacity);
+    assert!(memory.get_account_size() == account_size);
     assert!(memory.name == name);
 
     let vm = get_vm_account(&svm, vm_address);
