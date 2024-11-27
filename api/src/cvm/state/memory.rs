@@ -16,8 +16,8 @@ pub struct MemoryAccount {
     pub bump: u8,
 
     pub version: u8,
-    pub num_accounts: u32,
     pub account_size: u16,
+    pub num_accounts: u32,
 
     // Data starts at 72 bytes into the account
     _data: PhantomData<[u8]>,

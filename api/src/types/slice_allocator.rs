@@ -56,7 +56,7 @@ impl<'a> SliceAllocator<'a> {
         self.state.len()
     }
 
-    pub fn read(&self, item_index: usize, size: usize) -> Option<&[u8]> {
+    fn read(&self, item_index: usize, size: usize) -> Option<&[u8]> {
         if item_index >= self.capacity() || size > self.item_size {
             return None;
         }
@@ -124,7 +124,7 @@ impl<'a> SliceAllocatorMut<'a> {
         self.state.len()
     }
 
-    pub fn read(&self, item_index: usize, size: usize) -> Option<&[u8]> {
+    fn read(&self, item_index: usize, size: usize) -> Option<&[u8]> {
         if item_index >= self.capacity() || size > self.item_size {
             return None;
         }
@@ -133,7 +133,7 @@ impl<'a> SliceAllocatorMut<'a> {
         Some(&self.data[item_start..item_start + size])
     }
 
-    pub fn write(&mut self, item_index: usize, data: &[u8]) -> ProgramResult {
+    fn write(&mut self, item_index: usize, data: &[u8]) -> ProgramResult {
         if item_index >= self.capacity() || data.len() > self.item_size {
             return Err(ProgramError::InvalidArgument);
         }

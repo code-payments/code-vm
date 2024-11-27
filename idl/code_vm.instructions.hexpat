@@ -130,7 +130,8 @@ struct InitVmArgs {
 
 struct InitMemoryArgs {
     u8 name[MAX_NAME_LEN];
-    u8 layout;
+    u32 num_accounts;
+    u16 account_size;
     u8 vm_memory_bump;
 };
 

@@ -29,8 +29,8 @@ pub struct MemoryAccount {
     pub name: [u8; MAX_NAME_LEN],
     pub bump: u8,
 
-    _padding: [u8; 6],
-    pub data: AccountData,
+    pub packed_info: [u8; 8],
+    //pub _data: PhantomData<[u8]>,
 }
 
 #[account]
