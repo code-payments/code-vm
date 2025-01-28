@@ -34,7 +34,7 @@ pub fn process_relay(
 ) -> ProgramResult {
 
     let vm = load_vm(ctx.vm_info)?;
-    let args = RelayOp::try_from_bytes(&data.data)?;
+    let args = RelayOp::try_from_bytes(&data.data)?.to_struct()?;
 
     check_condition(
         ctx.omnibus_info.is_some(),

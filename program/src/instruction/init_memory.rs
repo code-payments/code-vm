@@ -32,7 +32,7 @@ use steel::*;
     3. vm_memory_bump: u8   - The bump seed for the this memory account.
 */
 pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-    let args = InitMemoryIx::try_from_bytes(data)?;
+    let args = InitMemoryIx::try_from_bytes(data)?.to_struct()?;
     let [
         vm_authority_info,
         vm_info,

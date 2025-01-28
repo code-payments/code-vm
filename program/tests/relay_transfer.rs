@@ -80,13 +80,13 @@ fn run_relay_transfer() {
     // Run the relay to vta_a transfer
     let mem_indices = vec![vta_a_index, vra_index]; // dst, vra
     let mem_banks = vec![1, 2]; // mem_b, mem_c
-    let data = RelayOp {
+    let data = RelayOp::from_struct( 
+        ParsedRelayOp {
         amount,
         transcript,
         recent_root,
         commitment,
-    }
-    .to_bytes();
+    }).to_bytes();
 
     ctx.exec_relay_op(
         &relay_ctx,
@@ -110,11 +110,11 @@ fn run_relay_transfer() {
     // Now, we're going to run the conditional transfer from vta_b to the relay
     let mem_indices = vec![vdn_index, vta_b_index, vra_index];
     let mem_banks = vec![0, 1, 2];
-    let data = ConditionalTransferOp {
+    let data = ConditionalTransferOp::from_struct(
+        ParsedConditionalTransferOp {
         amount,
         signature: conditional_sig,
-    }
-    .to_bytes();
+    }).to_bytes();
 
     ctx.exec_conditional_transfer(
         relay_ctx.relay.treasury.vault,

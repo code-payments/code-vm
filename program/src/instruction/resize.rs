@@ -37,7 +37,7 @@ use steel::*;
 */
 pub fn process_resize(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
 
-    let args = ResizeMemoryIx::try_from_bytes(data)?;
+    let args = ResizeMemoryIx::try_from_bytes(data)?.to_struct()?;
     let [
         vm_authority_info,
         vm_info,

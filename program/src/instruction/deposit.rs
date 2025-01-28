@@ -41,7 +41,7 @@ use steel::*;
     1. signature: [u8; 64]  - A signature of the current account state signed by the VM authority.
 */
 pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-    let args = DepositIx::try_from_bytes(data)?;
+    let args = DepositIx::try_from_bytes(data)?.to_struct()?;
     let [
         vm_authority_info,
         vm_info,

@@ -47,12 +47,13 @@ pub fn vm_memory_init(
             AccountMeta::new_readonly(system_program::id(), false),
             AccountMeta::new_readonly(solana_program::sysvar::rent::id(), false),
         ],
-        data: InitMemoryIx {
+        data: InitMemoryIx::from_struct(
+            ParsedInitMemoryIx {
             num_accounts: num_accounts as u32,
             account_size: account_size as u16,
             name,
             vm_memory_bump,
-        }
+        })
         .to_bytes(),
     }
 }
@@ -72,7 +73,10 @@ pub fn vm_memory_resize(
             AccountMeta::new_readonly(system_program::id(), false),
             AccountMeta::new_readonly(solana_program::sysvar::rent::id(), false),
         ],
-        data: ResizeMemoryIx { account_size }.to_bytes(),
+        data: ResizeMemoryIx::from_struct(
+            ParsedResizeMemoryIx {
+            account_size,
+        }).to_bytes(),
     }
 }
 
@@ -112,7 +116,10 @@ pub fn system_nonce_init(
             AccountMeta::new(vm_memory, false),
             AccountMeta::new_readonly(virtual_account_owner, false),
         ],
-        data: InitNonceIx { account_index }.to_bytes(),
+        data: InitNonceIx::from_struct(
+            ParsedInitNonceIx {
+            account_index,
+        }).to_bytes(),
     }
 }
 
@@ -134,13 +141,13 @@ pub fn system_timelock_init(
             AccountMeta::new(vm_memory, false),
             AccountMeta::new_readonly(virtual_account_owner, false),
         ],
-        data: InitTimelockIx {
+        data: InitTimelockIx::from_struct( 
+            ParsedInitTimelockIx {
             account_index,
             virtual_timelock_bump,
             virtual_vault_bump,
             unlock_pda_bump,
-        }
-        .to_bytes(),
+        }).to_bytes(),
     }
 }
 
@@ -160,11 +167,11 @@ pub fn system_account_compress(
             AccountMeta::new(vm_memory, false),
             AccountMeta::new(vm_storage, false),
         ],
-        data: CompressIx {
+        data: CompressIx::from_struct(
+            ParsedCompressIx {
             account_index,
             signature,
-        }
-        .to_bytes(),
+        }).to_bytes(),
     }
 }
 
@@ -313,12 +320,12 @@ pub fn timelock_deposit_from_pda(
             AccountMeta::new(omnibus, false),
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
-        data: DepositIx {
+        data: DepositIx::from_struct(
+            ParsedDepositIx{
             account_index,
             amount,
             bump,
-        }
-        .to_bytes(),
+        }).to_bytes(),
     }
 }
 

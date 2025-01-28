@@ -33,7 +33,7 @@ pub fn process_external_relay(
     data: &ExecIxData,
 ) -> ProgramResult {
 
-    let args = ExternalRelayOp::try_from_bytes(&data.data)?;
+    let args = ExternalRelayOp::try_from_bytes(&data.data)?.to_struct()?;
 
     check_condition(
         ctx.external_address_info.is_some(),
