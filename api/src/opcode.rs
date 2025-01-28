@@ -65,14 +65,13 @@ impl WithdrawOp {
     // Since WithdrawOp only contains byte arrays, no conversion methods are necessary.
 }
 
-
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct RelayOp { // relay_to_internal
     pub amount: [u8; 8],       // Pack u64 as [u8; 8]
-    pub transcript: Hash,      // Assuming Hash is [u8; 32], no change needed
-    pub recent_root: Hash,     // Assuming Hash is [u8; 32], no change needed
-    pub commitment: Pubkey,    // Assuming Pubkey is [u8; 32], no change needed
+    pub transcript: Hash,      // no packing needed
+    pub recent_root: Hash,     // no packing needed
+    pub commitment: Pubkey,    // no packing needed
 }
 
 impl RelayOp {
