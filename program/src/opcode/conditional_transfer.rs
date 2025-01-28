@@ -31,7 +31,7 @@ use crate::ExecContext;
 */
 pub fn process_conditional_transfer(ctx: &ExecContext, data: &ExecIxData) -> ProgramResult {
     let vm = load_vm(ctx.vm_info)?;
-    let args = ConditionalTransferOp::try_from_bytes(&data.data)?;
+    let args = ConditionalTransferOp::try_from_bytes(&data.data)?.to_struct()?;
 
     check_condition(
         ctx.omnibus_info.is_some(),

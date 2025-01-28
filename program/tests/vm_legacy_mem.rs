@@ -77,7 +77,9 @@ fn run_transfer_on_legacy_memory() {
     // Prepare the opcode data
     let mem_indices = vec![vdn_ctx.index, vta_a_ctx.index, vta_b_ctx.index];
     let mem_banks = vec![0, 1, 1];
-    let data = TransferOp { amount, signature }.to_bytes();
+    let data = TransferOp::from_struct(
+        ParsedTransferOp { amount, signature }
+    ).to_bytes();
 
     // Execute the opcode
     ctx.exec_opcode(

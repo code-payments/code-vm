@@ -34,7 +34,7 @@ use steel::*;
     1. signature: [u8; 64]  - A signature of the current account state signed by the VM authority.
 */
 pub fn process_compress(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-    let args = CompressIx::try_from_bytes(data)?;
+    let args = CompressIx::try_from_bytes(data)?.to_struct()?;
     let [vm_authority_info, vm_info, vm_memory_info, vm_storage_info] = accounts else {
         return Err(ProgramError::NotEnoughAccountKeys);
     };

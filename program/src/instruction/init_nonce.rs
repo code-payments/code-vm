@@ -28,7 +28,7 @@ use steel::*;
     0. nonce_bump: u8      - The bump seed for the nonce account address.
 */
 pub fn process_init_nonce(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-    let args = InitNonceIx::try_from_bytes(data)?;
+    let args = InitNonceIx::try_from_bytes(data)?.to_struct()?;
     let [
         vm_authority_info,
         vm_info,

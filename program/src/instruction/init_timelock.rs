@@ -34,7 +34,7 @@ use steel::*;
 */
 pub fn process_init_timelock(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
 
-    let args = InitTimelockIx::try_from_bytes(data)?;
+    let args = InitTimelockIx::try_from_bytes(data)?.to_struct()?;
     let [
         vm_authority_info,
         vm_info,

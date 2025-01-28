@@ -40,7 +40,9 @@ fn run_transfer() {
     // Prepare the opcode data
     let mem_indices = vec![vdn_ctx.index, vta_a_ctx.index, vta_b_ctx.index];
     let mem_banks = vec![0, 1, 1];
-    let data = TransferOp { amount, signature }.to_bytes();
+    let data = TransferOp::from_struct(
+        ParsedTransferOp { amount, signature }
+    ).to_bytes();
 
     // Execute the opcode
     ctx.exec_opcode(
@@ -94,7 +96,9 @@ fn run_transfer_to_external() {
     // Prepare the opcode data
     let mem_indices = vec![vdn_ctx.index, vta_a_ctx.index];
     let mem_banks = vec![0, 1];
-    let data = ExternalTransferOp { amount, signature }.to_bytes();
+    let data = ExternalTransferOp::from_struct( 
+        ParsedExternalTransferOp { amount, signature }
+    ).to_bytes();
 
     // Execute the opcode
     ctx.exec_opcode(

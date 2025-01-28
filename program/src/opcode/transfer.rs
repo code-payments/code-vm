@@ -32,7 +32,7 @@ pub fn process_transfer(
 ) -> ProgramResult {
 
     let vm = load_vm(ctx.vm_info)?;
-    let args = TransferOp::try_from_bytes(&data.data)?;
+    let args = TransferOp::try_from_bytes(&data.data)?.to_struct()?;
 
     let mem_indicies = &data.mem_indicies;
     let mem_banks = &data.mem_banks;

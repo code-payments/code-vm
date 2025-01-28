@@ -50,7 +50,7 @@ instruction!(CodeInstruction, DepositIx);
 instruction!(CodeInstruction, WithdrawIx);
 instruction!(CodeInstruction, UnlockIx);
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct InitVmIx {
     pub lock_duration: u8,
@@ -58,29 +58,78 @@ pub struct InitVmIx {
     pub vm_omnibus_bump: u8,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct InitMemoryIx {
+    pub name: [u8; MAX_NAME_LEN],
+    pub num_accounts: [u8; 4],       // Pack u32 as [u8; 4]
+    pub account_size: [u8; 2],       // Pack u16 as [u8; 2]
+    pub vm_memory_bump: u8,
+}
+
+impl InitMemoryIx {
+    /// Converts the byte arrays to their respective data types.
+    pub fn to_struct(&self) -> Result<ParsedInitMemoryIx, std::io::Error> {
+        Ok(ParsedInitMemoryIx {
+            name: self.name,
+            num_accounts: u32::from_le_bytes(self.num_accounts),
+            account_size: u16::from_le_bytes(self.account_size),
+            vm_memory_bump: self.vm_memory_bump,
+        })
+    }
+
+    /// Creates `InitMemoryIx` from the parsed struct by converting data types back to byte arrays.
+    pub fn from_struct(parsed: ParsedInitMemoryIx) -> Self {
+        InitMemoryIx {
+            name: parsed.name,
+            num_accounts: parsed.num_accounts.to_le_bytes(),
+            account_size: parsed.account_size.to_le_bytes(),
+            vm_memory_bump: parsed.vm_memory_bump,
+        }
+    }
+}
+
+pub struct ParsedInitMemoryIx {
     pub name: [u8; MAX_NAME_LEN],
     pub num_accounts: u32,
     pub account_size: u16,
     pub vm_memory_bump: u8,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct ResizeMemoryIx {
+    pub account_size: [u8; 4], // Pack u32 as [u8; 4]
+}
+
+impl ResizeMemoryIx {
+    /// Converts the byte array to u32.
+    pub fn to_struct(&self) -> Result<ParsedResizeMemoryIx, std::io::Error> {
+        Ok(ParsedResizeMemoryIx {
+            account_size: u32::from_le_bytes(self.account_size),
+        })
+    }
+
+    /// Creates `ResizeMemoryIx` from the parsed struct by converting u32 to byte array.
+    pub fn from_struct(parsed: ParsedResizeMemoryIx) -> Self {
+        ResizeMemoryIx {
+            account_size: parsed.account_size.to_le_bytes(),
+        }
+    }
+}
+
+pub struct ParsedResizeMemoryIx {
     pub account_size: u32,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct InitStorageIx {
     pub name: [u8; MAX_NAME_LEN],
     pub vm_storage_bump: u8,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct ExecIx {
     // Dynamically sized data, not supported by Pod (or steel)
@@ -111,29 +160,95 @@ pub struct ExecIxData {
     pub data: Vec<u8>,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct InitNonceIx {
+    pub account_index: [u8; 2], // Pack u16 as [u8; 2]
+}
+
+impl InitNonceIx {
+    pub fn to_struct(&self) -> Result<ParsedInitNonceIx, std::io::Error> {
+        Ok(ParsedInitNonceIx {
+            account_index: u16::from_le_bytes(self.account_index),
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedInitNonceIx) -> Self {
+        InitNonceIx {
+            account_index: parsed.account_index.to_le_bytes(),
+        }
+    }
+}
+
+pub struct ParsedInitNonceIx {
     pub account_index: u16,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct InitTimelockIx {
+    pub account_index: [u8; 2], // Pack u16 as [u8; 2]
+    pub virtual_timelock_bump: u8,
+    pub virtual_vault_bump: u8,
+    pub unlock_pda_bump: u8,
+}
+
+impl InitTimelockIx {
+    pub fn to_struct(&self) -> Result<ParsedInitTimelockIx, std::io::Error> {
+        Ok(ParsedInitTimelockIx {
+            account_index: u16::from_le_bytes(self.account_index),
+            virtual_timelock_bump: self.virtual_timelock_bump,
+            virtual_vault_bump: self.virtual_vault_bump,
+            unlock_pda_bump: self.unlock_pda_bump,
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedInitTimelockIx) -> Self {
+        InitTimelockIx {
+            account_index: parsed.account_index.to_le_bytes(),
+            virtual_timelock_bump: parsed.virtual_timelock_bump,
+            virtual_vault_bump: parsed.virtual_vault_bump,
+            unlock_pda_bump: parsed.unlock_pda_bump,
+        }
+    }
+}
+
+pub struct ParsedInitTimelockIx {
     pub account_index: u16,
     pub virtual_timelock_bump: u8,
     pub virtual_vault_bump: u8,
     pub unlock_pda_bump: u8,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct CompressIx {
+    pub account_index: [u8; 2], // Pack u16 as [u8; 2]
+    pub signature: Signature,
+}
+
+impl CompressIx {
+    pub fn to_struct(&self) -> Result<ParsedCompressIx, std::io::Error> {
+        Ok(ParsedCompressIx {
+            account_index: u16::from_le_bytes(self.account_index),
+            signature: self.signature,
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedCompressIx) -> Self {
+        CompressIx {
+            account_index: parsed.account_index.to_le_bytes(),
+            signature: parsed.signature,
+        }
+    }
+}
+
+pub struct ParsedCompressIx {
     pub account_index: u16,
     pub signature: Signature,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct DecompressIx {
     // Dynamically sized data, not supported by Pod (or steel)
@@ -164,7 +279,7 @@ pub struct DecompressIxData {
     pub signature: Signature,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct InitRelayIx {
     pub name: [u8; MAX_NAME_LEN],
@@ -172,31 +287,54 @@ pub struct InitRelayIx {
     pub relay_vault_bump: u8,
 }
 
-
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct SnapshotIx { // SaveRecentRoot
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct DepositIx {
+    pub account_index: [u8; 2], // Pack u16 as [u8; 2]
+    pub amount: [u8; 8],        // Pack u64 as [u8; 8]
+    pub bump: u8,
+}
+
+impl DepositIx {
+    pub fn to_struct(&self) -> Result<ParsedDepositIx, std::io::Error> {
+        Ok(ParsedDepositIx {
+            account_index: u16::from_le_bytes(self.account_index),
+            amount: u64::from_le_bytes(self.amount),
+            bump: self.bump,
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedDepositIx) -> Self {
+        DepositIx {
+            account_index: parsed.account_index.to_le_bytes(),
+            amount: parsed.amount.to_le_bytes(),
+            bump: parsed.bump,
+        }
+    }
+}
+
+pub struct ParsedDepositIx {
     pub account_index: u16,
     pub amount: u64,
     pub bump: u8,
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct InitUnlockIx {
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct UnlockIx {
 }
 
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct WithdrawIx {
     _data: PhantomData<WithdrawIxData>,
