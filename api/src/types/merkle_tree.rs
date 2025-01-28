@@ -97,10 +97,14 @@ impl<const N: usize> MerkleTree<N> {
     }
 
     pub fn try_remove(&mut self, proof: &[Hash], val: Hash) -> ProgramResult {
+        self.check_length(proof)?;
+
         self.try_replace_leaf(proof, Self::as_leaf(val), self.get_empty_leaf())
     }
 
     pub fn try_replace(&mut self, proof: &[Hash], original_val: Hash, new_val: Hash) -> ProgramResult {
+        self.check_length(proof)?;
+
         let original_leaf = Self::as_leaf(original_val);
         let new_leaf = Self::as_leaf(new_val);
 
@@ -108,6 +112,8 @@ impl<const N: usize> MerkleTree<N> {
     }
 
     pub fn try_replace_leaf(&mut self, proof: &[Hash], original_leaf: Hash, new_leaf: Hash) -> ProgramResult {
+        self.check_length(proof)?;
+
         let original_path = MerkleTree::<N>::compute_path(proof, original_leaf);
         let new_path = MerkleTree::<N>::compute_path(proof, new_leaf);
 
@@ -128,11 +134,19 @@ impl<const N: usize> MerkleTree<N> {
     }
 
     pub fn contains(&self, proof: &[Hash], val: Hash) -> bool {
+        if let Err(_) = self.check_length(proof) {
+            return false;
+        }
+
         let leaf = Self::as_leaf(val);
         self.contains_leaf(proof, leaf)
     }
 
     pub fn contains_leaf(&self, proof: &[Hash], leaf: Hash) -> bool {
+        if let Err(_) = self.check_length(proof) {
+            return false;
+        }
+
         let root = self.get_root();
         Self::is_valid_leaf(proof, root, leaf)
     }
@@ -233,8 +247,14 @@ impl<const N: usize> MerkleTree<N> {
 
         proof
     }
-}
 
+    fn check_length(&self, proof: &[Hash]) -> Result<(), ProgramError> {
+        check_condition(
+            proof.len() == N,
+            "merkle proof length does not match tree depth",
+        )
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -383,5 +403,15 @@ mod tests {
         assert!(tree.contains(&val2_proof, val2));
         assert!(tree.contains(&val3_proof, val3));
 
+        // Invalid Proof Length
+        let invalid_proof_short = &val1_proof[..2]; // Shorter than depth
+        let invalid_proof_long = [&val1_proof[..], &val1_proof[..]].concat(); // Longer than depth
+
+        assert!(!tree.contains(&invalid_proof_short, val1));
+        assert!(!tree.contains(&invalid_proof_long, val1));
+
+        // Empty Proof
+        let empty_proof: Vec<Hash> = Vec::new();
+        assert!(!tree.contains(&empty_proof, val1));
     }
 }
