@@ -57,19 +57,25 @@ pub fn process_init_timelock(accounts: &[AccountInfo<'_>], data: &[u8]) -> Progr
     let owner = virtual_account_owner_info.key.clone();
     let nonce = vm.get_current_poh();
 
-    let timelock_address = pdas::create_virtual_timelock_address(
+    let (timelock_address, timelock_bump) = pdas::find_virtual_timelock_address(
         &vm.get_mint(), 
         &vm.get_authority(), 
         &owner, 
         vm.get_lock_duration(), 
-        args.virtual_timelock_bump,
     );
 
-    let unlock_address = pdas::create_unlock_address(
+    if args.virtual_timelock_bump != timelock_bump {
+        return Err(ProgramError::InvalidArgument);
+    }
+
+    let (unlock_address, unlock_bump) = pdas::find_unlock_address(
         &owner, 
         &timelock_address, 
-        vm_info.key, 
-        args.unlock_pda_bump);
+        vm_info.key);
+    
+    if args.unlock_pda_bump != unlock_bump {
+        return Err(ProgramError::InvalidArgument);
+    }
 
     // We could technically require the user to provide the withdraw_bump,
     // however, that would make using this instruction more cumbersome since the
