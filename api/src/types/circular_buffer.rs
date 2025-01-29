@@ -35,7 +35,13 @@ impl<const N: usize, const M: usize> CircularBuffer<N, M> {
     }
 
     pub fn find_index(&self, item: &[u8]) -> Option<usize> {
-        self.items.iter().position(|x| x.eq(item))
+        for i in 0..self.num_items as usize {
+            let idx = (self.offset as usize + i) % N;
+            if self.items[idx] == item {
+                return Some(i);
+            }
+        }
+        None
     }
 
     pub fn contains(&self, item: &[u8]) -> bool {
@@ -79,13 +85,11 @@ impl<const N: usize, const M: usize> CircularBuffer<N, M> {
         }
 
         let index = if self.num_items < N as u8 {
-            self.num_items as u8 - 1
+            self.num_items - 1
+        } else if self.offset == 0 {
+            N as u8 - 1
         } else {
-            if self.offset == 0 {
-                N as u8 - 1
-            } else {
-                self.offset - 1
-            }
+            self.offset - 1
         };
 
         Some(&self.items[index as usize])
@@ -256,5 +260,29 @@ mod tests {
         assert!(buffer.get(0).unwrap()[..8].eq(&item2));
         assert!(buffer.get(1).unwrap()[..16].eq(&item3));
         assert!(buffer.get(2).unwrap()[..32].eq(&item4));
+    }
+
+    #[test]
+    fn test_ignore_empty_items() {
+        let mut buffer = TestBuffer::new();
+        let zero_item = [0u8; 32];
+        assert!(!buffer.contains(&zero_item));
+
+        let item1 = [1u8; 32];
+        buffer.push(&item1);
+        assert!(!buffer.contains(&zero_item));
+
+        buffer.push(&zero_item);
+        assert!(buffer.contains(&zero_item));
+
+        let item2 = [2u8; 32];
+        let item3 = [3u8; 32];
+        let item4 = [4u8; 32];
+
+        buffer.push(&item2);
+        buffer.push(&item3);
+        buffer.push(&item4);
+
+        assert!(!buffer.contains(&zero_item));
     }
 }
