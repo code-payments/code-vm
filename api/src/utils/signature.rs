@@ -3,7 +3,7 @@ use sha2::{ Digest, Sha512 };
 use std::mem::MaybeUninit;
 use curve25519_dalek::scalar::Scalar;
 use solana_curve25519::{
-    edwards::{ add_edwards, multiply_edwards, validate_edwards, PodEdwardsPoint },
+    edwards::{ subtract_edwards, multiply_edwards, validate_edwards, PodEdwardsPoint },
     scalar::PodScalar,
 };
 
@@ -14,12 +14,6 @@ const ED25519_PUBKEY_LEN: usize = 32;
 const G: [u8; 32] = [
     88, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 
     102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102
-];
-
-/// Scalar value -1
-const NEGATIVE_ONE: [u8; 32] = [
-    236, 211, 245, 92, 26, 99, 18, 88, 214, 156, 247, 162, 222, 249, 222, 20, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16
 ];
 
 /// Verify an ed25519 signature.
@@ -72,23 +66,20 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
 
     let f = h.finalize();
     let k = Scalar::from_bytes_mod_order_wide(f.as_ref());
-    let minus_A = multiply_edwards(&PodScalar(NEGATIVE_ONE), &pubkey_point).unwrap();
 
     let k_bytes = k.to_bytes();
-    let minus_A_bytes = minus_A.0;
+    let pubkey_bytes = pubkey_point.0;
     let sig_s_bytes = sig_s.to_bytes();
 
     let a = PodScalar(k_bytes);
-    let A = PodEdwardsPoint(minus_A_bytes);
     let b = PodScalar(sig_s_bytes);
     let B = PodEdwardsPoint(G);
 
-    // R = aA + bB
-    // R = (k * minus_A) + (sig_s * G)
+    // R = sB - kA
 
-    let aA = multiply_edwards(&a, &A).unwrap();
-    let bB = multiply_edwards(&b, &B).unwrap();
-    let R = add_edwards(&aA, &bB).unwrap();
+    let sB = multiply_edwards(&b, &B).unwrap();
+    let kA = multiply_edwards(&a, &PodEdwardsPoint(pubkey_bytes)).unwrap();
+    let R = subtract_edwards(&sB, &kA).unwrap();
 
     let expected_R = sig_R.0;
     let computed_R = R.0;
@@ -164,7 +155,6 @@ pub fn scalar_from_u64(n: u64) -> PodScalar {
 mod tests {
     use super::*;
     use curve25519_dalek::constants;
-    use std::ops::Neg;
 
     #[test]
     fn test_base_point() {
@@ -172,14 +162,6 @@ mod tests {
         let compressed = base_point.compress();
         let bytes = compressed.to_bytes();
         assert_eq!(bytes, G);
-    }
-
-    #[test]
-    fn test_neg_one() {
-        let one = Scalar::ONE;
-        let neg_one = one.neg();
-        let neg_one_bytes = neg_one.to_bytes();
-        assert_eq!(neg_one_bytes, NEGATIVE_ONE);
     }
 
     #[test]
