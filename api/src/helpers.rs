@@ -74,6 +74,10 @@ pub fn check_readonly(account: &AccountInfo) -> ProgramResult {
 }
 
 pub fn check_uninitialized_pda(account: &AccountInfo, seeds: &[&[u8]], bump: u8, program_id: &Pubkey) -> ProgramResult {
+    if !account.owner.eq(&system_program::ID) {
+        return Err(ProgramError::InvalidAccountData);
+    }
+
     account.is_empty()?.is_writable()?.has_seeds(seeds, bump, program_id)?;
     Ok(())
 }
