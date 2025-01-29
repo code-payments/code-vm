@@ -1,7 +1,7 @@
 use steel::*;
-use sha2::{ Digest, Sha512 };
 use std::mem::MaybeUninit;
 use curve25519_dalek::scalar::Scalar;
+use solana_ed25519_sha512::hash;
 use solana_curve25519::{
     edwards::{ subtract_edwards, multiply_edwards, validate_edwards, PodEdwardsPoint },
     scalar::PodScalar,
@@ -59,13 +59,20 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
         return Err(ProgramError::InvalidAccountOwner);
     }
 
-    let mut h: Sha512 = Sha512::new(); // <- Expensive, no system calls available yet.
-    h.update(sig_R.0);
-    h.update(&pubkey);
-    h.update(&message);
+    // let mut h: Sha512 = Sha512::new(); // <- Expensive, no system calls available yet.
+    // h.update(sig_R.0);
+    // h.update(&pubkey);
+    // h.update(&message);
+    // let f = h.finalize();
 
-    let f = h.finalize();
-    let k = Scalar::from_bytes_mod_order_wide(f.as_ref());
+    // Optimized version of the above (single-round SHA-512)
+    let f = hash(
+        &sig_R.0,
+        pubkey.try_into().unwrap(),
+        message.try_into().unwrap()
+    );
+
+    let k = Scalar::from_bytes_mod_order_wide(&f);
 
     let k_bytes = k.to_bytes();
     let pubkey_bytes = pubkey_point.0;

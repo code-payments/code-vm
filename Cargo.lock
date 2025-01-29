@@ -660,6 +660,7 @@ dependencies = [
  "num_enum 0.7.3",
  "sha2 0.10.8",
  "solana-curve25519",
+ "solana-ed25519-sha512",
  "solana-program 1.18.26",
  "solana-sdk",
  "spl-token 4.0.3",
@@ -2587,6 +2588,12 @@ dependencies = [
  "solana-program 2.0.13",
  "thiserror",
 ]
+
+[[package]]
+name = "solana-ed25519-sha512"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8320a8d89009ee71e46378ba17811357f2702b1d57a91748ed369d72cfe6c85c"
 
 [[package]]
 name = "solana-frozen-abi"
