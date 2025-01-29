@@ -3,7 +3,7 @@ use sha2::{ Digest, Sha512 };
 use std::mem::MaybeUninit;
 use curve25519_dalek::scalar::Scalar;
 use solana_curve25519::{
-    edwards::{ add_edwards, multiply_edwards, PodEdwardsPoint },
+    edwards::{ add_edwards, multiply_edwards, validate_edwards, PodEdwardsPoint },
     scalar::PodScalar,
 };
 
@@ -51,6 +51,17 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
     let sig_s = Scalar::from_canonical_bytes(sig_upper).unwrap();
 
     if is_small_order(&sig_R) || is_small_order(&pubkey_point) {
+        return Err(ProgramError::InvalidAccountOwner);
+    }
+
+    // Note, the point validation below is optional. The internal
+    // PodEdwardsPoint decompress logic is already doing this check. 
+    // But, this makes it explicit in case the internal logic changes.
+
+    // (Remove this check if CU usage is a concern)
+    let pubkey_on_curve = validate_edwards(&pubkey_point);
+    let sig_R_on_curve = validate_edwards(&sig_R);
+    if !pubkey_on_curve || !sig_R_on_curve {
         return Err(ProgramError::InvalidAccountOwner);
     }
 
