@@ -46,6 +46,18 @@ pub fn get_unlock_state(svm: &LiteSVM, unlock_address: Pubkey) -> UnlockStateAcc
     UnlockStateAccount::unpack(&account.data)
 }
 
+pub fn has_virtual_account(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> bool {
+    let info = svm.get_account(&vm_memory).unwrap();
+    let mem_account = MemoryAccount::unpack(&info.data);
+    let capacity = mem_account.get_capacity();
+    let max_item_size = mem_account.get_account_size();
+
+    let offset = MemoryAccount::get_size();
+    let data = info.data.split_at(offset).1;
+    let mem = SliceAllocator::try_from_slice(data, capacity, max_item_size).unwrap();
+    mem.has_item(account_index)
+}
+
 pub fn get_virtual_account_data(svm: &LiteSVM, vm_memory: Pubkey, account_index: u16) -> Option<Vec<u8>> {
     let info = svm.get_account(&vm_memory).unwrap();
     let mem_account = MemoryAccount::unpack(&info.data);

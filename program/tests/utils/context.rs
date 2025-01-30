@@ -16,9 +16,9 @@ pub struct TestContext {
 }
 
 impl TestContext {
-    pub fn new(param: u8) -> Self {
+    pub fn new(lock_duration: u8) -> Self {
         let (svm, payer, mint_owner, mint_pk, vm_address) =
-            setup_svm_with_payer_and_vm(param);
+            setup_svm_with_payer_and_vm(lock_duration);
 
         let vm = get_vm_account(&svm, vm_address);
 
@@ -230,6 +230,14 @@ impl TestContext {
 
     pub fn get_virtual_timelock(&self, mem: Pubkey, index: u16) -> VirtualTimelockAccount {
         get_virtual_timelock(&self.svm, mem, index)
+    }
+
+    pub fn has_virtual_account(&self, mem: Pubkey, index: u16) -> bool {
+        has_virtual_account(&self.svm, mem, index)
+    }
+
+    pub fn get_ata_balance(&self, ata: Pubkey) -> u64 {
+        get_ata_balance(&self.svm, &ata)
     }
 }
 

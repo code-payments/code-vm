@@ -69,6 +69,8 @@ pub fn process_exec(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult 
 
         Opcode::ConditionalTransferOp  => process_conditional_transfer(&ctx, &args),
 
+        Opcode::AirdropOp              => process_airdrop(&ctx, &args),
+
         _ => Err(ProgramError::InvalidInstructionData),
     }?;
 
