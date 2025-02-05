@@ -3,7 +3,6 @@ name = "code-vm-program"
 description = "Purpose built VM for reduced fees on Solana"
 version = "0.2.0"
 edition = "2021"
-build = "build.rs"
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -22,7 +21,6 @@ solana-program.workspace = true
 steel.workspace = true
 spl-token.workspace = true
 spl-associated-token-account.workspace = true
-solana-include-idl = "0.1"
 
 [dev-dependencies]
 rand = "0.8.5"
@@ -31,6 +29,3 @@ litesvm = "0.2.1"
 litesvm-token = "0.2.1"
 base64 = "0.13.0"
 pretty-hex = "0.4.1"
-
-[build-dependencies]
-solana-include-idl = { version = "0.1", features = ["shrink"] }
