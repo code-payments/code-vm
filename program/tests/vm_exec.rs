@@ -21,8 +21,15 @@ fn run_transfer() {
     // Create durable nonce account
     let vdn_ctx = ctx.create_durable_nonce_account(mem_a, 0);
 
+    // -- 1) Deposit tokens into `vta_a_ctx` so we have something to send
+    let deposit_amount = 100;
+    ctx.deposit_tokens_to_timelock(mem_b, &vta_a_ctx, deposit_amount)
+        .unwrap();
+
+    // -- 2) Set a non-zero transfer amount
+    let amount = 42;
+
     // Create the transfer message and signature
-    let amount = 0; // Sending 0 tokens to keep the test simple
     let hash = create_transfer_message(
         &ctx.vm,
         &vta_a_ctx.account,
@@ -40,11 +47,9 @@ fn run_transfer() {
     // Prepare the opcode data
     let mem_indices = vec![vdn_ctx.index, vta_a_ctx.index, vta_b_ctx.index];
     let mem_banks = vec![0, 1, 1];
-    let data = TransferOp::from_struct(
-        ParsedTransferOp { amount, signature }
-    ).to_bytes();
+    let data = TransferOp::from_struct(ParsedTransferOp { amount, signature }).to_bytes();
 
-    // Execute the opcode
+    // -- 3) Execute the transfer opcode
     ctx.exec_opcode(
         [Some(mem_a), Some(mem_b), None, None],
         None, // vm_omnibus
@@ -57,6 +62,12 @@ fn run_transfer() {
         mem_banks,
     )
     .unwrap();
+
+    // -- 4) Verify final balances
+    let src_vta = ctx.get_virtual_timelock(mem_b, vta_a_ctx.index);
+    let dst_vta = ctx.get_virtual_timelock(mem_b, vta_b_ctx.index);
+    assert_eq!(src_vta.balance, deposit_amount - amount);
+    assert_eq!(dst_vta.balance, amount);
 }
 
 #[test]
@@ -75,10 +86,17 @@ fn run_transfer_to_external() {
     let vdn_ctx = ctx.create_durable_nonce_account(mem_a, 0);
 
     // Prepare the destination pubkey
-    let dst_pubkey = ctx.vm.omnibus.vault; // Self send (to keep things simple)
+    let dst_pubkey = ctx.vm.omnibus.vault; // e.g. the VM's omnibus vault
+
+    // -- 1) Deposit tokens into `vta_a_ctx`
+    let deposit_amount = 50;
+    ctx.deposit_tokens_to_timelock(mem_b, &vta_a_ctx, deposit_amount)
+        .unwrap();
+
+    // -- 2) Set a non-zero transfer amount
+    let amount = 10;
 
     // Create the transfer message and signature
-    let amount = 0; // Sending 0 tokens to keep the test simple
     let hash = create_transfer_message_to_external(
         &ctx.vm,
         &vta_a_ctx.account,
@@ -96,11 +114,11 @@ fn run_transfer_to_external() {
     // Prepare the opcode data
     let mem_indices = vec![vdn_ctx.index, vta_a_ctx.index];
     let mem_banks = vec![0, 1];
-    let data = ExternalTransferOp::from_struct( 
+    let data = ExternalTransferOp::from_struct(
         ParsedExternalTransferOp { amount, signature }
     ).to_bytes();
 
-    // Execute the opcode
+    // -- 3) Execute the transfer opcode
     ctx.exec_opcode(
         [Some(mem_a), Some(mem_b), None, None],
         Some(ctx.vm.omnibus.vault), // vm_omnibus
@@ -113,6 +131,13 @@ fn run_transfer_to_external() {
         mem_banks,
     )
     .unwrap();
+
+    // -- 4) Verify final balance in the timelock
+    let src_vta = ctx.get_virtual_timelock(mem_b, vta_a_ctx.index);
+    assert_eq!(src_vta.balance, deposit_amount - amount);
+
+    // Optionally, if you want to verify the omnibus vault gained tokens,
+    // you'd look up the vault’s balance in the test context (implementation dependent).
 }
 
 #[test]
@@ -131,7 +156,12 @@ fn run_withdraw() {
     // Create durable nonce account
     let vdn_ctx = ctx.create_durable_nonce_account(mem_a, 0);
 
-    // Create the withdraw message and signature
+    // -- 1) Deposit tokens into vta_a
+    let deposit_amount = 100;
+    ctx.deposit_tokens_to_timelock(mem_b, &vta_a_ctx, deposit_amount)
+        .unwrap();
+
+    // Create the transfer message and signature
     let hash = create_withdraw_message(
         &ctx.vm,
         &vta_a_ctx.account,
@@ -150,7 +180,7 @@ fn run_withdraw() {
     let mem_banks = vec![0, 1, 1];
     let data = WithdrawOp { signature }.to_bytes();
 
-    // Execute the opcode
+    // -- 2) Execute the withdraw opcode
     ctx.exec_opcode(
         [Some(mem_a), Some(mem_b), None, None],
         None, // vm_omnibus
@@ -163,6 +193,14 @@ fn run_withdraw() {
         mem_banks,
     )
     .unwrap();
+
+    // -- 3) Verify final balances
+    let dst_vta = ctx.get_virtual_timelock(mem_b, vta_b_ctx.index);
+    assert_eq!(dst_vta.balance, deposit_amount);
+
+    // We expect the source account to be deleted after the withdraw
+    let src_exists = ctx.has_virtual_account(mem_b, vta_a_ctx.index);
+    assert_eq!(src_exists, false);
 }
 
 #[test]
@@ -181,7 +219,12 @@ fn run_withdraw_to_external() {
     let vdn_ctx = ctx.create_durable_nonce_account(mem_a, 0);
 
     // Prepare the destination pubkey
-    let dst_pubkey = ctx.vm.omnibus.vault; // Self send
+    let dst_pubkey = ctx.vm.omnibus.vault; // e.g. the VM's omnibus vault
+
+    // -- 1) Deposit tokens into `vta_a_ctx`
+    let deposit_amount = 100;
+    ctx.deposit_tokens_to_timelock(mem_b, &vta_a_ctx, deposit_amount)
+        .unwrap();
 
     // Create the withdraw message and signature
     let hash = create_withdraw_message_to_external(
@@ -202,7 +245,7 @@ fn run_withdraw_to_external() {
     let mem_banks = vec![0, 1];
     let data = ExternalWithdrawOp { signature }.to_bytes();
 
-    // Execute the opcode
+    // -- 2) Execute the withdraw-to-external opcode
     ctx.exec_opcode(
         [Some(mem_a), Some(mem_b), None, None],
         Some(ctx.vm.omnibus.vault), // vm_omnibus
@@ -215,4 +258,12 @@ fn run_withdraw_to_external() {
         mem_banks,
     )
     .unwrap();
+
+    // -- 3) Verify final balances
+
+    let src_exists = ctx.has_virtual_account(mem_b, vta_a_ctx.index);
+    assert_eq!(src_exists, false);
+
+    let dst_balance = ctx.get_ata_balance(dst_pubkey);
+    assert_eq!(dst_balance, deposit_amount);
 }

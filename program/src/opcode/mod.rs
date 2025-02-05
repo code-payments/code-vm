@@ -1,3 +1,4 @@
+mod airdrop;
 mod conditional_transfer;
 mod external_relay;
 mod external_transfer;
@@ -6,6 +7,7 @@ mod relay;
 mod transfer;
 mod withdraw;
 
+pub use airdrop::*;
 pub use conditional_transfer::*;
 pub use external_relay::*;
 pub use external_transfer::*;

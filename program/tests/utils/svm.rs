@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use code_vm_api::prelude::CodeInstruction;
 use solana_sdk::{pubkey::Pubkey, signature::Keypair, signer::Signer, transaction::Transaction};
 use litesvm::{types::{FailedTransactionMetadata, TransactionMetadata, TransactionResult}, LiteSVM};
-use litesvm_token::{CreateAssociatedTokenAccount, CreateMint, MintTo};
+use litesvm_token::{CreateAssociatedTokenAccount, CreateMint, MintTo, spl_token::{state::Account}, get_spl_account};
 use pretty_hex::*;
 
 pub fn program_bytes() -> Vec<u8> {
@@ -58,6 +58,11 @@ pub fn create_ata(svm: &mut LiteSVM, payer_kp: &Keypair, mint_pk: &Pubkey, owner
         .owner(owner_pk)
         .send()
         .unwrap()
+}
+
+pub fn get_ata_balance(svm: &LiteSVM, ata: &Pubkey) -> u64 {
+    let info:Account = get_spl_account(svm, &ata).unwrap();
+    info.amount
 }
 
 pub fn mint_to(svm: &mut LiteSVM,

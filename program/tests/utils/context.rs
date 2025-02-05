@@ -3,7 +3,7 @@ use super::*;
 
 use steel::*;
 use litesvm::{types::TransactionResult, LiteSVM};
-use solana_sdk::signature::{Keypair, Signer};
+use solana_sdk::{signature::{Keypair, Signer }, transaction::Transaction};
 use code_vm_api::prelude::*;
 
 pub struct TestContext {
@@ -16,9 +16,9 @@ pub struct TestContext {
 }
 
 impl TestContext {
-    pub fn new(param: u8) -> Self {
+    pub fn new(lock_duration: u8) -> Self {
         let (svm, payer, mint_owner, mint_pk, vm_address) =
-            setup_svm_with_payer_and_vm(param);
+            setup_svm_with_payer_and_vm(lock_duration);
 
         let vm = get_vm_account(&svm, vm_address);
 
@@ -228,8 +228,66 @@ impl TestContext {
         )
     }
 
+    pub fn ix_send(
+        &mut self,
+        ix: &[Instruction],
+    ) -> TransactionResult {
+        let payer_pk = self.payer.pubkey();
+        let blockhash = self.svm.latest_blockhash();
+        let tx = Transaction::new_signed_with_payer(
+            ix,
+            Some(&payer_pk),
+            &[&self.payer],
+            blockhash
+        );
+
+        send_tx(&mut self.svm, tx)
+    }
+
+    pub fn get_exec_ix(
+        &mut self,
+        mems: [Option<Pubkey>; 4],
+        vm_omnibus: Option<Pubkey>,
+        relay: Option<Pubkey>,
+        relay_vault: Option<Pubkey>,
+        external_address: Option<Pubkey>,
+        token_program: Option<Pubkey>,
+        data: Vec<u8>,
+        mem_indices: Vec<u16>,
+        mem_banks: Vec<u8>,
+    ) -> Instruction {
+        let opcode = data[0];
+        let data = data[1..].to_vec();
+
+        vm_exec(
+            self.payer.pubkey(),
+            self.vm_address,
+            mems[0],
+            mems[1],
+            mems[2],
+            mems[3],
+            vm_omnibus,
+            relay,
+            relay_vault,
+            external_address,
+            token_program,
+            opcode,
+            mem_indices,
+            mem_banks,
+            data,
+        )
+    }
+
     pub fn get_virtual_timelock(&self, mem: Pubkey, index: u16) -> VirtualTimelockAccount {
         get_virtual_timelock(&self.svm, mem, index)
+    }
+
+    pub fn has_virtual_account(&self, mem: Pubkey, index: u16) -> bool {
+        has_virtual_account(&self.svm, mem, index)
+    }
+
+    pub fn get_ata_balance(&self, ata: Pubkey) -> u64 {
+        get_ata_balance(&self.svm, &ata)
     }
 }
 

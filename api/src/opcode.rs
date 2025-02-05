@@ -15,6 +15,8 @@ pub enum Opcode {
   ExternalRelayOp = 20,
 
   ConditionalTransferOp = 12,
+
+  AirdropOp = 30,
 }
 
 instruction!(Opcode, TransferOp);
@@ -24,6 +26,7 @@ instruction!(Opcode, ExternalTransferOp);
 instruction!(Opcode, ExternalWithdrawOp);
 instruction!(Opcode, ExternalRelayOp);
 instruction!(Opcode, ConditionalTransferOp);
+instruction!(Opcode, AirdropOp);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
@@ -209,4 +212,38 @@ impl ConditionalTransferOp {
 pub struct ParsedConditionalTransferOp {
     pub signature: [u8; 64],
     pub amount: u64,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct AirdropOp {
+    pub signature: [u8; 64],
+    pub amount: [u8; 8], // Pack u64 as [u8; 8]
+    pub count: u8,       // Up to 255 airdrops in a single tx (but CU limit will be hit first)
+}
+
+impl AirdropOp {
+    /// Converts the byte array `amount` to `u64`.
+    pub fn to_struct(&self) -> Result<ParsedAirdropOp, std::io::Error> {
+        Ok(ParsedAirdropOp {
+            signature: self.signature,
+            amount: u64::from_le_bytes(self.amount),
+            count: self.count,
+        })
+    }
+
+    /// Creates `AirdropOp` from the parsed struct by converting `u64` back to byte array.
+    pub fn from_struct(parsed: ParsedAirdropOp) -> Self {
+        AirdropOp {
+            signature: parsed.signature,
+            amount: parsed.amount.to_le_bytes(),
+            count: parsed.count,
+        }
+    }
+}
+
+pub struct ParsedAirdropOp {
+    pub signature: [u8; 64],
+    pub amount: u64,
+    pub count: u8,
 }
