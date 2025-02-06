@@ -16,52 +16,41 @@ using the Code app or manually through a public indexer.
 > [!NOTE]
 > The Code VM is designed specifically to be used by the [Code](https://getcode.com) and [Flipchat](https://flipchat.xyz/) mobile apps, prioritizing **seamless payments**. As a result, this codebase is not intended as a generalized foundation for other projects.
 
+## Audits
 
-## Current Progress
+| Network | Address | Audited By | Status | Audit Report | Commit |
+| --- | --- | --- | --- | --- | --- |
+| Mainnet | [vmZ1WU...5YMRTJ](https://explorer.solana.com/address/vmZ1WUq8SxjBWcaeTCvgJRZbS84R61uniFsQy5YMRTJ) | OtterSec | [in progress](https://github.com/code-payments/code-vm/pulls?q=is%3Apr+is%3Aclosed) | - | tbd |
+| Devnet | [J8FLfS...Rr3L24](https://explorer.solana.com/address/J8FLfS8rqBcQ3hH8KTfQF3zBNG3r3uaG2WqfNoRr3L24?cluster=devnet) | - | - | - | - |
 
-:white_check_mark: The on-chain program itself is largely completed. The audit is currently [in progress](https://github.com/code-payments/code-vm/pulls?q=is%3Apr+is%3Aclosed).
+## Dev Milestones
+
+:white_check_mark: The on-chain program itself is largely completed.
+
+:white_check_mark: Flipchat is using the program in mainnet.
 
 We’re currently integrating the VM into a fork of the Code app called Flipchat. 
 This allows us to make changes to backend services more efficiently without 
 disrupting Code app users. 
 
-A key goal is ensuring the mobile app requires minimal changes to switch to the 
-VM. From the app’s perspective, it should behave as if it’s using standard token 
-accounts on Solana.
+> [!NOTE]
+> A key obejctive for us has been that the Code mobile app could be migrated
+> to the VM with minimal effort. From the app’s perspective, it should behave
+> as if it’s using standard Solana accounts. All the VM complexity should be
+> abstracted away by the backend services.
 
-We’re happy to report that this goal was achieved on Flipchat — our mobile app 
-dev team migrated payments with only minor adjustments to the original 
-transaction mechanics.
+We’re happy to report that this key objective has been achieved on Flipchat — 
+our mobile app team migrated payments using only a handful of minor adjustments 
+to the original transaction mechanics. To enable this from the VM side, we made 
+intentional trade-offs that optimize for core objectives instead of on-chain 
+compute units.
 
-To achieve this seamless integration, we made intentional trade-offs that optimize 
-for compatibility with the Code and Flipchat mobile apps. 
-
-## Deployments
-
-| Network | Address |
-| --- | --- |
-| Mainnet | [vmZ1WU...5YMRTJ](https://explorer.solana.com/address/vmZ1WUq8SxjBWcaeTCvgJRZbS84R61uniFsQy5YMRTJ) |
-| Devnet | [J8FLfS...Rr3L24](https://explorer.solana.com/address/J8FLfS8rqBcQ3hH8KTfQF3zBNG3r3uaG2WqfNoRr3L24?cluster=devnet) |
-
-## Audits
-
-| Audited By | Status | Audit Report | Version | Commit |
-| --- | --- | --- | --- | --- |
-| OtterSec | audit phase | - | tbd | tbd |
-
-
-## Release Schedule
-
-We're currently working towards a mainnet release and are looking for feedback
-from the community. Please reach out to us on [Discord](https://discord.gg/T8Tpj8DBFp) or [Twitter](https://twitter.com/getcode) if you have any
-questions or feedback.
-
-<br>
+#### Release Schedule
 
 | Milestone | Status | Code | Flipchat |
 | --- | --- | --- | --- |
-| Preview Release | Released | - | Aug 9th, 2024 |
-| Optimized Release | Released | - | Oct 24th, 2024 |
+| Anchor Version | Released | - | Aug 9th, 2024 |
+| Steel Version | Released | - | Oct 24th, 2024 |
 | Audited Release | [WIP](https://github.com/code-payments/code-vm/pulls?q=is%3Apr+is%3Aclosed) | - | - |
 | IDLs | [Released](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | - | Oct 30th, 2024 |
 | Indexer Service | [Released](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
@@ -69,6 +58,7 @@ questions or feedback.
 | Mobile App Integration | Released | - | November 27th, 2024 |
 | Code VM Explorer | - | - | - |
 | Documentation | - | - | - |
+
 
 ## Quick Start
 
