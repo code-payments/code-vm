@@ -21,6 +21,7 @@ solana-program.workspace = true
 steel.workspace = true
 spl-token.workspace = true
 spl-associated-token-account.workspace = true
+solana-security-txt = "1.1.1"
 
 [dev-dependencies]
 rand = "0.8.5"

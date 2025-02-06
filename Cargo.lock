@@ -680,6 +680,7 @@ dependencies = [
  "rand 0.8.5",
  "solana-program 1.18.26",
  "solana-sdk",
+ "solana-security-txt",
  "spl-associated-token-account 2.3.0",
  "spl-token 4.0.3",
  "steel",
