@@ -1,7 +1,8 @@
 mod opcode;
 mod instruction;
-use instruction::*;
+mod security;
 
+use instruction::*;
 use code_vm_api::prelude::*;
 use steel::*;
 
@@ -38,3 +39,4 @@ pub fn process_instruction(
 }
 
 entrypoint!(process_instruction);
+
