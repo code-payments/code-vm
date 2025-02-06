@@ -13,14 +13,28 @@ compress dormant accounts off-chain, effectively reducing rent to `zero`.
 Compressed accounts can be decompressed when needed — either automatically 
 using the Code app or manually through a public indexer.
 
-The Code VM is designed to be used by the Code app, to deliver a seamless
-payments experience to millions of users at negligible cost.
+> [!NOTE]
+> The Code VM is designed specifically to be used by the [Code](https://getcode.com) and [Flipchat](https://flipchat.xyz/) mobile apps, prioritizing **seamless payments**. As a result, this codebase is not intended as a generalized foundation for other projects.
 
-##  What is Code?
 
-[Code](https://getcode.com) is a mobile app that leverages self custodial 
-blockchain technology to deliver a seamless payments experience that is instant, 
-global, and private. 
+## Current Progress
+
+:white_check_mark: The on-chain program itself is largely completed. The audit is currently [in progress](https://github.com/code-payments/code-vm/pulls?q=is%3Apr+is%3Aclosed).
+
+We’re currently integrating the VM into a fork of the Code app called Flipchat. 
+This allows us to make changes to backend services more efficiently without 
+disrupting Code app users. 
+
+A key goal is ensuring the mobile app requires minimal changes to switch to the 
+VM. From the app’s perspective, it should behave as if it’s using standard token 
+accounts on Solana.
+
+We’re happy to report that this goal was achieved on Flipchat — our mobile app 
+dev team migrated payments with only minor adjustments to the original 
+transaction mechanics.
+
+To achieve this seamless integration, we made intentional trade-offs that optimize 
+for compatibility with the Code and Flipchat mobile apps. 
 
 ## Deployments
 
@@ -34,6 +48,7 @@ global, and private.
 | Audited By | Status | Audit Report | Version | Commit |
 | --- | --- | --- | --- | --- |
 | OtterSec | audit phase | - | tbd | tbd |
+
 
 ## Release Schedule
 
@@ -78,6 +93,7 @@ solana-cli 1.18.9 (src:9a7dd9ca; feat:3469865029, client:SolanaLabs)
 If you have any questions or need help, please reach out to us on [Discord](https://discord.gg/T8Tpj8DBFp) or [Twitter](https://twitter.com/getcode).
 
 ## Community Feedback & Contributions
+
 While we can't guarantee that all feedback will be implemented, we are always 
 open to hearing from the community. If you have any suggestions or feedback,
 please reach out to us.
@@ -88,3 +104,4 @@ In the interest of protecting the security of our users and their funds, we ask
 that if you discover any security vulnerabilities please report them using this
 [Report a Vulnerability](https://github.com/code-wallet/code-program-library/security/advisories/new)
 link.
+
