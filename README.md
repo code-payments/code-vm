@@ -62,7 +62,7 @@ questions or feedback.
 | --- | --- | --- | --- |
 | Preview Release | Released | - | Aug 9th, 2024 |
 | Optimized Release | Released | - | Oct 24th, 2024 |
-| Audited Release | WIP | - | - |
+| Audited Release | [WIP](https://github.com/code-payments/code-vm/pulls?q=is%3Apr+is%3Aclosed) | - | - |
 | IDLs | [Released](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | - | Oct 30th, 2024 |
 | Indexer Service | [Released](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
 | Sequencer Integration | Released | - | November 25th, 2024 |
