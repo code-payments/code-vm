@@ -33,11 +33,10 @@ We’re currently integrating the VM into a fork of the Code app called Flipchat
 This allows us to make changes to backend services more efficiently without 
 disrupting Code app users. 
 
-> [!NOTE]
-> A key obejctive for us has been that the Code mobile app could be migrated
-> to the VM with minimal effort. From the app’s perspective, it should behave
-> as if it’s using standard Solana accounts. All the VM complexity should be
-> abstracted away by the backend services.
+A key obejctive for us has been that the Code mobile app could be migrated
+to the VM with minimal effort. From the app’s perspective, it should behave
+as if it’s using standard Solana accounts. All the VM complexity should be
+abstracted away by the backend services.
 
 We’re happy to report that this key objective has been achieved on Flipchat — 
 our mobile app team migrated payments using only a handful of minor adjustments 
