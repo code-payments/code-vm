@@ -53,6 +53,11 @@ pub fn process_resize(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResul
         "account_size must be greater than the base size of a memory account",
     )?;
 
+    check_condition(
+        args.account_size as usize <= MAX_ACCOUNT_SIZE * MAX_NUM_ACCOUNTS,
+        "account_size must be less than or equal to the maximum size for this type of memory account",
+    )?;
+
     check_signer(vm_authority_info)?;
     check_mut(vm_info)?;
     check_mut(vm_memory_info)?;

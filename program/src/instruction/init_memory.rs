@@ -43,6 +43,17 @@ pub fn process_init_memory(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
         return Err(ProgramError::NotEnoughAccountKeys);        
     };
 
+    check_condition(
+        args.account_size as usize >= MIN_ACCOUNT_SIZE && 
+        args.account_size as usize <= MAX_ACCOUNT_SIZE,
+        "account_size must be between MIN_ACCOUNT_SIZE and MAX_ACCOUNT_SIZE",
+    )?;
+
+    check_condition(
+        args.num_accounts as usize <= MAX_NUM_ACCOUNTS,
+        "num_accounts must be less than MAX_NUM_ACCOUNTS",
+    )?;
+
     check_signer(vm_authority_info)?;
     check_mut(vm_info)?;
     check_mut(vm_memory_info)?;

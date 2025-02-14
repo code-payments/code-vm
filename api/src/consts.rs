@@ -17,6 +17,11 @@ pub const MERKLE_TREE_SEED: &[u8]     = b"merkletree";
 pub const MAX_NAME_LEN: usize = 32;
 pub const NUM_ACCOUNTS: usize = 32_000;
 
+// Some (reasonable) virtual account limits without being perscriptive
+pub const MIN_ACCOUNT_SIZE: usize = 32; 
+pub const MAX_ACCOUNT_SIZE: usize = 256;
+pub const MAX_NUM_ACCOUNTS: usize = 320_000;
+
 pub const COMPRESSED_STATE_DEPTH: usize = 20;
 pub const RELAY_STATE_DEPTH: usize = 63;
 pub const RELAY_HISTORY_ITEMS: usize = 32;
