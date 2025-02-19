@@ -20,7 +20,7 @@ using the Code app or manually through a public indexer.
 
 | Network | Address | Audited By | Status | Audit Report | Commit |
 | --- | --- | --- | --- | --- | --- |
-| Mainnet | [vmZ1WU...5YMRTJ](https://explorer.solana.com/address/vmZ1WUq8SxjBWcaeTCvgJRZbS84R61uniFsQy5YMRTJ) | OtterSec | [in progress](https://github.com/code-payments/code-vm/pulls?q=is%3Apr+is%3Aclosed) | - | tbd |
+| Mainnet | [vmZ1WU...5YMRTJ](https://explorer.solana.com/address/vmZ1WUq8SxjBWcaeTCvgJRZbS84R61uniFsQy5YMRTJ) | [OtterSec](https://osec.io/) | Completed | [Report](https://github.com/code-payments/code-vm/blob/main/docs/code_audit_final.pdf) | [c49f95d9](https://github.com/code-payments/code-vm/commit/c49f95d92095eb5955955f1bc888e25957b2f64d) |
 | Devnet | [J8FLfS...Rr3L24](https://explorer.solana.com/address/J8FLfS8rqBcQ3hH8KTfQF3zBNG3r3uaG2WqfNoRr3L24?cluster=devnet) | - | - | - | - |
 
 ## Dev Milestones
@@ -28,6 +28,8 @@ using the Code app or manually through a public indexer.
 :white_check_mark: The on-chain program itself is largely completed.
 
 :white_check_mark: Flipchat is using the program in mainnet.
+
+:white_check_mark: OtterSec has completed an audit of the program.
 
 We’re currently integrating the VM into a fork of the Code app called Flipchat. 
 This allows us to make changes to backend services more efficiently without 
@@ -50,7 +52,7 @@ compute units.
 | --- | --- | --- | --- | --- |
 | Anchor Version | Done |Aug 9th, 2024 | - | - |
 | Steel Version | Done | Oct 24th, 2024 | - | - |
-| Audited Release | [WIP](https://github.com/code-payments/code-vm/pulls?q=is%3Apr+is%3Aclosed) | tbd | - | - |
+| Audited Release | Done | Feb 18th, 2024 | - | - |
 | IDLs | [Done](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | Oct 30th, 2024 | - | - |
 | Indexer | [Done](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 | tbd |
 | Sequencer | Done | - | November 25th, 2024 | tbd |
