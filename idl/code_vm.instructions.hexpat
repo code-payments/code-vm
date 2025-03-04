@@ -48,6 +48,7 @@ enum Opcode : u8 {
     WithdrawOp = 14,
     ExternalRelayOp = 20,
     RelayOp = 21,
+    Airdrop = 30,
 };
 
 
@@ -88,6 +89,12 @@ struct ConditionalTransferOp {
     u64 amount;
 };
 
+struct AirdropOp {
+    Signature signature;
+    u64 amount;
+    u8 count;
+};
+
 struct ExecArgs {
     Opcode opcode;
     Vec<u16> mem_indices;
@@ -115,6 +122,9 @@ struct ExecArgs {
     }
     else if (opcode == Opcode::ConditionalTransferOp) {
         ConditionalTransferOp data;
+    }
+    else if (opcode == Opcode::Airdrop) {
+        AirdropOp data;
     }
     else {
         // Unknown opcode, read data as bytes
