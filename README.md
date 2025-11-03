@@ -11,7 +11,7 @@ to `95%` and account rent by `80%` when compared to using non-virtualized
 accounts. The VM operates on compact representations of accounts but can further 
 compress dormant accounts off-chain, effectively reducing rent to `zero`. 
 Compressed accounts can be decompressed when needed — either automatically 
-using the Code app or manually through a public indexer.
+using the Flipcash app or manually through a public indexer.
 
 > [!NOTE]
 > The Code VM is designed specifically to be used by the [Flipcash](https://flipcash.com) mobile app, prioritizing **seamless payments**. As a result, this codebase is not intended as a generalized foundation for other projects.
@@ -80,7 +80,7 @@ solana-cli 1.18.9 (src:9a7dd9ca; feat:3469865029, client:SolanaLabs)
 
 ## Getting Help
 
-If you have any questions or need help, please reach out to us on [Discord](https://discord.gg/T8Tpj8DBFp) or [Twitter](https://twitter.com/getcode).
+If you have any questions or need help, please reach out to us on [Twitter](https://twitter.com/flipcash).
 
 ## Community Feedback & Contributions
 
