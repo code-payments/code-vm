@@ -6,7 +6,7 @@ use utils::*;
 use code_vm_api::prelude::*;
 
 #[test]
-fn run_deposit() {
+fn run_deposit_from_pda() {
     let (mut svm, payer, mint_owner, mint_pk, vm_address) =
         setup_svm_with_payer_and_vm(21);
 
@@ -30,7 +30,7 @@ fn run_deposit() {
 
     let vm = get_vm_account(&svm, vm_address);
 
-    assert!(tx_deposit(
+    assert!(tx_deposit_from_pda(
         &mut svm, 
         &payer, 
         vm_address, 
@@ -42,6 +42,50 @@ fn run_deposit() {
         account_index, 
         amount, 
         bump
+    ).is_ok());
+
+    let vta = get_virtual_timelock(&svm, vm_memory, account_index);
+
+    assert_eq!(vta.balance, amount);
+}
+
+#[test]
+fn run_deposit_with_authority() {
+    let (mut svm, payer, mint_owner, mint_pk, vm_address) =
+        setup_svm_with_payer_and_vm(21);
+
+    let name = "test";
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
+
+    let (vm_memory, _) =
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
+
+    let amount = 1000;
+    let account_index = 7;
+
+    let (_, vta_key) =
+        create_timelock(&mut svm, &payer, vm_address, vm_memory, account_index);
+    let destination = vta_key.pubkey();
+
+    let source_key = create_keypair();
+    let source = create_ata(&mut svm, &payer, &mint_pk, &source_key.pubkey());
+
+    mint_to(&mut svm, &payer, &mint_pk, &mint_owner, &source, amount).unwrap();
+
+    let vm = get_vm_account(&svm, vm_address);
+
+    assert!(tx_deposit_with_authority(
+        &mut svm,
+        &payer,
+        &source_key,
+        vm_address,
+        vm_memory,
+        source,
+        destination,
+        vm.omnibus.vault,
+        account_index,
+        amount,
     ).is_ok());
 
     let vta = get_virtual_timelock(&svm, vm_memory, account_index);

@@ -116,7 +116,7 @@ impl TestContext {
         )
         .unwrap();
 
-        tx_deposit(
+        tx_deposit_from_pda(
             &mut self.svm,
             &self.payer,
             self.vm_address,

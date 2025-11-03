@@ -320,11 +320,42 @@ pub fn timelock_deposit_from_pda(
             AccountMeta::new(omnibus, false),
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
-        data: DepositIx::from_struct(
-            ParsedDepositIx{
+        data: DepositFromPdaIx::from_struct(
+            ParsedDepositFromPdaIx{
             account_index,
             amount,
             bump,
+        }).to_bytes(),
+    }
+}
+
+pub fn timelock_deposit_with_authority(
+    vm_authority: Pubkey,
+    vm: Pubkey,
+    vm_memory: Pubkey,
+    source_authority: Pubkey,
+    source_ata: Pubkey,
+    destination: Pubkey,
+    omnibus: Pubkey,
+    account_index: u16,
+    amount: u64,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(vm_authority, true),
+            AccountMeta::new(vm, false),
+            AccountMeta::new(vm_memory, false),
+            AccountMeta::new(source_authority, true),
+            AccountMeta::new(source_ata, false),
+            AccountMeta::new_readonly(destination, false),
+            AccountMeta::new(omnibus, false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+        ],
+        data: DepositWithAuthorityIx::from_struct(
+            ParsedDepositWithAuthorityIx{
+            account_index,
+            amount,
         }).to_bytes(),
     }
 }

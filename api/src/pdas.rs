@@ -53,6 +53,14 @@ pub fn find_timelock_deposit_pda(vm: &Pubkey, depositor: &Pubkey) -> (Pubkey, u8
     )
 }
 
+#[cfg(not(target_os = "solana"))]
+pub fn find_timelock_swap_pda(vm: &Pubkey, swapper: &Pubkey) -> (Pubkey, u8) {
+    Pubkey::find_program_address(
+        &[CODE_VM, VM_SWAP_PDA, swapper.as_ref(), vm.as_ref()],
+        &crate::id(),
+    )
+}
+
 pub fn create_timelock_deposit_pda(vm: &Pubkey, depositor: &Pubkey, bump: u8) -> Pubkey {
     Pubkey::create_program_address(
         &[

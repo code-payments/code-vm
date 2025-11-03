@@ -506,7 +506,7 @@ pub fn tx_unlock_finalize(
     send_tx(svm, tx)
 }
 
-pub fn tx_deposit(
+pub fn tx_deposit_from_pda(
     svm: &mut LiteSVM,
     payer: &Keypair,
     vm_address: Pubkey,
@@ -536,6 +536,39 @@ pub fn tx_deposit(
     );
 
     let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer], blockhash);
+
+    send_tx(svm, tx)
+}
+
+pub fn tx_deposit_with_authority(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    source_authority: &Keypair,
+    vm_address: Pubkey,
+    vm_memory: Pubkey,
+    source_ata: Pubkey,
+    destination: Pubkey,
+    omnibus: Pubkey,
+    account_index: u16,
+    amount: u64,
+) -> TransactionResult {
+    let payer_pk = payer.pubkey();
+    let source_authority_pk = source_authority.pubkey();
+    let blockhash = svm.latest_blockhash();
+
+    let ix = timelock_deposit_with_authority(
+        payer_pk,
+        vm_address,
+        vm_memory,
+        source_authority_pk,
+        source_ata,
+        destination,
+        omnibus,
+        account_index,
+        amount,
+    );
+
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer, source_authority], blockhash);
 
     send_tx(svm, tx)
 }

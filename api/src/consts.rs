@@ -10,6 +10,7 @@ pub const VM_RELAY_ACCOUNT: &[u8]     = b"vm_relay_account";
 pub const VM_RELAY_PROOF: &[u8]       = b"vm_proof_account";
 pub const VM_RELAY_VAULT: &[u8]       = b"vm_relay_vault";
 pub const VM_RELAY_COMMITMENT: &[u8]  = b"relay_commitment";
+pub const VM_SWAP_PDA: &[u8]          = b"vm_swap_pda";
 pub const VM_TIMELOCK_STATE: &[u8]    = b"timelock_state";
 pub const VM_TIMELOCK_VAULT: &[u8]    = b"timelock_vault";
 pub const MERKLE_TREE_SEED: &[u8]     = b"merkletree";

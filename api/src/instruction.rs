@@ -26,9 +26,10 @@ pub enum CodeInstruction {
     ResizeMemoryIx,
     SnapshotIx,
 
-    DepositIx,
+    DepositFromPdaIx,
     WithdrawIx,
     UnlockIx,
+    DepositWithAuthorityIx,
 }
 
 instruction!(CodeInstruction, InitVmIx);
@@ -46,9 +47,10 @@ instruction!(CodeInstruction, DecompressIx);
 instruction!(CodeInstruction, ResizeMemoryIx);
 instruction!(CodeInstruction, SnapshotIx);
 
-instruction!(CodeInstruction, DepositIx);
+instruction!(CodeInstruction, DepositFromPdaIx);
 instruction!(CodeInstruction, WithdrawIx);
 instruction!(CodeInstruction, UnlockIx);
+instruction!(CodeInstruction, DepositWithAuthorityIx);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
@@ -294,23 +296,23 @@ pub struct SnapshotIx { // SaveRecentRoot
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
-pub struct DepositIx {
+pub struct DepositFromPdaIx {
     pub account_index: [u8; 2], // Pack u16 as [u8; 2]
     pub amount: [u8; 8],        // Pack u64 as [u8; 8]
     pub bump: u8,
 }
 
-impl DepositIx {
-    pub fn to_struct(&self) -> Result<ParsedDepositIx, std::io::Error> {
-        Ok(ParsedDepositIx {
+impl DepositFromPdaIx {
+    pub fn to_struct(&self) -> Result<ParsedDepositFromPdaIx, std::io::Error> {
+        Ok(ParsedDepositFromPdaIx {
             account_index: u16::from_le_bytes(self.account_index),
             amount: u64::from_le_bytes(self.amount),
             bump: self.bump,
         })
     }
 
-    pub fn from_struct(parsed: ParsedDepositIx) -> Self {
-        DepositIx {
+    pub fn from_struct(parsed: ParsedDepositFromPdaIx) -> Self {
+        DepositFromPdaIx {
             account_index: parsed.account_index.to_le_bytes(),
             amount: parsed.amount.to_le_bytes(),
             bump: parsed.bump,
@@ -318,10 +320,38 @@ impl DepositIx {
     }
 }
 
-pub struct ParsedDepositIx {
+pub struct ParsedDepositFromPdaIx {
     pub account_index: u16,
     pub amount: u64,
     pub bump: u8,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct DepositWithAuthorityIx {
+    pub account_index: [u8; 2], // Pack u16 as [u8; 2]
+    pub amount: [u8; 8],        // Pack u64 as [u8; 8]
+}
+
+impl DepositWithAuthorityIx {
+    pub fn to_struct(&self) -> Result<ParsedDepositWithAuthorityIx, std::io::Error> {
+        Ok(ParsedDepositWithAuthorityIx {
+            account_index: u16::from_le_bytes(self.account_index),
+            amount: u64::from_le_bytes(self.amount),
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedDepositWithAuthorityIx) -> Self {
+        DepositWithAuthorityIx {
+            account_index: parsed.account_index.to_le_bytes(),
+            amount: parsed.amount.to_le_bytes(),
+        }
+    }
+}
+
+pub struct ParsedDepositWithAuthorityIx {
+    pub account_index: u16,
+    pub amount: u64,
 }
 
 #[repr(C)]
