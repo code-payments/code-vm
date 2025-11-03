@@ -14,7 +14,7 @@ Compressed accounts can be decompressed when needed — either automatically
 using the Code app or manually through a public indexer.
 
 > [!NOTE]
-> The Code VM is designed specifically to be used by the [Code](https://getcode.com) and [Flipchat](https://flipchat.xyz/) mobile apps, prioritizing **seamless payments**. As a result, this codebase is not intended as a generalized foundation for other projects.
+> The Code VM is designed specifically to be used by the [Flipcash](https://flipcash.com) mobile app, prioritizing **seamless payments**. As a result, this codebase is not intended as a generalized foundation for other projects.
 
 ## Audits
 
@@ -27,20 +27,20 @@ using the Code app or manually through a public indexer.
 
 :white_check_mark: The on-chain program itself is largely completed.
 
-:white_check_mark: Flipchat is using the program in mainnet.
+:white_check_mark: Flipcash is using the program in mainnet.
 
 :white_check_mark: OtterSec has completed an audit of the program.
 
-We’re currently integrating the VM into a fork of the Code app called Flipchat. 
-This allows us to make changes to backend services more efficiently without 
-disrupting Code app users. 
+We’re currently integrating the VM into the Flipcash app. This allows us to 
+make changes to backend services more efficiently without disrupting Flipcash 
+users. 
 
-A key obejctive for us has been that the Code mobile app could be migrated
+A key obejctive for us has been that the Flipcash mobile app could be migrated
 to the VM with minimal effort. From the app’s perspective, it should behave
 as if it’s using standard Solana accounts. All the VM complexity should be
 abstracted away by the backend services.
 
-We’re happy to report that this key objective has been achieved on Flipchat — 
+We’re happy to report that this key objective has been achieved on Flipcash — 
 our mobile app team migrated payments using only a handful of minor adjustments 
 to the original transaction mechanics. To enable this from the VM side, we made 
 intentional trade-offs that optimize for core objectives instead of on-chain 
@@ -48,16 +48,16 @@ compute units.
 
 #### Release Schedule
 
-| Milestone | Status | VM | Flipchat | Code |
-| --- | --- | --- | --- | --- |
-| Anchor Version | Done |Aug 9th, 2024 | - | - |
-| Steel Version | Done | Oct 24th, 2024 | - | - |
-| Audited Release | Done | Feb 18th, 2024 | - | - |
-| IDLs | [Done](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | Oct 30th, 2024 | - | - |
-| Indexer | [Done](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 | tbd |
-| Sequencer | Done | - | November 25th, 2024 | tbd |
-| Explorer | tbd |  | |  |
-| Documentation | tbd |  |  | |
+| Milestone | Status | VM | Flipcash |
+| --- | --- | --- | --- |
+| Anchor Version | Done |Aug 9th, 2024 | - |
+| Steel Version | Done | Oct 24th, 2024 | - |
+| Audited Release | Done | Feb 18th, 2024 | - |
+| IDLs | [Done](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | Oct 30th, 2024 | - |
+| Indexer | [Done](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
+| Sequencer | Done | - | November 25th, 2024 |
+| Explorer | tbd |  |  |
+| Documentation | tbd |  |  |
 
 
 ## Quick Start
