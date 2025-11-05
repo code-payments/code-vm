@@ -608,6 +608,41 @@ pub fn tx_withdraw_from_deposit(
     send_tx(svm, tx)
 }
 
+pub fn tx_withdraw_from_swap(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    owner: &Keypair,
+    vm_address: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    unlock_pda: Pubkey,
+    external_address: Pubkey,
+    data: WithdrawIxData,
+) -> TransactionResult {
+    let depositor = owner.pubkey();
+    let payer_pk = payer.pubkey();
+    let blockhash = svm.latest_blockhash();
+
+    let ix = timelock_withdraw(
+        depositor,
+        payer_pk,
+        vm_address,
+        None, // vm_omnibus
+        None, // vm_memory
+        None, // vm_storage
+        Some(swap_pda),
+        Some(swap_ata),
+        unlock_pda,
+        None, // withdraw_receipt
+        external_address,
+        data,
+    );
+
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer, owner], blockhash);
+
+    send_tx(svm, tx)
+}
+
 pub fn tx_withdraw_from_memory(
     svm: &mut LiteSVM,
     payer: &Keypair,
@@ -676,6 +711,99 @@ pub fn tx_withdraw_from_storage(
     );
 
     let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer, owner], blockhash);
+
+    send_tx(svm, tx)
+}
+
+pub fn tx_transfer_for_swap(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    swapper: &Keypair,
+    vm_address: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    destination: Pubkey,
+    amount: u64,
+    bump: u8,
+) -> TransactionResult {
+    let payer_pk = payer.pubkey();
+    let swapper_pk = swapper.pubkey();
+    let blockhash = svm.latest_blockhash();
+
+    let ix = transfer_for_swap(
+        payer_pk,
+        vm_address,
+        swapper_pk,
+        swap_pda,
+        swap_ata,
+        destination,
+        amount,
+        bump,
+    );
+
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer, swapper], blockhash);
+
+    send_tx(svm, tx)
+}
+
+pub fn tx_cancel_swap(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    vm_address: Pubkey,
+    vm_memory: Pubkey,
+    swapper: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    omnibus: Pubkey,
+    account_index: u16,
+    amount: u64,
+    bump: u8,
+) -> TransactionResult {
+    let payer_pk = payer.pubkey();
+    let blockhash = svm.latest_blockhash();
+
+    let ix = cancel_swap(
+        payer_pk,
+        vm_address,
+        vm_memory,
+        swapper,
+        swap_pda,
+        swap_ata,
+        omnibus,
+        account_index,
+        amount,
+        bump,
+    );
+
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer], blockhash);
+
+    send_tx(svm, tx)
+}
+
+pub fn tx_close_swap_account_if_empty(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    vm: Pubkey,
+    swapper: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    destination: Pubkey,
+    bump: u8,
+) -> TransactionResult {
+    let payer_pk = payer.pubkey();
+    let blockhash = svm.latest_blockhash();
+
+    let ix = close_swap_account_if_empty(
+        payer_pk,
+        vm,
+        swapper,
+        swap_pda,
+        swap_ata,
+        destination,
+        bump,
+    );
+
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer], blockhash);
 
     send_tx(svm, tx)
 }

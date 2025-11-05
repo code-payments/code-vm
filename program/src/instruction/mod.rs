@@ -11,6 +11,7 @@ mod init_unlock;
 mod init_vm;
 mod resize;
 mod snapshot;
+mod swap;
 mod unlock;
 mod withdraw;
 
@@ -27,5 +28,6 @@ pub use init_unlock::*;
 pub use init_vm::*;
 pub use resize::*;
 pub use snapshot::*;
+pub use swap::*;
 pub use unlock::*;
 pub use withdraw::*;

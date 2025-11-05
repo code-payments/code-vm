@@ -16,24 +16,28 @@ pub fn process_instruction(
     match ix {
         CodeInstruction::Unknown => return Err(ProgramError::InvalidInstructionData),
 
-        CodeInstruction::InitVmIx               => process_init_vm(accounts, data)?,
-        CodeInstruction::InitMemoryIx           => process_init_memory(accounts, data)?,
-        CodeInstruction::InitStorageIx          => process_init_storage(accounts, data)?,
-        CodeInstruction::InitRelayIx            => process_init_relay(accounts, data)?,
-        CodeInstruction::InitNonceIx            => process_init_nonce(accounts, data)?,
-        CodeInstruction::InitTimelockIx         => process_init_timelock(accounts, data)?,
-        CodeInstruction::InitUnlockIx           => process_init_unlock(accounts, data)?,
+        CodeInstruction::InitVmIx                  => process_init_vm(accounts, data)?,
+        CodeInstruction::InitMemoryIx              => process_init_memory(accounts, data)?,
+        CodeInstruction::InitStorageIx             => process_init_storage(accounts, data)?,
+        CodeInstruction::InitRelayIx               => process_init_relay(accounts, data)?,
+        CodeInstruction::InitNonceIx               => process_init_nonce(accounts, data)?,
+        CodeInstruction::InitTimelockIx            => process_init_timelock(accounts, data)?,
+        CodeInstruction::InitUnlockIx              => process_init_unlock(accounts, data)?,
 
-        CodeInstruction::ExecIx                 => process_exec(accounts, data)?,
-        CodeInstruction::CompressIx             => process_compress(accounts, data)?,
-        CodeInstruction::DecompressIx           => process_decompress(accounts, data)?,
-        CodeInstruction::ResizeMemoryIx         => process_resize(accounts, data)?,
-        CodeInstruction::SnapshotIx             => process_snapshot(accounts, data)?,
+        CodeInstruction::ExecIx                    => process_exec(accounts, data)?,
+        CodeInstruction::CompressIx                => process_compress(accounts, data)?,
+        CodeInstruction::DecompressIx              => process_decompress(accounts, data)?,
+        CodeInstruction::ResizeMemoryIx            => process_resize(accounts, data)?,
+        CodeInstruction::SnapshotIx                => process_snapshot(accounts, data)?,
 
-        CodeInstruction::DepositFromPdaIx       => process_deposit_from_pda(accounts, data)?,
-        CodeInstruction::WithdrawIx             => process_withdraw(accounts, data)?,
-        CodeInstruction::UnlockIx               => process_unlock(accounts, data)?,
-        CodeInstruction::DepositWithAuthorityIx => process_deposit_with_authority(accounts, data)?,
+        CodeInstruction::DepositFromPdaIx          => process_deposit_from_pda(accounts, data)?,
+        CodeInstruction::WithdrawIx                => process_withdraw(accounts, data)?,
+        CodeInstruction::UnlockIx                  => process_unlock(accounts, data)?,
+        CodeInstruction::DepositWithAuthorityIx    => process_deposit_with_authority(accounts, data)?,
+
+        CodeInstruction::TransferForSwapIx         => process_transfer_for_swap(accounts, data)?,
+        CodeInstruction::CancelSwapIx              => process_cancel_swap(accounts, data)?,
+        CodeInstruction::CloseSwapAccountIfEmptyIx => process_close_swap_account_if_empty(accounts, data)?,
     }
 
     Ok(())

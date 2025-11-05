@@ -405,8 +405,8 @@ pub fn timelock_withdraw(
     vm_omnibus: Option<Pubkey>,
     vm_memory: Option<Pubkey>,
     vm_storage: Option<Pubkey>,
-    deposit_pda: Option<Pubkey>,
-    deposit_ata: Option<Pubkey>,
+    deposit_or_swap_pda: Option<Pubkey>,
+    deposit_or_swap_ata: Option<Pubkey>,
     unlock_pda: Pubkey,
     withdraw_receipt: Option<Pubkey>,
     external_address: Pubkey,
@@ -419,7 +419,11 @@ pub fn timelock_withdraw(
     let accounts = match data {
         WithdrawIxData::FromDeposit { .. } => 
             withdraw_from_deposit(
-                depositor, payer, vm, deposit_pda, deposit_ata, unlock_pda, external_address),
+                depositor, payer, vm, deposit_or_swap_pda, deposit_or_swap_ata, unlock_pda, external_address),
+
+        WithdrawIxData::FromSwap { .. } => 
+            withdraw_from_swap(
+                depositor, payer, vm, deposit_or_swap_pda, deposit_or_swap_ata, unlock_pda, external_address),
 
         WithdrawIxData::FromMemory { .. } => 
             withdraw_from_memory(
@@ -457,6 +461,33 @@ fn withdraw_from_deposit(
         optional_meta(None, false), // vm_storage
         optional_meta(deposit_pda, false),
         optional_meta(deposit_ata, false),
+        AccountMeta::new(unlock_pda, false),
+        optional_meta(None, false), // withdraw_receipt
+        AccountMeta::new(external_address, false),
+        AccountMeta::new_readonly(spl_token::id(), false),
+        optional_meta(None, false), // system_program
+        optional_meta(None, false), // rent_sysvar
+    ]
+}
+
+fn withdraw_from_swap(
+    depositor: Pubkey,
+    payer: Pubkey,
+    vm: Pubkey,
+    swap_pda: Option<Pubkey>,
+    swap_ata: Option<Pubkey>,
+    unlock_pda: Pubkey,
+    external_address: Pubkey,
+) -> Vec<AccountMeta> {
+    vec![
+        AccountMeta::new(depositor, true),
+        AccountMeta::new(payer, true),
+        AccountMeta::new(vm, false),
+        optional_meta(None, false), // vm_omnibus
+        optional_meta(None, false), // vm_memory
+        optional_meta(None, false), // vm_storage
+        optional_meta(swap_pda, false),
+        optional_meta(swap_ata, false),
         AccountMeta::new(unlock_pda, false),
         optional_meta(None, false), // withdraw_receipt
         AccountMeta::new(external_address, false),
@@ -520,4 +551,93 @@ fn withdraw_from_storage(
         optional_readonly_meta(Some(system_program::id()), false),
         optional_readonly_meta(Some(solana_program::sysvar::rent::id()), false),
     ]
+}
+
+pub fn transfer_for_swap(
+    vm_authority: Pubkey,
+    vm: Pubkey,
+    swapper: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    destination: Pubkey,
+    amount: u64,
+    bump: u8,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(vm_authority, true),
+            AccountMeta::new(vm, false),
+            AccountMeta::new(swapper, true),
+            AccountMeta::new_readonly(swap_pda, false),
+            AccountMeta::new(swap_ata, false),
+            AccountMeta::new(destination, false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+        ],
+        data: TransferForSwapIx::from_struct(
+            ParsedTransferForSwapIx{
+            amount,
+            bump,
+        }).to_bytes(),
+    }
+}
+
+pub fn cancel_swap(
+    vm_authority: Pubkey,
+    vm: Pubkey,
+    vm_memory: Pubkey,
+    swapper: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    omnibus: Pubkey,
+    account_index: u16,
+    amount: u64,
+    bump: u8,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(vm_authority, true),
+            AccountMeta::new(vm, false),
+            AccountMeta::new(vm_memory, false),
+            AccountMeta::new_readonly(swapper, false),
+            AccountMeta::new_readonly(swap_pda, false),
+            AccountMeta::new(swap_ata, false),
+            AccountMeta::new(omnibus, false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+        ],
+        data: CancelSwapIx::from_struct(
+            ParsedCancelSwapIx{
+            account_index,
+            amount,
+            bump,
+        }).to_bytes(),
+    }
+}
+
+pub fn close_swap_account_if_empty(
+    vm_authority: Pubkey,
+    vm: Pubkey,
+    swapper: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    destination: Pubkey,
+    bump: u8,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(vm_authority, true),
+            AccountMeta::new(vm, false),
+            AccountMeta::new_readonly(swapper, false),
+            AccountMeta::new_readonly(swap_pda, false),
+            AccountMeta::new(swap_ata, false),
+            AccountMeta::new(destination, false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+        ],
+        data: CloseSwapAccountIfEmptyIx::from_struct(
+            ParsedCloseSwapAccountIfEmptyIx{
+            bump,
+        }).to_bytes(),
+    }
 }

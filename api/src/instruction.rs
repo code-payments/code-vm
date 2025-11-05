@@ -30,6 +30,10 @@ pub enum CodeInstruction {
     WithdrawIx,
     UnlockIx,
     DepositWithAuthorityIx,
+
+    TransferForSwapIx,
+    CancelSwapIx,
+    CloseSwapAccountIfEmptyIx,
 }
 
 instruction!(CodeInstruction, InitVmIx);
@@ -51,6 +55,10 @@ instruction!(CodeInstruction, DepositFromPdaIx);
 instruction!(CodeInstruction, WithdrawIx);
 instruction!(CodeInstruction, UnlockIx);
 instruction!(CodeInstruction, DepositWithAuthorityIx);
+
+instruction!(CodeInstruction, TransferForSwapIx);
+instruction!(CodeInstruction, CancelSwapIx);
+instruction!(CodeInstruction, CloseSwapAccountIfEmptyIx);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
@@ -399,4 +407,92 @@ pub enum WithdrawIxData {
     FromDeposit {
         bump: u8,
     } = 2,
+    FromSwap {
+        bump: u8,
+    } = 3,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct TransferForSwapIx {
+    pub amount: [u8; 8],        // Pack u64 as [u8; 8]
+    pub bump: u8,
+}
+
+impl TransferForSwapIx {
+    pub fn to_struct(&self) -> Result<ParsedTransferForSwapIx, std::io::Error> {
+        Ok(ParsedTransferForSwapIx {
+            amount: u64::from_le_bytes(self.amount),
+            bump: self.bump,
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedTransferForSwapIx) -> Self {
+        TransferForSwapIx {
+            amount: parsed.amount.to_le_bytes(),
+            bump: parsed.bump,
+        }
+    }
+}
+
+pub struct ParsedTransferForSwapIx {
+    pub amount: u64,
+    pub bump: u8,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct CancelSwapIx {
+    pub account_index: [u8; 2], // Pack u16 as [u8; 2]
+    pub amount: [u8; 8],        // Pack u64 as [u8; 8]
+    pub bump: u8,
+}
+
+impl CancelSwapIx {
+    pub fn to_struct(&self) -> Result<ParsedCancelSwapIx, std::io::Error> {
+        Ok(ParsedCancelSwapIx {
+            account_index: u16::from_le_bytes(self.account_index),
+            amount: u64::from_le_bytes(self.amount),
+            bump: self.bump,
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedCancelSwapIx) -> Self {
+        CancelSwapIx {
+            account_index: parsed.account_index.to_le_bytes(),
+            amount: parsed.amount.to_le_bytes(),
+            bump: parsed.bump,
+        }
+    }
+}
+
+pub struct ParsedCancelSwapIx {
+    pub account_index: u16,
+    pub amount: u64,
+    pub bump: u8,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct CloseSwapAccountIfEmptyIx {
+    pub bump: u8,
+}
+
+impl CloseSwapAccountIfEmptyIx {
+    pub fn to_struct(&self) -> Result<ParsedCloseSwapAccountIfEmptyIx, std::io::Error> {
+        Ok(ParsedCloseSwapAccountIfEmptyIx {
+            bump: self.bump,
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedCloseSwapAccountIfEmptyIx) -> Self {
+        CloseSwapAccountIfEmptyIx {
+            bump: parsed.bump,
+        }
+    }
+}
+
+pub struct ParsedCloseSwapAccountIfEmptyIx {
+    pub bump: u8,
 }

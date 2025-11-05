@@ -11,22 +11,22 @@ use steel::*;
 
     Accounts expected by this instruction:
 
-    | # | R/W | Req | PDA | Type         | Name             | Description                            |
-    |---|-----|-----|-----|------------  |------------------|----------------------------------------|
-    | 0 | mut | Yes |     | Signer       | depositor        | The owner of the deposited tokens.     |
-    | 1 | mut | Yes |     | Signer       | payer            | The transaction fee payer.             |
-    | 2 | mut | Yes | Yes | Vm           | vm               | The VM instance state account.         |
-    | 3 | mut |     | Yes | TokenAccount | vm_omnibus       | The token account for this VM.         |
-    | 4 | mut |     | Yes | Memory       | vm_memory        | If withdrawing from memory (hot).      |
-    | 5 |     |     | Yes | Storage      | vm_storage       | If withdrawing from storage (cold).    |
-    | 6 |     |     | Yes | Address      | deposit_pda      | If withdrawing from deposit (ata).     |
-    | 7 | mut |     | Yes | ATA          | deposit_ata      | If withdrawing from deposit.           |
-    | 8 |     | Yes | Yes | UnlockState  | unlock_pda       | Timelock unlock state account.         |
-    | 9 |     |     | Yes | Receipt      | withdraw_receipt | If withdrawing from memory or storage. |
-    |10 | mut | Yes |     | Address      | external_address | External address to send tokens to.    |
-    |11 |     | Yes |     | Token        | token_program    | SPL token program account.             |
-    |12 |     |     |     | System       | system_program   | System program account.                |
-    |13 |     |     |     | Rent         | rent_sysvar      | Rent sysvar account (for receipt).     |
+    | # | R/W | Req | PDA | Type         | Name                | Description                             |
+    |---|-----|-----|-----|------------  |---------------------|-----------------------------------------|
+    | 0 | mut | Yes |     | Signer       | depositor           | The owner of the deposited tokens.      |
+    | 1 | mut | Yes |     | Signer       | payer               | The transaction fee payer.              |
+    | 2 | mut | Yes | Yes | Vm           | vm                  | The VM instance state account.          |
+    | 3 | mut |     | Yes | TokenAccount | vm_omnibus          | The token account for this VM.          |
+    | 4 | mut |     | Yes | Memory       | vm_memory           | If withdrawing from memory (hot).       | 
+    | 5 |     |     | Yes | Storage      | vm_storage          | If withdrawing from storage (cold).     |
+    | 6 |     |     | Yes | Address      | swap_or_deposit_pda | If withdrawing from swap/deposit (ata). |
+    | 7 | mut |     | Yes | ATA          | swap_or_deposit_ata | If withdrawing from swap/deposit.       |
+    | 8 |     | Yes | Yes | UnlockState  | unlock_pda          | Timelock unlock state account.          |
+    | 9 |     |     | Yes | Receipt      | withdraw_receipt    | If withdrawing from memory or storage.  |
+    |10 | mut | Yes |     | Address      | external_address    | External address to send tokens to.     |
+    |11 |     | Yes |     | Token        | token_program       | SPL token program account.              |
+    |12 |     |     |     | System       | system_program      | System program account.                 |
+    |13 |     |     |     | Rent         | rent_sysvar         | Rent sysvar account (for receipt).      |
 
 */
 pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
@@ -72,6 +72,9 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
 
         WithdrawIxData::FromDeposit { .. } => 
             process_withdraw_from_deposit(&ctx, &args),
+
+        WithdrawIxData::FromSwap { .. } => 
+            process_withdraw_from_swap(&ctx, &args),
 
         WithdrawIxData::FromMemory { .. } => 
             process_withdraw_from_memory(&ctx, &args),
@@ -209,17 +212,17 @@ fn process_withdraw_from_deposit(
     }?;
 
     check_condition(
-        ctx.deposit_pda_info.is_some(),
+        ctx.swap_or_deposit_pda_info.is_some(),
         "deposit_pda account is required for deposit withdraw",
     )?;
 
     check_condition(
-        ctx.deposit_ata_info.is_some(),
+        ctx.swap_or_deposit_ata_info.is_some(),
         "deposit_ata account is required for deposit withdraw",
     )?;
 
-    let deposit_ata_info = ctx.deposit_ata_info.unwrap();
-    let deposit_pda_info = ctx.deposit_pda_info.unwrap();
+    let deposit_ata_info = ctx.swap_or_deposit_ata_info.unwrap();
+    let deposit_pda_info = ctx.swap_or_deposit_pda_info.unwrap();
     let token_account = deposit_ata_info.to_token_account()?;
 
     transfer_signed(
@@ -242,6 +245,50 @@ fn process_withdraw_from_deposit(
     Ok(())
 }
 
+fn process_withdraw_from_swap(
+    ctx: &WithdrawContext,
+    data: &WithdrawIxData,
+) -> ProgramResult {
+    let bump = match data {
+        WithdrawIxData::FromSwap { bump } => Ok(*bump),
+        _ => Err(ProgramError::InvalidInstructionData),
+    }?;
+
+    check_condition(
+        ctx.swap_or_deposit_pda_info.is_some(),
+        "swap_pda account is required for deposit withdraw",
+    )?;
+
+    check_condition(
+        ctx.swap_or_deposit_ata_info.is_some(),
+        "swap_ata account is required for deposit withdraw",
+    )?;
+
+    let swap_ata_info = ctx.swap_or_deposit_ata_info.unwrap();
+    let swap_pda_info = ctx.swap_or_deposit_pda_info.unwrap();
+    let token_account = swap_ata_info.to_token_account()?;
+
+    transfer_signed(
+        swap_pda_info,
+        swap_ata_info,
+        ctx.external_address_info,
+        ctx.token_program_info,
+        token_account.amount,
+        &[&[
+            CODE_VM,
+            VM_SWAP_PDA,
+            &ctx.depositor_info.key.to_bytes(),
+            &ctx.vm_info.key.to_bytes(),
+            &[bump],
+        ]],
+    )?;
+
+    // No receipt is created for this type of withdraw
+
+    Ok(())
+}
+
+
 pub struct WithdrawContext<'a, 'b> {
     pub depositor_info: &'a AccountInfo<'b>,
     pub payer_info: &'a AccountInfo<'b>,
@@ -249,8 +296,8 @@ pub struct WithdrawContext<'a, 'b> {
     pub vm_omnibus: Option<&'a AccountInfo<'b>>,
     pub vm_memory_info: Option<&'a AccountInfo<'b>>,
     pub vm_storage_info: Option<&'a AccountInfo<'b>>,
-    pub deposit_pda_info: Option<&'a AccountInfo<'b>>,
-    pub deposit_ata_info: Option<&'a AccountInfo<'b>>,
+    pub swap_or_deposit_pda_info: Option<&'a AccountInfo<'b>>,
+    pub swap_or_deposit_ata_info: Option<&'a AccountInfo<'b>>,
     pub unlock_pda_info: &'a AccountInfo<'b>,
     pub withdraw_receipt_info: Option<&'a AccountInfo<'b>>,
     pub external_address_info: &'a AccountInfo<'b>,
@@ -268,8 +315,8 @@ impl<'a, 'b> WithdrawContext<'a, 'b> {
             vm_omnibus,
             vm_memory_info,
             vm_storage_info,
-            deposit_pda_info,
-            deposit_ata_info,
+            swap_or_deposit_pda_info,
+            swap_or_deposit_ata_info,
             unlock_pda_info,
             withdraw_receipt_info,
             external_address_info,
@@ -301,8 +348,8 @@ impl<'a, 'b> WithdrawContext<'a, 'b> {
             vm_omnibus,
             vm_memory_info,
             vm_storage_info,
-            deposit_pda_info,
-            deposit_ata_info,
+            swap_or_deposit_pda_info,
+            swap_or_deposit_ata_info,
             unlock_pda_info,
             withdraw_receipt_info,
             external_address_info,

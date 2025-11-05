@@ -76,6 +76,88 @@ fn run_withdraw_from_deposit_pda() {
         destination, 
         WithdrawIxData::FromDeposit { bump: deposit_pda_bump }
     ).is_ok());
+
+    let deposit_ata_balance = get_ata_balance(&svm, &deposit_ata);
+    assert_eq!(0, deposit_ata_balance);
+
+    let destination_balance = get_ata_balance(&svm, &destination);
+    assert_eq!(amount, destination_balance);
+}
+
+#[test]
+fn run_withdraw_from_swap_pda() {
+    let (mut svm, payer, mint_owner, mint_pk, vm_address) =
+        setup_svm_with_payer_and_vm(21);
+
+    let name = "test";
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
+
+    let (vm_memory, _) =
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
+
+    let amount = 1000;
+    let account_index = 7;
+
+    let (vta, vta_key) =
+        create_timelock(&mut svm, &payer, vm_address, vm_memory, account_index);
+
+    let swapper = vta_key.pubkey();
+    let (swap_pda, swap_pda_bump) = find_timelock_swap_pda(&vm_address, &swapper);
+    let swap_ata = create_ata(&mut svm, &payer, &mint_pk, &swap_pda);
+
+    let dest_key = create_keypair();
+    let destination = create_ata(&mut svm, &payer, &mint_pk, &dest_key.pubkey());
+
+    mint_to(&mut svm, &payer, &mint_pk, &mint_owner, &swap_ata, amount).unwrap();
+
+    let vm = get_vm_account(&svm, vm_address);
+    let timelock_address = vta.get_timelock_address(
+        &vm.get_mint(),
+        &vm.get_authority(),
+        vm.get_lock_duration()
+    );
+
+    let unlock_address = vta.get_unlock_address(&timelock_address, &vm_address);
+
+    assert!(tx_unlock_init(
+        &mut svm,
+        &payer,
+        &vta_key,
+        vm_address,
+        unlock_address,
+    ).is_ok());
+
+    let unlock = get_unlock_state(&svm, unlock_address);
+    let mut clock = svm.get_sysvar::<Clock>();
+    clock.unix_timestamp = unlock.unlock_at + 1;
+    svm.set_sysvar::<Clock>(&clock);
+
+    assert!(tx_unlock_finalize(
+        &mut svm,
+        &payer,
+        &vta_key,
+        vm_address,
+        unlock_address,
+    ).is_ok());
+
+    assert!(tx_withdraw_from_swap(
+        &mut svm,
+        &payer,
+        &vta_key,
+        vm_address,
+        swap_pda,
+        swap_ata,
+        unlock_address,
+        destination,
+        WithdrawIxData::FromSwap { bump: swap_pda_bump }
+    ).is_ok());
+
+    let swap_ata_balance = get_ata_balance(&svm, &swap_ata);
+    assert_eq!(0, swap_ata_balance);
+
+    let destination_balance = get_ata_balance(&svm, &destination);
+    assert_eq!(amount, destination_balance);
 }
 
 #[test]
