@@ -47,14 +47,14 @@ compute units.
 
 #### Release Schedule
 
-| Milestone | Status | VM | Flipcash |
+| Milestone | Status | VM | Open Code Protocol |
 | --- | --- | --- | --- |
 | Anchor Version | Done |Aug 9th, 2024 | - |
 | Steel Version | Done | Oct 24th, 2024 | - |
 | Audited Release | Done | Feb 18th, 2024 | - |
 | IDLs | [Done](https://github.com/code-payments/code-vm/blob/main/idl/code_vm.json) | Oct 30th, 2024 | - |
 | Indexer | [Done](https://github.com/code-payments/code-vm-indexer) | - | Aug 15th, 2024 |
-| Sequencer | Done | - | November 25th, 2024 |
+| Sequencer | [Done](https://github.com/code-payments/ocp-server) | - | November 25th, 2024 |
 | Explorer | tbd |  |  |
 | Documentation | tbd |  |  |
 
