@@ -164,8 +164,7 @@
             "writable": true
           },
           {
-            "name": "destination",
-            "writable": true
+            "name": "destination"
           },
           {
             "name": "token_program",
@@ -803,6 +802,7 @@
           },
           {
             "name": "swapper",
+            "writable": true,
             "signer": true
           },
           {
@@ -2090,8 +2090,7 @@
           "writable": true
         },
         {
-          "name": "destination",
-          "writable": true
+          "name": "destination"
         },
         {
           "name": "token_program",
@@ -2729,6 +2728,7 @@
         },
         {
           "name": "swapper",
+          "writable": true,
           "signer": true
         },
         {

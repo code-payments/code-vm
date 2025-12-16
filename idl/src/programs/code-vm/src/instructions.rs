@@ -247,6 +247,7 @@ pub struct TransferForSwap<'info> {
     pub vm_authority: Signer<'info>,
     #[account(mut)]
     pub vm: Account<'info, CodeVmAccount>,
+     #[account(mut)]
     pub swapper: Signer<'info>,
     pub swap_pda: AccountInfo<'info>,
     #[account(mut)]
@@ -283,7 +284,6 @@ pub struct CloseSwapAccountIfEmpty<'info> {
     pub swap_pda: AccountInfo<'info>,
     #[account(mut)]
     pub swap_ata: AccountInfo<'info>,
-    #[account(mut)]
     pub destination: AccountInfo<'info>,
     pub token_program: Program<'info, Token>,
 }
