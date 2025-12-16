@@ -10,7 +10,6 @@ use crate::{
 #[derive(Clone, Copy, Debug, Eq, PartialEq, TryFromPrimitive)]
 pub enum CodeInstruction {
     Unknown = 0,
-
     InitVmIx,
     InitMemoryIx,
     InitStorageIx,
@@ -18,19 +17,15 @@ pub enum CodeInstruction {
     InitNonceIx,
     InitTimelockIx,
     InitUnlockIx,
-
     ExecIx,
     CompressIx,
     DecompressIx,
-
     ResizeMemoryIx,
     SnapshotIx,
-
     DepositFromPdaIx,
     WithdrawIx,
     UnlockIx,
     DepositWithAuthorityIx,
-
     TransferForSwapIx,
     CancelSwapIx,
     CloseSwapAccountIfEmptyIx,
@@ -43,19 +38,15 @@ instruction!(CodeInstruction, InitRelayIx);
 instruction!(CodeInstruction, InitNonceIx);
 instruction!(CodeInstruction, InitTimelockIx);
 instruction!(CodeInstruction, InitUnlockIx);
-
 instruction!(CodeInstruction, ExecIx);
 instruction!(CodeInstruction, CompressIx);
 instruction!(CodeInstruction, DecompressIx);
-
 instruction!(CodeInstruction, ResizeMemoryIx);
 instruction!(CodeInstruction, SnapshotIx);
-
 instruction!(CodeInstruction, DepositFromPdaIx);
 instruction!(CodeInstruction, WithdrawIx);
 instruction!(CodeInstruction, UnlockIx);
 instruction!(CodeInstruction, DepositWithAuthorityIx);
-
 instruction!(CodeInstruction, TransferForSwapIx);
 instruction!(CodeInstruction, CancelSwapIx);
 instruction!(CodeInstruction, CloseSwapAccountIfEmptyIx);
