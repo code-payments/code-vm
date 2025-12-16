@@ -3,7 +3,7 @@ resolver = "2"
 members = ["api", "program"]
 
 [workspace.package]
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 license = "Apache-2.0"
 homepage = ""
@@ -13,7 +13,7 @@ readme = "./README.md"
 keywords = ["solana"]
 
 [workspace.dependencies]
-code-vm-api = { path = "./api", version = "0.1.0" }
+code-vm-api = { path = "./api", version = "1.0.0" }
 borsh = "0.10.3"
 bs58 = "0.4.0"
 bytemuck = "1.14"

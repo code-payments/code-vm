@@ -2,7 +2,7 @@
 ![license][license-image]
 ![version][version-image]
 
-[version-image]: https://img.shields.io/badge/version-0.2.0-blue.svg?style=flat
+[version-image]: https://img.shields.io/badge/version-1.0.0-blue.svg?style=flat
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
 
 The Code Virtual Machine (Code VM) is a program that runs on the Solana
@@ -21,7 +21,6 @@ using the Flipcash app or manually through a public indexer.
 | Network | Address | Audited By | Status | Audit Report | Commit |
 | --- | --- | --- | --- | --- | --- |
 | Mainnet | [vmZ1WU...5YMRTJ](https://explorer.solana.com/address/vmZ1WUq8SxjBWcaeTCvgJRZbS84R61uniFsQy5YMRTJ) | [OtterSec](https://osec.io/) | Completed | [Report](https://github.com/code-payments/code-vm/blob/main/docs/code_audit_final.pdf) | [c49f95d9](https://github.com/code-payments/code-vm/commit/c49f95d92095eb5955955f1bc888e25957b2f64d) |
-| Devnet | [J8FLfS...Rr3L24](https://explorer.solana.com/address/J8FLfS8rqBcQ3hH8KTfQF3zBNG3r3uaG2WqfNoRr3L24?cluster=devnet) | - | - | - | - |
 
 ## Dev Milestones
 
