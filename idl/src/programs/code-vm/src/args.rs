@@ -136,4 +136,35 @@ pub enum WithdrawArgsData {
     FromDeposit {
         bump: u8,
     } = 2,
+    FromSwap {
+        bump: u8,
+    } = 3,
+}
+
+#[repr(C)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
+pub struct DepositWithAuthorityArgs {
+    pub account_index: u16,
+    pub amount: u64,
+}
+
+#[repr(C)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
+pub struct TransferForSwapArgs {
+    pub amount: u64,
+    pub bump: u8,
+}
+
+#[repr(C)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
+pub struct CancelSwapArgs {
+    pub account_index: u16,
+    pub amount: u64,
+    pub bump: u8,
+}
+
+#[repr(C)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
+pub struct CloseSwapAccountIfEmptyArgs {
+    pub bump: u8,
 }

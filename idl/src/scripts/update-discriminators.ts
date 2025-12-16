@@ -15,9 +15,13 @@ const instructionValues = {
     decompress: [10],
     resize_memory: [11],
     snapshot: [12],
-    deposit: [13],
+    deposit_from_pda: [13],
     withdraw: [14],
     unlock: [15],
+    deposit_with_authority: [16],
+    transfer_for_swap: [17],
+    cancel_swap: [18],
+    close_swap_account_if_empty: [19],
 };
 
 // Pulled from: 

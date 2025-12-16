@@ -34,9 +34,13 @@ enum Instruction : u8 {
     DecompressIx = 10,
     ResizeMemoryIx = 11,
     SnapshotIx = 12,
-    DepositIx = 13,
+    DepositFromPdaIx = 13,
     WithdrawIx = 14,
     UnlockIx = 15,
+    DepositWithAuthorityIx = 16,
+    TransferForSwapIx = 17,
+    CancelSwapIx = 18,
+    CloseSwapAccountIfEmptyIx = 19,
 };
 
 enum Opcode : u8 {
@@ -48,7 +52,7 @@ enum Opcode : u8 {
     WithdrawOp = 14,
     ExternalRelayOp = 20,
     RelayOp = 21,
-    Airdrop = 30,
+    AirdropOp = 30,
 };
 
 
@@ -123,7 +127,7 @@ struct ExecArgs {
     else if (opcode == Opcode::ConditionalTransferOp) {
         ConditionalTransferOp data;
     }
-    else if (opcode == Opcode::Airdrop) {
+    else if (opcode == Opcode::AirdropOp) {
         AirdropOp data;
     }
     else {
@@ -185,9 +189,29 @@ struct InitRelayArgs {
 
 struct SnapshotArgs { };
 
-struct DepositArgs {
+struct DepositFromPdaArgs {
     u16 account_index;
     u64 amount;
+    u8 bump;
+};
+
+struct DepositWithAuthorityArgs {
+    u16 account_index;
+    u64 amount;
+};
+
+struct TransferForSwapArgs {
+    u64 amount;
+    u8 bump;
+};
+
+struct CancelSwapArgs {
+    u16 account_index;
+    u64 amount;
+    u8 bump;
+};
+
+struct CloseSwapAccountIfEmptyArgs {
     u8 bump;
 };
 
@@ -209,6 +233,10 @@ struct WithdrawArgsFromDeposit {
     u8 bump;
 };
 
+struct WithdrawArgsFromSwap {
+    u8 bump;
+};
+
 struct WithdrawArgs {
     u8 discriminator;
     if (discriminator == 0) { // FromMemory
@@ -219,6 +247,9 @@ struct WithdrawArgs {
     }
     else if (discriminator == 2) { // FromDeposit
         WithdrawArgsFromDeposit data;
+    }
+    else if (discriminator == 3) { // FromSwap
+        WithdrawArgsFromSwap data;
     }
     else {
         u8 data[];
@@ -264,14 +295,26 @@ struct InstructionData {
     else if (discriminator == Instruction::SnapshotIx) {
         SnapshotArgs data;
     }
-    else if (discriminator == Instruction::DepositIx) {
-        DepositArgs data;
+    else if (discriminator == Instruction::DepositFromPdaIx) {
+        DepositFromPdaArgs data;
     }
     else if (discriminator == Instruction::WithdrawIx) {
         WithdrawArgs data;
     }
     else if (discriminator == Instruction::UnlockIx) {
         UnlockArgs data;
+    }
+    else if (discriminator == Instruction::DepositWithAuthorityIx) {
+        DepositWithAuthorityArgs data;
+    }
+    else if (discriminator == Instruction::TransferForSwapIx) {
+        TransferForSwapArgs data;
+    }
+    else if (discriminator == Instruction::CancelSwapIx) {
+        CancelSwapArgs data;
+    }
+    else if (discriminator == Instruction::CloseSwapAccountIfEmptyIx) {
+        CloseSwapAccountIfEmptyArgs data;
     }
     else {
         u8 data[];

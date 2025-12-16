@@ -64,7 +64,7 @@ pub mod code_vm {
         Ok(())
     }
 
-    pub fn deposit(_ctx: Context<Deposit>, _data: DepositArgs) -> Result<()> {
+    pub fn deposit_from_pda(_ctx: Context<DepositFromPda>, _data: DepositArgs) -> Result<()> {
         Ok(())
     }
 
@@ -73,6 +73,22 @@ pub mod code_vm {
     }
 
     pub fn unlock(_ctx: Context<Unlock>, _data: UnlockArgs) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn deposit_with_authority(_ctx: Context<DepositWithAuthority>, _data: DepositWithAuthorityArgs) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn transfer_for_swap(_ctx: Context<TransferForSwap>, _data: TransferForSwapArgs) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn cancel_swap(_ctx: Context<CancelSwap>, _data: CancelSwapArgs) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn close_swap_account_if_empty(_ctx: Context<CloseSwapAccountIfEmpty>, _data: CloseSwapAccountIfEmptyArgs) -> Result<()> {
         Ok(())
     }
 }

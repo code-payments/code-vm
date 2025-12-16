@@ -123,7 +123,7 @@ pub struct Decompress<'info> {
 }
 
 #[derive(Accounts)]
-pub struct Deposit<'info> {
+pub struct DepositFromPda<'info> {
     #[account(mut)]
     pub vm_authority: Signer<'info>,
     #[account(mut)]
@@ -221,4 +221,69 @@ pub struct Withdraw<'info> {
     pub token_program: Program<'info, Token>,
     pub system_program: Option<Program<'info, System>>,
     pub rent_sysvar: Option<Sysvar<'info, Rent>>,
+}
+
+#[derive(Accounts)]
+pub struct DepositWithAuthority<'info> {
+    #[account(mut)]
+    pub vm_authority: Signer<'info>,
+    #[account(mut)]
+    pub vm: Account<'info, CodeVmAccount>,
+    #[account(mut)]
+    pub vm_memory: Account<'info, MemoryAccount>,
+    #[account(mut)]
+    pub source_authority: Signer<'info>,
+    #[account(mut)]
+    pub source_ata: AccountInfo<'info>,
+    pub destination: AccountInfo<'info>,
+    #[account(mut)]
+    pub omnibus: AccountInfo<'info>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct TransferForSwap<'info> {
+    #[account(mut)]
+    pub vm_authority: Signer<'info>,
+    #[account(mut)]
+    pub vm: Account<'info, CodeVmAccount>,
+    pub swapper: Signer<'info>,
+    pub swap_pda: AccountInfo<'info>,
+    #[account(mut)]
+    pub swap_ata: AccountInfo<'info>,
+    #[account(mut)]
+    pub destination: AccountInfo<'info>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct CancelSwap<'info> {
+    #[account(mut)]
+    pub vm_authority: Signer<'info>,
+    #[account(mut)]
+    pub vm: Account<'info, CodeVmAccount>,
+    #[account(mut)]
+    pub vm_memory: Account<'info, MemoryAccount>,
+    pub swapper: AccountInfo<'info>,
+    pub swap_pda: AccountInfo<'info>,
+    #[account(mut)]
+    pub swap_ata: AccountInfo<'info>,
+    #[account(mut)]
+    pub omnibus: AccountInfo<'info>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct CloseSwapAccountIfEmpty<'info> {
+    #[account(mut)]
+    pub vm_authority: Signer<'info>,
+    #[account(mut)]
+    pub vm: Account<'info, CodeVmAccount>,
+    pub swapper: AccountInfo<'info>,
+    pub swap_pda: AccountInfo<'info>,
+    #[account(mut)]
+    pub swap_ata: AccountInfo<'info>,
+    #[account(mut)]
+    pub destination: AccountInfo<'info>,
+    pub token_program: Program<'info, Token>,
 }
