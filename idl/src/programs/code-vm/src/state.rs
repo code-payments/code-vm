@@ -2,8 +2,8 @@ use anchor_lang::prelude::*;
 use crate::{types::*, MAX_NAME_LEN};
 
 pub type RelayHistory = CircularBuffer<32, 32>;
-pub type RelayTree = MerkleTree<64>;
-pub type CompressedState = MerkleTree<24>;
+pub type RelayTree = MerkleTree<63>;
+pub type CompressedState = MerkleTree<20>;
 
 #[account]
 #[repr(C, align(8))]
@@ -28,8 +28,10 @@ pub struct MemoryAccount {
     pub vm: Pubkey,
     pub name: [u8; MAX_NAME_LEN],
     pub bump: u8,
+    pub version: u8,
+    pub account_size: u16,
+    pub num_accounts: u32,
 
-    pub packed_info: [u8; 8],
     //pub _data: PhantomData<[u8]>,
 }
 

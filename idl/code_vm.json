@@ -903,11 +903,11 @@
             "optional": true
           },
           {
-            "name": "deposit_pda",
+            "name": "swap_or_deposit_pda",
             "optional": true
           },
           {
-            "name": "deposit_ata",
+            "name": "swap_or_deposit_ata",
             "writable": true,
             "optional": true
           },
@@ -1558,13 +1558,16 @@
               "type": "u8"
             },
             {
-              "name": "packed_info",
-              "type": {
-                "array": [
-                  "u8",
-                  8
-                ]
-              }
+              "name": "version",
+              "type": "u8"
+            },
+            {
+              "name": "account_size",
+              "type": "u16"
+            },
+            {
+              "name": "num_accounts",
+              "type": "u32"
             }
           ]
         }
@@ -2829,11 +2832,11 @@
           "optional": true
         },
         {
-          "name": "deposit_pda",
+          "name": "swap_or_deposit_pda",
           "optional": true
         },
         {
-          "name": "deposit_ata",
+          "name": "swap_or_deposit_ata",
           "writable": true,
           "optional": true
         },
@@ -3410,13 +3413,16 @@
             "type": "u8"
           },
           {
-            "name": "packed_info",
-            "type": {
-              "array": [
-                "u8",
-                8
-              ]
-            }
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "account_size",
+            "type": "u16"
+          },
+          {
+            "name": "num_accounts",
+            "type": "u32"
           }
         ]
       }

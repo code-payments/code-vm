@@ -211,9 +211,9 @@ pub struct Withdraw<'info> {
     #[account(mut)]
     pub vm_memory: Option<AccountInfo<'info>>,
     pub vm_storage: Option<AccountInfo<'info>>,
-    pub deposit_pda: Option<AccountInfo<'info>>,
+    pub swap_or_deposit_pda: Option<AccountInfo<'info>>,
     #[account(mut)]
-    pub deposit_ata: Option<AccountInfo<'info>>,
+    pub swap_or_deposit_ata: Option<AccountInfo<'info>>,
     pub unlock_pda: Account<'info, UnlockStateAccount>,
     pub withdraw_receipt: Option<Account<'info, WithdrawReceiptAccount>>,
     #[account(mut)]
