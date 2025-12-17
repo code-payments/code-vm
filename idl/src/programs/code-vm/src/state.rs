@@ -1,10 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::{types::*, MAX_NAME_LEN};
 
-pub type RelayHistory = CircularBuffer<32, 32>;
-pub type RelayTree = MerkleTree<63>;
-pub type CompressedState = MerkleTree<20>;
-
 #[account]
 #[repr(C, align(8))]
 #[derive(Copy, Debug, PartialEq)]

@@ -1054,64 +1054,6 @@
         }
       },
       {
-        "name": "CircularBuffer",
-        "repr": {
-          "kind": "c"
-        },
-        "generics": [
-          {
-            "kind": "const",
-            "name": "N",
-            "type": "usize"
-          },
-          {
-            "kind": "const",
-            "name": "M",
-            "type": "usize"
-          }
-        ],
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "items",
-              "type": {
-                "array": [
-                  {
-                    "array": [
-                      "u8",
-                      {
-                        "generic": "M"
-                      }
-                    ]
-                  },
-                  {
-                    "generic": "N"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "offset",
-              "type": "u8"
-            },
-            {
-              "name": "num_items",
-              "type": "u8"
-            },
-            {
-              "name": "_padding",
-              "type": {
-                "array": [
-                  "u8",
-                  6
-                ]
-              }
-            }
-          ]
-        }
-      },
-      {
         "name": "CloseSwapAccountIfEmptyArgs",
         "repr": {
           "kind": "c"
@@ -1202,6 +1144,55 @@
                   "name": "Signature"
                 }
               }
+            }
+          ]
+        }
+      },
+      {
+        "name": "CompressedState",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "root",
+              "type": {
+                "defined": {
+                  "name": "Hash"
+                }
+              }
+            },
+            {
+              "name": "filled_subtrees",
+              "type": {
+                "array": [
+                  {
+                    "defined": {
+                      "name": "Hash"
+                    }
+                  },
+                  20
+                ]
+              }
+            },
+            {
+              "name": "zero_values",
+              "type": {
+                "array": [
+                  {
+                    "defined": {
+                      "name": "Hash"
+                    }
+                  },
+                  20
+                ]
+              }
+            },
+            {
+              "name": "next_index",
+              "type": "u64"
             }
           ]
         }
@@ -1573,66 +1564,6 @@
         }
       },
       {
-        "name": "MerkleTree",
-        "repr": {
-          "kind": "c"
-        },
-        "generics": [
-          {
-            "kind": "const",
-            "name": "N",
-            "type": "usize"
-          }
-        ],
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "root",
-              "type": {
-                "defined": {
-                  "name": "Hash"
-                }
-              }
-            },
-            {
-              "name": "filled_subtrees",
-              "type": {
-                "array": [
-                  {
-                    "defined": {
-                      "name": "Hash"
-                    }
-                  },
-                  {
-                    "generic": "N"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "zero_values",
-              "type": {
-                "array": [
-                  {
-                    "defined": {
-                      "name": "Hash"
-                    }
-                  },
-                  {
-                    "generic": "N"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "next_index",
-              "type": "u64"
-            }
-          ]
-        }
-      },
-      {
         "name": "RelayAccount",
         "repr": {
           "kind": "c",
@@ -1687,7 +1618,7 @@
               "name": "recent_roots",
               "type": {
                 "defined": {
-                  "name": "CircularBuffer"
+                  "name": "RelayHistory"
                 }
               }
             },
@@ -1695,9 +1626,99 @@
               "name": "history",
               "type": {
                 "defined": {
-                  "name": "MerkleTree"
+                  "name": "RelayTree"
                 }
               }
+            }
+          ]
+        }
+      },
+      {
+        "name": "RelayHistory",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "items",
+              "type": {
+                "array": [
+                  {
+                    "defined": {
+                      "name": "Hash"
+                    }
+                  },
+                  32
+                ]
+              }
+            },
+            {
+              "name": "offset",
+              "type": "u8"
+            },
+            {
+              "name": "num_items",
+              "type": "u8"
+            },
+            {
+              "name": "_padding",
+              "type": {
+                "array": [
+                  "u8",
+                  6
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "RelayTree",
+        "repr": {
+          "kind": "c"
+        },
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "root",
+              "type": {
+                "defined": {
+                  "name": "Hash"
+                }
+              }
+            },
+            {
+              "name": "filled_subtrees",
+              "type": {
+                "array": [
+                  {
+                    "defined": {
+                      "name": "Hash"
+                    }
+                  },
+                  63
+                ]
+              }
+            },
+            {
+              "name": "zero_values",
+              "type": {
+                "array": [
+                  {
+                    "defined": {
+                      "name": "Hash"
+                    }
+                  },
+                  63
+                ]
+              }
+            },
+            {
+              "name": "next_index",
+              "type": "u64"
             }
           ]
         }
@@ -1790,7 +1811,7 @@
               "name": "compressed_state",
               "type": {
                 "defined": {
-                  "name": "MerkleTree"
+                  "name": "CompressedState"
                 }
               }
             }
@@ -2909,64 +2930,6 @@
       }
     },
     {
-      "name": "CircularBuffer",
-      "repr": {
-        "kind": "c"
-      },
-      "generics": [
-        {
-          "kind": "const",
-          "name": "N",
-          "type": "usize"
-        },
-        {
-          "kind": "const",
-          "name": "M",
-          "type": "usize"
-        }
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "items",
-            "type": {
-              "array": [
-                {
-                  "array": [
-                    "u8",
-                    {
-                      "generic": "M"
-                    }
-                  ]
-                },
-                {
-                  "generic": "N"
-                }
-              ]
-            }
-          },
-          {
-            "name": "offset",
-            "type": "u8"
-          },
-          {
-            "name": "num_items",
-            "type": "u8"
-          },
-          {
-            "name": "_padding",
-            "type": {
-              "array": [
-                "u8",
-                6
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
       "name": "CloseSwapAccountIfEmptyArgs",
       "repr": {
         "kind": "c"
@@ -3057,6 +3020,55 @@
                 "name": "Signature"
               }
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CompressedState",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "root",
+            "type": {
+              "defined": {
+                "name": "Hash"
+              }
+            }
+          },
+          {
+            "name": "filled_subtrees",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Hash"
+                  }
+                },
+                20
+              ]
+            }
+          },
+          {
+            "name": "zero_values",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Hash"
+                  }
+                },
+                20
+              ]
+            }
+          },
+          {
+            "name": "next_index",
+            "type": "u64"
           }
         ]
       }
@@ -3428,66 +3440,6 @@
       }
     },
     {
-      "name": "MerkleTree",
-      "repr": {
-        "kind": "c"
-      },
-      "generics": [
-        {
-          "kind": "const",
-          "name": "N",
-          "type": "usize"
-        }
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "root",
-            "type": {
-              "defined": {
-                "name": "Hash"
-              }
-            }
-          },
-          {
-            "name": "filled_subtrees",
-            "type": {
-              "array": [
-                {
-                  "defined": {
-                    "name": "Hash"
-                  }
-                },
-                {
-                  "generic": "N"
-                }
-              ]
-            }
-          },
-          {
-            "name": "zero_values",
-            "type": {
-              "array": [
-                {
-                  "defined": {
-                    "name": "Hash"
-                  }
-                },
-                {
-                  "generic": "N"
-                }
-              ]
-            }
-          },
-          {
-            "name": "next_index",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
       "name": "RelayAccount",
       "repr": {
         "kind": "c",
@@ -3542,7 +3494,7 @@
             "name": "recent_roots",
             "type": {
               "defined": {
-                "name": "CircularBuffer"
+                "name": "RelayHistory"
               }
             }
           },
@@ -3550,9 +3502,99 @@
             "name": "history",
             "type": {
               "defined": {
-                "name": "MerkleTree"
+                "name": "RelayTree"
               }
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RelayHistory",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "items",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Hash"
+                  }
+                },
+                32
+              ]
+            }
+          },
+          {
+            "name": "offset",
+            "type": "u8"
+          },
+          {
+            "name": "num_items",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RelayTree",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "root",
+            "type": {
+              "defined": {
+                "name": "Hash"
+              }
+            }
+          },
+          {
+            "name": "filled_subtrees",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Hash"
+                  }
+                },
+                63
+              ]
+            }
+          },
+          {
+            "name": "zero_values",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Hash"
+                  }
+                },
+                63
+              ]
+            }
+          },
+          {
+            "name": "next_index",
+            "type": "u64"
           }
         ]
       }
@@ -3645,7 +3687,7 @@
             "name": "compressed_state",
             "type": {
               "defined": {
-                "name": "MerkleTree"
+                "name": "CompressedState"
               }
             }
           }
