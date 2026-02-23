@@ -41,7 +41,6 @@ pub fn process_init_nonce(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     check_signer(vm_authority_info)?;
     check_mut(vm_info)?;
     check_mut(vm_memory_info)?;
-    check_readonly(virtual_account_owner_info)?;
 
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
 

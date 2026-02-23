@@ -52,7 +52,6 @@ pub fn process_init_relay(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     check_mut(vm_info)?;
     check_mut(relay_info)?;
     check_mut(relay_vault_info)?;
-    check_readonly(mint_info)?;
     check_program(token_program_info, &spl_token::id())?;
     check_program(system_program_info, &system_program::id())?;
     check_sysvar(rent_sysvar_info, &sysvar::rent::id())?;

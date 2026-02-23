@@ -56,7 +56,6 @@ pub fn process_init_vm(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     check_signer(vm_authority_info)?;
     check_mut(vm_info)?;
     check_mut(omnibus_info)?;
-    check_readonly(mint_info)?;
     check_program(token_program_info, &spl_token::id())?;
     check_program(system_program_info, &system_program::id())?;
     check_sysvar(rent_sysvar_info, &sysvar::rent::id())?;
