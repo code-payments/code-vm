@@ -183,6 +183,11 @@ fn process_withdraw_from_storage(
 
     try_decompress(vm_storage_info, sig_hash, proof)?;
 
+    check_condition(
+        vta.owner.eq(ctx.depositor_info.key),
+        "depositor does not match the owner of the timelock account",
+    )?;
+
     transfer_signed(
         vm_omnibus,
         vm_omnibus,
