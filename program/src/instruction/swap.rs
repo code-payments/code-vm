@@ -130,6 +130,7 @@ pub fn process_close_swap_account_if_empty(accounts: &[AccountInfo<'_>], data: &
     check_signer(vm_authority_info)?;
     check_mut(vm_info)?;
     check_mut(swap_ata_info)?;
+    check_program(token_program_info, &spl_token::id())?;
 
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
 
