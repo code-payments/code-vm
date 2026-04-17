@@ -84,6 +84,10 @@ pub mod code_vm {
         Ok(())
     }
 
+    pub fn transfer_for_swap_with_fee(_ctx: Context<TransferForSwapWithFee>, _data: TransferForSwapWithFeeArgs) -> Result<()> {
+        Ok(())
+    }
+
     pub fn cancel_swap(_ctx: Context<CancelSwap>, _data: CancelSwapArgs) -> Result<()> {
         Ok(())
     }

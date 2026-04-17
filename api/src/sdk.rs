@@ -582,6 +582,39 @@ pub fn transfer_for_swap(
     }
 }
 
+pub fn transfer_for_swap_with_fee(
+    vm_authority: Pubkey,
+    vm: Pubkey,
+    swapper: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    swap_destination: Pubkey,
+    fee_destination: Pubkey,
+    swap_amount: u64,
+    fee_amount: u64,
+    bump: u8,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(vm_authority, true),
+            AccountMeta::new(vm, false),
+            AccountMeta::new(swapper, true),
+            AccountMeta::new_readonly(swap_pda, false),
+            AccountMeta::new(swap_ata, false),
+            AccountMeta::new(swap_destination, false),
+            AccountMeta::new(fee_destination, false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+        ],
+        data: TransferForSwapWithFeeIx::from_struct(
+            ParsedTransferForSwapWithFeeIx{
+            swap_amount,
+            fee_amount,
+            bump,
+        }).to_bytes(),
+    }
+}
+
 pub fn cancel_swap(
     vm_authority: Pubkey,
     vm: Pubkey,

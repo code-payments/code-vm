@@ -34,6 +34,7 @@ pub fn process_instruction(
         CodeInstruction::TransferForSwapIx         => process_transfer_for_swap(accounts, data)?,
         CodeInstruction::CancelSwapIx              => process_cancel_swap(accounts, data)?,
         CodeInstruction::CloseSwapAccountIfEmptyIx => process_close_swap_account_if_empty(accounts, data)?,
+        CodeInstruction::TransferForSwapWithFeeIx  => process_transfer_for_swap_with_fee(accounts, data)?,
     }
 
     Ok(())

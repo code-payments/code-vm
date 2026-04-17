@@ -157,6 +157,14 @@ pub struct TransferForSwapArgs {
 
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
+pub struct TransferForSwapWithFeeArgs {
+    pub swap_amount: u64,
+    pub fee_amount: u64,
+    pub bump: u8,
+}
+
+#[repr(C)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
 pub struct CancelSwapArgs {
     pub account_index: u16,
     pub amount: u64,

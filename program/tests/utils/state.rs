@@ -746,6 +746,41 @@ pub fn tx_transfer_for_swap(
     send_tx(svm, tx)
 }
 
+pub fn tx_transfer_for_swap_with_fee(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    swapper: &Keypair,
+    vm_address: Pubkey,
+    swap_pda: Pubkey,
+    swap_ata: Pubkey,
+    swap_destination: Pubkey,
+    fee_destination: Pubkey,
+    swap_amount: u64,
+    fee_amount: u64,
+    bump: u8,
+) -> TransactionResult {
+    let payer_pk = payer.pubkey();
+    let swapper_pk = swapper.pubkey();
+    let blockhash = svm.latest_blockhash();
+
+    let ix = transfer_for_swap_with_fee(
+        payer_pk,
+        vm_address,
+        swapper_pk,
+        swap_pda,
+        swap_ata,
+        swap_destination,
+        fee_destination,
+        swap_amount,
+        fee_amount,
+        bump,
+    );
+
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer, swapper], blockhash);
+
+    send_tx(svm, tx)
+}
+
 pub fn tx_cancel_swap(
     svm: &mut LiteSVM,
     payer: &Keypair,

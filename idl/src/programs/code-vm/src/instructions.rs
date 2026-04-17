@@ -258,6 +258,24 @@ pub struct TransferForSwap<'info> {
 }
 
 #[derive(Accounts)]
+pub struct TransferForSwapWithFee<'info> {
+    #[account(mut)]
+    pub vm_authority: Signer<'info>,
+    #[account(mut)]
+    pub vm: Account<'info, CodeVmAccount>,
+     #[account(mut)]
+    pub swapper: Signer<'info>,
+    pub swap_pda: AccountInfo<'info>,
+    #[account(mut)]
+    pub swap_ata: AccountInfo<'info>,
+    #[account(mut)]
+    pub swap_destination: AccountInfo<'info>,
+    #[account(mut)]
+    pub fee_destination: AccountInfo<'info>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
 pub struct CancelSwap<'info> {
     #[account(mut)]
     pub vm_authority: Signer<'info>,

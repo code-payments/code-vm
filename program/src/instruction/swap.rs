@@ -23,6 +23,11 @@ pub fn process_transfer_for_swap(accounts: &[AccountInfo<'_>], data: &[u8]) -> P
     check_mut(destination_info)?;
     check_program(token_program_info, &spl_token::id())?;
 
+    check_condition(
+        args.amount > 0,
+        "amount must be greater than zero",
+    )?;
+
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
 
     transfer_signed(
@@ -41,6 +46,68 @@ pub fn process_transfer_for_swap(accounts: &[AccountInfo<'_>], data: &[u8]) -> P
     )?;
 
     vm.advance_poh(CodeInstruction::TransferForSwapIx, accounts, data);
+
+    Ok(())
+}
+
+// todo: comments
+pub fn process_transfer_for_swap_with_fee(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
+    let args = TransferForSwapWithFeeIx::try_from_bytes(data)?.to_struct()?;
+    let [
+        vm_authority_info,
+        vm_info,
+        swapper_info,
+        swap_pda_info,
+        swap_ata_info,
+        swap_destination_info,
+        fee_destination_info,
+        token_program_info,
+    ] = accounts else {
+        return Err(ProgramError::NotEnoughAccountKeys);
+    };
+
+    check_signer(vm_authority_info)?;
+    check_signer(swapper_info)?;
+    check_mut(vm_info)?;
+    check_mut(swap_ata_info)?;
+    check_mut(swap_destination_info)?;
+    check_mut(fee_destination_info)?;
+    check_program(token_program_info, &spl_token::id())?;
+
+    check_condition(
+        args.swap_amount > 0,
+        "swap amount must be greater than zero",
+    )?;
+
+    let vm = load_vm_checked(vm_info, vm_authority_info)?;
+
+    let seeds: &[&[u8]] = &[
+        CODE_VM,
+        VM_SWAP_PDA,
+        &swapper_info.key.to_bytes(),
+        &vm_info.key.to_bytes(),
+        &[args.bump],
+    ];
+
+    transfer_signed(
+        swap_pda_info,
+        swap_ata_info,
+        swap_destination_info,
+        token_program_info,
+        args.swap_amount,
+        &[seeds],
+    )?;
+
+    transfer_signed(
+        swap_pda_info,
+        swap_ata_info,
+        fee_destination_info,
+        token_program_info,
+        args.fee_amount,
+        &[seeds],
+    )?;
+
+    vm.advance_poh(CodeInstruction::TransferForSwapWithFeeIx, accounts, data);
 
     Ok(())
 }

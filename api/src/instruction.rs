@@ -29,6 +29,7 @@ pub enum CodeInstruction {
     TransferForSwapIx,
     CancelSwapIx,
     CloseSwapAccountIfEmptyIx,
+    TransferForSwapWithFeeIx,
 }
 
 instruction!(CodeInstruction, InitVmIx);
@@ -50,6 +51,7 @@ instruction!(CodeInstruction, DepositWithAuthorityIx);
 instruction!(CodeInstruction, TransferForSwapIx);
 instruction!(CodeInstruction, CancelSwapIx);
 instruction!(CodeInstruction, CloseSwapAccountIfEmptyIx);
+instruction!(CodeInstruction, TransferForSwapWithFeeIx);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
@@ -429,6 +431,38 @@ impl TransferForSwapIx {
 
 pub struct ParsedTransferForSwapIx {
     pub amount: u64,
+    pub bump: u8,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct TransferForSwapWithFeeIx {
+    pub swap_amount: [u8; 8],   // Pack u64 as [u8; 8]
+    pub fee_amount: [u8; 8],    // Pack u64 as [u8; 8]
+    pub bump: u8,
+}
+
+impl TransferForSwapWithFeeIx {
+    pub fn to_struct(&self) -> Result<ParsedTransferForSwapWithFeeIx, std::io::Error> {
+        Ok(ParsedTransferForSwapWithFeeIx {
+            swap_amount: u64::from_le_bytes(self.swap_amount),
+            fee_amount: u64::from_le_bytes(self.fee_amount),
+            bump: self.bump,
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedTransferForSwapWithFeeIx) -> Self {
+        TransferForSwapWithFeeIx {
+            swap_amount: parsed.swap_amount.to_le_bytes(),
+            fee_amount: parsed.fee_amount.to_le_bytes(),
+            bump: parsed.bump,
+        }
+    }
+}
+
+pub struct ParsedTransferForSwapWithFeeIx {
+    pub swap_amount: u64,
+    pub fee_amount: u64,
     pub bump: u8,
 }
 

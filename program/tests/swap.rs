@@ -50,6 +50,59 @@ fn run_transfer_for_swap() {
 }
 
 #[test]
+fn run_transfer_for_swap_with_fee() {
+    let (mut svm, payer, mint_owner, mint_pk, vm_address) =
+        setup_svm_with_payer_and_vm(21);
+
+    let name = "test";
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
+
+    let (vm_memory, _) =
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
+
+    let swap_amount = 900;
+    let fee_amount = 100;
+    let total = swap_amount + fee_amount;
+    let account_index = 7;
+
+    let (_, vta_key) =
+        create_timelock(&mut svm, &payer, vm_address, vm_memory, account_index);
+    let swapper = vta_key.pubkey();
+    let (swap_pda, bump) = find_timelock_swap_pda(&vm_address, &swapper);
+    let swap_ata = create_ata(&mut svm, &payer, &mint_pk, &swap_pda);
+
+    mint_to(&mut svm, &payer, &mint_pk, &mint_owner, &swap_ata, total).unwrap();
+
+    let swap_destination = create_ata(&mut svm, &payer, &mint_pk, &swapper);
+    let fee_collector = create_keypair();
+    let fee_destination = create_ata(&mut svm, &payer, &mint_pk, &fee_collector.pubkey());
+
+    assert!(tx_transfer_for_swap_with_fee(
+        &mut svm,
+        &payer,
+        &vta_key,
+        vm_address,
+        swap_pda,
+        swap_ata,
+        swap_destination,
+        fee_destination,
+        swap_amount,
+        fee_amount,
+        bump
+    ).is_ok());
+
+    let swap_ata_balance = get_ata_balance(&svm, &swap_ata);
+    assert_eq!(0, swap_ata_balance);
+
+    let swap_destination_balance = get_ata_balance(&svm, &swap_destination);
+    assert_eq!(swap_amount, swap_destination_balance);
+
+    let fee_destination_balance = get_ata_balance(&svm, &fee_destination);
+    assert_eq!(fee_amount, fee_destination_balance);
+}
+
+#[test]
 fn run_cancel_swap() {
     let (mut svm, payer, mint_owner, mint_pk, vm_address) =
         setup_svm_with_payer_and_vm(21);
