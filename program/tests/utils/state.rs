@@ -842,3 +842,31 @@ pub fn tx_close_swap_account_if_empty(
 
     send_tx(svm, tx)
 }
+
+pub fn tx_close_deposit_account_if_empty(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    vm: Pubkey,
+    depositor: Pubkey,
+    deposit_pda: Pubkey,
+    deposit_ata: Pubkey,
+    destination: Pubkey,
+    bump: u8,
+) -> TransactionResult {
+    let payer_pk = payer.pubkey();
+    let blockhash = svm.latest_blockhash();
+
+    let ix = close_deposit_account_if_empty(
+        payer_pk,
+        vm,
+        depositor,
+        deposit_pda,
+        deposit_ata,
+        destination,
+        bump,
+    );
+
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer_pk), &[payer], blockhash);
+
+    send_tx(svm, tx)
+}

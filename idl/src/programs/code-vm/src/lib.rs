@@ -95,4 +95,8 @@ pub mod code_vm {
     pub fn close_swap_account_if_empty(_ctx: Context<CloseSwapAccountIfEmpty>, _data: CloseSwapAccountIfEmptyArgs) -> Result<()> {
         Ok(())
     }
+
+    pub fn close_deposit_account_if_empty(_ctx: Context<CloseDepositAccountIfEmpty>, _data: CloseDepositAccountIfEmptyArgs) -> Result<()> {
+        Ok(())
+    }
 }

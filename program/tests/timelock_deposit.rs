@@ -92,3 +92,62 @@ fn run_deposit_with_authority() {
 
     assert_eq!(vta.balance, amount);
 }
+
+#[test]
+fn run_close_deposit_account_if_empty() {
+    let (mut svm, payer, mint_owner, mint_pk, vm_address) =
+        setup_svm_with_payer_and_vm(21);
+
+    let name = "test";
+    let capacity = 100;
+    let account_size = VirtualTimelockAccount::LEN+1;
+
+    let (vm_memory, _) =
+        create_and_resize_memory(&mut svm, &payer, vm_address, capacity, account_size, name);
+
+    let (_, vta_key1) =
+        create_timelock(&mut svm, &payer, vm_address, vm_memory, 0);
+    let depositor1 = vta_key1.pubkey();
+    let (deposit_pda1, bump1) = find_timelock_deposit_pda(&vm_address, &depositor1);
+    let deposit_ata1 = create_ata(&mut svm, &payer, &mint_pk, &deposit_pda1);
+
+    let (_, vta_key2) =
+        create_timelock(&mut svm, &payer, vm_address, vm_memory, 1);
+    let depositor2 = vta_key2.pubkey();
+    let (deposit_pda2, bump2) = find_timelock_deposit_pda(&vm_address, &depositor2);
+    let deposit_ata2 = create_ata(&mut svm, &payer, &mint_pk, &deposit_pda2);
+    mint_to(&mut svm, &payer, &mint_pk, &mint_owner, &deposit_ata2, 1000).unwrap();
+
+    let destination = create_keypair().pubkey();
+
+    assert!(tx_close_deposit_account_if_empty(
+        &mut svm,
+        &payer,
+        vm_address,
+        depositor1,
+        deposit_pda1,
+        deposit_ata1,
+        destination,
+        bump1
+    ).is_ok());
+
+    assert!(tx_close_deposit_account_if_empty(
+        &mut svm,
+        &payer,
+        vm_address,
+        depositor2,
+        deposit_pda2,
+        deposit_ata2,
+        destination,
+        bump2
+    ).is_ok());
+
+    let destination_lamports = svm.get_account(&destination).unwrap().lamports;
+    assert!(destination_lamports > 0);
+
+    let deposit_ata1_lamports = svm.get_account(&deposit_ata1).unwrap().lamports;
+    assert_eq!(0, deposit_ata1_lamports);
+
+    let deposit_ata2_balance = get_ata_balance(&svm, &deposit_ata2);
+    assert_eq!(1000, deposit_ata2_balance);
+}

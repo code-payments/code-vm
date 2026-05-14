@@ -30,6 +30,7 @@ pub enum CodeInstruction {
     CancelSwapIx,
     CloseSwapAccountIfEmptyIx,
     TransferForSwapWithFeeIx,
+    CloseDepositAccountIfEmptyIx,
 }
 
 instruction!(CodeInstruction, InitVmIx);
@@ -52,6 +53,7 @@ instruction!(CodeInstruction, TransferForSwapIx);
 instruction!(CodeInstruction, CancelSwapIx);
 instruction!(CodeInstruction, CloseSwapAccountIfEmptyIx);
 instruction!(CodeInstruction, TransferForSwapWithFeeIx);
+instruction!(CodeInstruction, CloseDepositAccountIfEmptyIx);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
@@ -519,5 +521,29 @@ impl CloseSwapAccountIfEmptyIx {
 }
 
 pub struct ParsedCloseSwapAccountIfEmptyIx {
+    pub bump: u8,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct CloseDepositAccountIfEmptyIx {
+    pub bump: u8,
+}
+
+impl CloseDepositAccountIfEmptyIx {
+    pub fn to_struct(&self) -> Result<ParsedCloseDepositAccountIfEmptyIx, std::io::Error> {
+        Ok(ParsedCloseDepositAccountIfEmptyIx {
+            bump: self.bump,
+        })
+    }
+
+    pub fn from_struct(parsed: ParsedCloseDepositAccountIfEmptyIx) -> Self {
+        CloseDepositAccountIfEmptyIx {
+            bump: parsed.bump,
+        }
+    }
+}
+
+pub struct ParsedCloseDepositAccountIfEmptyIx {
     pub bump: u8,
 }

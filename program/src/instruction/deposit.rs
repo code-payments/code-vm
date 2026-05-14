@@ -198,3 +198,59 @@ pub fn process_deposit_with_authority(accounts: &[AccountInfo<'_>], data: &[u8])
 
     Ok(())
 }
+
+pub fn process_close_deposit_account_if_empty(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
+    let args = CloseDepositAccountIfEmptyIx::try_from_bytes(data)?.to_struct()?;
+    let [
+        vm_authority_info,
+        vm_info,
+        depositor_info,
+        deposit_pda_info,
+        deposit_ata_info,
+        destination_info,
+        token_program_info,
+    ] = accounts else {
+        return Err(ProgramError::NotEnoughAccountKeys);
+    };
+
+    check_signer(vm_authority_info)?;
+    check_mut(vm_info)?;
+    check_mut(deposit_ata_info)?;
+    check_mut(destination_info)?;
+    check_program(token_program_info, &spl_token::id())?;
+
+    let vm = load_vm_checked(vm_info, vm_authority_info)?;
+
+    let token_account = deposit_ata_info.to_token_account()?;
+
+    if token_account.amount > 0 {
+        return Ok(())
+    }
+
+    solana_program::program::invoke_signed(
+            &spl_token::instruction::close_account(
+            token_program_info.key,
+            deposit_ata_info.key,
+            destination_info.key,
+            deposit_pda_info.key,
+            &[deposit_pda_info.key],
+        )?,
+        &[
+            token_program_info.clone(),
+            deposit_ata_info.clone(),
+            destination_info.clone(),
+            deposit_pda_info.clone(),
+        ],
+        &[&[
+            CODE_VM,
+            VM_DEPOSIT_PDA,
+            &depositor_info.key.to_bytes(),
+            &vm_info.key.to_bytes(),
+            &[args.bump],
+        ]],
+    )?;
+
+    vm.advance_poh(CodeInstruction::CloseDepositAccountIfEmptyIx, accounts, data);
+
+    Ok(())
+}

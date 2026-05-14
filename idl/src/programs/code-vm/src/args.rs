@@ -176,3 +176,9 @@ pub struct CancelSwapArgs {
 pub struct CloseSwapAccountIfEmptyArgs {
     pub bump: u8,
 }
+
+#[repr(C)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
+pub struct CloseDepositAccountIfEmptyArgs {
+    pub bump: u8,
+}

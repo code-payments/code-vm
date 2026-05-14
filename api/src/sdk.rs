@@ -674,3 +674,30 @@ pub fn close_swap_account_if_empty(
         }).to_bytes(),
     }
 }
+
+pub fn close_deposit_account_if_empty(
+    vm_authority: Pubkey,
+    vm: Pubkey,
+    depositor: Pubkey,
+    deposit_pda: Pubkey,
+    deposit_ata: Pubkey,
+    destination: Pubkey,
+    bump: u8,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(vm_authority, true),
+            AccountMeta::new(vm, false),
+            AccountMeta::new_readonly(depositor, false),
+            AccountMeta::new_readonly(deposit_pda, false),
+            AccountMeta::new(deposit_ata, false),
+            AccountMeta::new(destination, false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+        ],
+        data: CloseDepositAccountIfEmptyIx::from_struct(
+            ParsedCloseDepositAccountIfEmptyIx{
+            bump,
+        }).to_bytes(),
+    }
+}

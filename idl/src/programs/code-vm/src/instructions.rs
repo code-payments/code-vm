@@ -302,6 +302,22 @@ pub struct CloseSwapAccountIfEmpty<'info> {
     pub swap_pda: AccountInfo<'info>,
     #[account(mut)]
     pub swap_ata: AccountInfo<'info>,
+    #[account(mut)]
+    pub destination: AccountInfo<'info>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct CloseDepositAccountIfEmpty<'info> {
+    #[account(mut)]
+    pub vm_authority: Signer<'info>,
+    #[account(mut)]
+    pub vm: Account<'info, CodeVmAccount>,
+    pub depositor: AccountInfo<'info>,
+    pub deposit_pda: AccountInfo<'info>,
+    #[account(mut)]
+    pub deposit_ata: AccountInfo<'info>,
+    #[account(mut)]
     pub destination: AccountInfo<'info>,
     pub token_program: Program<'info, Token>,
 }
