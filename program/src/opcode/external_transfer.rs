@@ -29,9 +29,9 @@ use crate::ExecContext;
 pub fn process_external_transfer(
     ctx: &ExecContext,
     data: &ExecIxData,
+    vm: &CodeVmAccount,
 ) -> ProgramResult {
 
-    let vm = load_vm(ctx.vm_info)?;
     let args = ExternalTransferOp::try_from_bytes(&data.data)?.to_struct()?;
 
     check_condition(

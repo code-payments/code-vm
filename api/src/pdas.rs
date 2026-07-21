@@ -142,7 +142,6 @@ pub fn create_virtual_timelock_address(
     .unwrap()
 }
 
-#[cfg(not(target_os = "solana"))]
 pub fn find_virtual_timelock_vault_address(timelock_address: &Pubkey) -> (Pubkey, u8) {
     Pubkey::find_program_address(
         &[VM_TIMELOCK_VAULT, timelock_address.as_ref(), &[3]],

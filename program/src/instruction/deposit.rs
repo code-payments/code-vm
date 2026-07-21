@@ -66,7 +66,7 @@ pub fn process_deposit_from_pda(accounts: &[AccountInfo<'_>], data: &[u8]) -> Pr
 
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
 
-    check_omnibus(omnibus_info, vm_info)?;
+    check_omnibus(omnibus_info, vm_info, vm)?;
     check_memory(vm_memory_info, vm_info)?;
 
     let va = try_read(&vm_memory_info, args.account_index)?;
@@ -164,7 +164,7 @@ pub fn process_deposit_with_authority(accounts: &[AccountInfo<'_>], data: &[u8])
 
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
 
-    check_omnibus(omnibus_info, vm_info)?;
+    check_omnibus(omnibus_info, vm_info, vm)?;
     check_memory(vm_memory_info, vm_info)?;
 
     let va = try_read(&vm_memory_info, args.account_index)?;

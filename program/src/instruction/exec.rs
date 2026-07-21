@@ -59,17 +59,17 @@ pub fn process_exec(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult 
 
     match ix {
 
-        Opcode::TransferOp             => process_transfer(&ctx, &args),
-        Opcode::WithdrawOp             => process_withdraw(&ctx, &args),
-        Opcode::RelayOp                => process_relay(&ctx, &args),
+        Opcode::TransferOp             => process_transfer(&ctx, &args, vm),
+        Opcode::WithdrawOp             => process_withdraw(&ctx, &args, vm),
+        Opcode::RelayOp                => process_relay(&ctx, &args, vm),
 
-        Opcode::ExternalTransferOp     => process_external_transfer(&ctx, &args),
-        Opcode::ExternalWithdrawOp     => process_external_withdraw(&ctx, &args),
+        Opcode::ExternalTransferOp     => process_external_transfer(&ctx, &args, vm),
+        Opcode::ExternalWithdrawOp     => process_external_withdraw(&ctx, &args, vm),
         Opcode::ExternalRelayOp        => process_external_relay(&ctx, &args),
 
-        Opcode::ConditionalTransferOp  => process_conditional_transfer(&ctx, &args),
+        Opcode::ConditionalTransferOp  => process_conditional_transfer(&ctx, &args, vm),
 
-        Opcode::AirdropOp              => process_airdrop(&ctx, &args),
+        Opcode::AirdropOp              => process_airdrop(&ctx, &args, vm),
 
         _ => Err(ProgramError::InvalidInstructionData),
     }?;

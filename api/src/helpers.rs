@@ -83,7 +83,21 @@ pub fn check_uninitialized_pda(account: &AccountInfo, seeds: &[&[u8]], bump: u8,
 }
 
 pub fn check_seeds(account: &AccountInfo, seeds: &[&[u8]], bump: u8, program_id: &Pubkey) -> ProgramResult {
-    account.has_seeds(seeds, bump, program_id)?;
+    // The bump is program-stored state proven canonical at init time by
+    // check_uninitialized_pda, so a single create_program_address is
+    // sufficient here (avoids walking bumps with find_program_address).
+    let bump_seed = &[bump];
+    let mut full_seeds: Vec<&[u8]> = Vec::with_capacity(seeds.len() + 1);
+    full_seeds.extend_from_slice(seeds);
+    full_seeds.push(bump_seed);
+
+    let pda = Pubkey::create_program_address(&full_seeds, program_id)
+        .map_err(|_| ProgramError::InvalidSeeds)?;
+
+    if account.key.ne(&pda) {
+        return Err(ProgramError::InvalidSeeds);
+    }
+
     Ok(())
 }
 
@@ -263,11 +277,10 @@ pub fn check_relay(
 }
 
 pub fn check_omnibus(
-    omnibus_info: &AccountInfo<'_>, 
-    vm_info: &AccountInfo<'_>
+    omnibus_info: &AccountInfo<'_>,
+    vm_info: &AccountInfo<'_>,
+    vm: &CodeVmAccount,
 ) -> ProgramResult {
-    let vm = load_vm(vm_info)?;
-
     check_seeds(
         omnibus_info, 
         &[

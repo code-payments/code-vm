@@ -30,9 +30,9 @@ use crate::ExecContext;
 pub fn process_airdrop(
     ctx: &ExecContext,
     data: &ExecIxData,
+    vm: &CodeVmAccount,
 ) -> ProgramResult {
 
-    let vm = load_vm(ctx.vm_info)?;
     let args = AirdropOp::try_from_bytes(&data.data)?.to_struct()?;
 
     let mem_indicies = &data.mem_indicies;

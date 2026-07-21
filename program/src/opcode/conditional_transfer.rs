@@ -29,8 +29,7 @@ use crate::ExecContext;
     0. signature: [u8;64]  - The opcode to execute.
     1. amount: [u64]       - The account_indicies of the virtual accounts to use.
 */
-pub fn process_conditional_transfer(ctx: &ExecContext, data: &ExecIxData) -> ProgramResult {
-    let vm = load_vm(ctx.vm_info)?;
+pub fn process_conditional_transfer(ctx: &ExecContext, data: &ExecIxData, vm: &CodeVmAccount) -> ProgramResult {
     let args = ConditionalTransferOp::try_from_bytes(&data.data)?.to_struct()?;
 
     check_condition(
@@ -55,7 +54,7 @@ pub fn process_conditional_transfer(ctx: &ExecContext, data: &ExecIxData) -> Pro
     check_mut(omnibus_info)?;
     check_mut(external_address_info)?;
     check_program(token_program_info, &spl_token::id())?;
-    check_omnibus(omnibus_info, ctx.vm_info)?;
+    check_omnibus(omnibus_info, ctx.vm_info, vm)?;
 
     let mem_indicies = &data.mem_indicies;
     let mem_banks = &data.mem_banks;

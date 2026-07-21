@@ -29,9 +29,9 @@ use crate::ExecContext;
 pub fn process_external_withdraw(
     ctx: &ExecContext,
     data: &ExecIxData,
+    vm: &CodeVmAccount,
 ) -> ProgramResult {
 
-    let vm = load_vm(ctx.vm_info)?;
     let args = ExternalWithdrawOp::try_from_bytes(&data.data)?;
 
     check_condition(

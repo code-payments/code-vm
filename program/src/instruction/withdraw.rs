@@ -66,25 +66,25 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
         withdraw_receipt_info.is_empty()?;
     }
 
-    ctx.check_unlock_state()?;
+    let vm = load_vm(ctx.vm_info)?;
+
+    ctx.check_unlock_state(vm)?;
 
     match args {
 
-        WithdrawIxData::FromDeposit { .. } => 
+        WithdrawIxData::FromDeposit { .. } =>
             process_withdraw_from_deposit(&ctx, &args),
 
-        WithdrawIxData::FromSwap { .. } => 
+        WithdrawIxData::FromSwap { .. } =>
             process_withdraw_from_swap(&ctx, &args),
 
-        WithdrawIxData::FromMemory { .. } => 
-            process_withdraw_from_memory(&ctx, &args),
+        WithdrawIxData::FromMemory { .. } =>
+            process_withdraw_from_memory(&ctx, &args, vm),
 
-        WithdrawIxData::FromStorage { .. } => 
-            process_withdraw_from_storage(&ctx, &args),
+        WithdrawIxData::FromStorage { .. } =>
+            process_withdraw_from_storage(&ctx, &args, vm),
 
     }?;
-
-    let vm = load_vm(ctx.vm_info)?;
 
     vm.advance_poh(CodeInstruction::WithdrawIx, accounts, data);
 
@@ -94,6 +94,7 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
 fn process_withdraw_from_memory(
     ctx: &WithdrawContext,
     data: &WithdrawIxData,
+    vm: &CodeVmAccount,
 ) -> ProgramResult {
     let account_index = match data {
         WithdrawIxData::FromMemory { account_index } => Ok(*account_index),
@@ -111,7 +112,6 @@ fn process_withdraw_from_memory(
     )?;
 
     let vm_info = ctx.vm_info;
-    let vm = load_vm(vm_info)?;
 
     let vm_omnibus = ctx.vm_omnibus.unwrap();
     let vm_memory_info = ctx.vm_memory_info.unwrap();
@@ -147,6 +147,7 @@ fn process_withdraw_from_memory(
 fn process_withdraw_from_storage(
     ctx: &WithdrawContext,
     data: &WithdrawIxData,
+    vm: &CodeVmAccount,
 ) -> ProgramResult {
     let (packed_va, proof, signature) = match data {
         WithdrawIxData::FromStorage {
@@ -158,7 +159,6 @@ fn process_withdraw_from_storage(
     }?;
 
     let vm_info = ctx.vm_info;
-    let vm = load_vm(vm_info)?;
 
     let va = VirtualAccount::unpack(packed_va)?;
     let vta = va.into_inner_timelock().unwrap();
@@ -364,12 +364,11 @@ impl<'a, 'b> WithdrawContext<'a, 'b> {
         })
     }
 
-    pub fn check_unlock_state(&self) -> Result<(Pubkey, u8), ProgramError> {
+    pub fn check_unlock_state(&self, vm: &CodeVmAccount) -> Result<(Pubkey, u8), ProgramError> {
         // Here we're going to derive the unlock address from the owner pubkey
         // and check that it has the correct unlocked state.
 
         let owner = self.depositor_info.key;
-        let vm = load_vm(self.vm_info)?;
 
         let (timelock_address, _) = find_virtual_timelock_address(
             &vm.get_mint(),

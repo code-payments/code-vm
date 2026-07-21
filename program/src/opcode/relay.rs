@@ -31,9 +31,9 @@ use crate::ExecContext;
 pub fn process_relay(
     ctx: &ExecContext,
     data: &ExecIxData,
+    vm: &CodeVmAccount,
 ) -> ProgramResult {
 
-    let vm = load_vm(ctx.vm_info)?;
     let args = RelayOp::try_from_bytes(&data.data)?.to_struct()?;
 
     check_condition(
@@ -65,7 +65,7 @@ pub fn process_relay(
     check_mut(relay_info)?;
     check_mut(relay_vault_info)?;
     check_program(token_program_info, &spl_token::id())?;
-    check_omnibus(omnibus_info, ctx.vm_info)?;
+    check_omnibus(omnibus_info, ctx.vm_info, vm)?;
     check_relay(relay_info, ctx.vm_info)?;
 
     let mem_indicies = &data.mem_indicies;

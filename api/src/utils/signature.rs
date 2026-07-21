@@ -3,7 +3,7 @@ use std::mem::MaybeUninit;
 use curve25519_dalek::scalar::Scalar;
 use solana_ed25519_sha512::hash;
 use solana_curve25519::{
-    edwards::{ subtract_edwards, multiply_edwards, validate_edwards, PodEdwardsPoint },
+    edwards::{ subtract_edwards, multiply_edwards, PodEdwardsPoint },
     scalar::PodScalar,
 };
 
@@ -48,16 +48,12 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
         return Err(ProgramError::InvalidAccountOwner);
     }
 
-    // Note, the point validation below is optional. The internal
-    // PodEdwardsPoint decompress logic is already doing this check. 
-    // But, this makes it explicit in case the internal logic changes.
-
-    // (Remove this check if CU usage is a concern)
-    let pubkey_on_curve = validate_edwards(&pubkey_point);
-    let sig_R_on_curve = validate_edwards(&sig_R);
-    if !pubkey_on_curve || !sig_R_on_curve {
-        return Err(ProgramError::InvalidAccountOwner);
-    }
+    // Explicit validate_edwards checks are omitted as redundant:
+    //  - The pubkey is validated by multiply_edwards below, which fails on
+    //    invalid point encodings (hence ok_or rather than unwrap).
+    //  - sig_R is never decompressed; it is only byte-compared against the
+    //    canonically compressed R we compute, so an off-curve or
+    //    non-canonical sig_R can never match and is rejected for free.
 
     // let mut h: Sha512 = Sha512::new(); // <- Expensive, no system calls available yet.
     // h.update(sig_R.0);
@@ -84,9 +80,14 @@ pub fn sig_verify(pubkey: &[u8], sig: &[u8], message: &[u8]) -> Result<(), Progr
 
     // R = sB - kA
 
-    let sB = multiply_edwards(&b, &B).unwrap();
-    let kA = multiply_edwards(&a, &PodEdwardsPoint(pubkey_bytes)).unwrap();
-    let R = subtract_edwards(&sB, &kA).unwrap();
+    // These must propagate errors: with no explicit validation above,
+    // multiply_edwards failing is what rejects an invalid pubkey.
+    let sB = multiply_edwards(&b, &B)
+        .ok_or(ProgramError::InvalidAccountOwner)?;
+    let kA = multiply_edwards(&a, &PodEdwardsPoint(pubkey_bytes))
+        .ok_or(ProgramError::InvalidAccountOwner)?;
+    let R = subtract_edwards(&sB, &kA)
+        .ok_or(ProgramError::InvalidAccountOwner)?;
 
     let expected_R = sig_R.0;
     let computed_R = R.0;

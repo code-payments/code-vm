@@ -67,6 +67,14 @@ pub fn process_init_timelock(accounts: &[AccountInfo<'_>], data: &[u8]) -> Progr
         return Err(ProgramError::InvalidArgument);
     }
 
+    let (_, vault_bump) = pdas::find_virtual_timelock_vault_address(
+        &timelock_address,
+    );
+
+    if args.virtual_vault_bump != vault_bump {
+        return Err(ProgramError::InvalidArgument);
+    }
+
     let (unlock_address, unlock_bump) = pdas::find_unlock_address(
         &owner, 
         &timelock_address, 

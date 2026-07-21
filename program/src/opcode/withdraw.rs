@@ -29,9 +29,9 @@ use crate::ExecContext;
 pub fn process_withdraw(
     ctx: &ExecContext,
     data: &ExecIxData,
+    vm: &CodeVmAccount,
 ) -> ProgramResult {
 
-    let vm = load_vm(ctx.vm_info)?;
     let args = WithdrawOp::try_from_bytes(&data.data)?;
 
     let mem_indicies = &data.mem_indicies;
