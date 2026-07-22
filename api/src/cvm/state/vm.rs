@@ -46,17 +46,45 @@ impl CodeVmAccount {
         accounts: &[AccountInfo],
         data: &[u8],
     ) {
-        let mut message = Vec::new();
-        for account in accounts {
-            message.extend_from_slice(account.key.as_ref());
-        }
-        message.extend_from_slice(data);
+        // hashv streams its chunks, so hashing the account keys in place is
+        // byte-for-byte identical to hashing a concatenated buffer, minus the
+        // allocation and the copy of every key.
+        // poh + opcode + accounts + data. Every handler destructures an
+        // exact-length account slice before reaching here, and the largest
+        // takes 14, so 24 leaves headroom without paying to initialise a
+        // needlessly large array. Anything bigger falls back below.
+        const MAX_PARTS: usize = 24;
+        let ix_byte = [ix as u8];
 
-        self.poh = utils::hashv(&[
-            self.poh.as_ref(),
-            &[ix as u8],
-            &message
-        ]);
+        if accounts.len() + 3 <= MAX_PARTS {
+            let mut parts: [&[u8]; MAX_PARTS] = [&[]; MAX_PARTS];
+            let mut n = 0;
+
+            parts[n] = self.poh.as_ref();
+            n += 1;
+            parts[n] = &ix_byte;
+            n += 1;
+            for account in accounts {
+                parts[n] = account.key.as_ref();
+                n += 1;
+            }
+            parts[n] = data;
+            n += 1;
+
+            self.poh = utils::hashv(&parts[..n]);
+        } else {
+            let mut message = Vec::new();
+            for account in accounts {
+                message.extend_from_slice(account.key.as_ref());
+            }
+            message.extend_from_slice(data);
+
+            self.poh = utils::hashv(&[
+                self.poh.as_ref(),
+                &ix_byte,
+                &message
+            ]);
+        }
 
         self.advance_slot();
     }

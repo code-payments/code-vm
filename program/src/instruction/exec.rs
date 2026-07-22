@@ -140,34 +140,22 @@ impl<'a, 'b> ExecContext<'a, 'b> {
     }
 
     pub fn check_memory_banks(&self) -> Result<(), ProgramError> {
-        let mut provided = Vec::with_capacity(4);
+        // Stack array instead of a heap Vec; unused slots hold vm_info as a
+        // placeholder and are never read (the slice is capped at n).
+        let mut provided: [&AccountInfo; 4] = [self.vm_info; 4];
+        let mut n = 0;
 
-        if let Some(mem_a_info) = self.mem_a_info {
-            check_mut(mem_a_info)?;
-            check_memory(mem_a_info, self.vm_info)?;
-            provided.push(mem_a_info);
-        }
-
-        if let Some(mem_b_info) = self.mem_b_info {
-            check_mut(mem_b_info)?;
-            check_memory(mem_b_info, self.vm_info)?;
-            provided.push(mem_b_info);
-        }
-
-        if let Some(mem_c_info) = self.mem_c_info {
-            check_mut(mem_c_info)?;
-            check_memory(mem_c_info, self.vm_info)?;
-            provided.push(mem_c_info);
-        }
-
-        if let Some(mem_d_info) = self.mem_d_info {
-            check_mut(mem_d_info)?;
-            check_memory(mem_d_info, self.vm_info)?;
-            provided.push(mem_d_info);
+        for bank in self.get_banks() {
+            if let Some(mem_info) = bank {
+                check_mut(mem_info)?;
+                check_memory(mem_info, self.vm_info)?;
+                provided[n] = mem_info;
+                n += 1;
+            }
         }
 
         check_unique(
-            &provided,
+            &provided[..n],
             "provided memory banks must be unique",
         )?;
 

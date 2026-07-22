@@ -17,7 +17,21 @@ pub enum VirtualAccount {
     Relay(VirtualRelayAccount),
 }
 
+const fn max3(a: usize, b: usize, c: usize) -> usize {
+    let m = if a > b { a } else { b };
+    if m > c { m } else { c }
+}
+
 impl VirtualAccount {
+    /// The largest packed size of any variant: one variant byte plus the
+    /// biggest inner account. Derived from the variants themselves so it keeps
+    /// tracking them, and small enough to sit on the stack.
+    pub const MAX_PACKED_LEN: usize = 1 + max3(
+        VirtualDurableNonce::LEN,
+        VirtualTimelockAccount::LEN,
+        VirtualRelayAccount::LEN,
+    );
+
     /// Get the size of this enum
     pub fn get_size(&self) -> usize {
         1 + (match self {
@@ -41,14 +55,23 @@ impl VirtualAccount {
 
     /// Get the hash of this VirtualAccount
     pub fn get_hash(&self) -> Hash {
-        utils::hash(self.pack().as_ref())
+        let mut bytes = [0u8; Self::MAX_PACKED_LEN];
+        let size = self.pack_into(&mut bytes).unwrap();
+        utils::hash(&bytes[..size])
     }
 
-    /// Pack this VirtualAccount into a byte array
-    pub fn pack(&self) -> Vec<u8> {
+    /// Pack this VirtualAccount into a caller provided buffer, returning the
+    /// number of bytes written.
+    ///
+    /// The buffer may be larger than needed (callers reuse a MAX_PACKED_LEN
+    /// one), so anything past the returned length is left untouched and must
+    /// not be read.
+    pub fn pack_into(&self, out: &mut [u8]) -> Result<usize, ProgramError> {
         // The first byte is the variant, followed by the data
 
-        let mut bytes = vec![0u8; self.get_size()];
+        let size = self.get_size();
+        let bytes = out.get_mut(..size).ok_or(ProgramError::AccountDataTooSmall)?;
+
         bytes[0] = match self {
             VirtualAccount::Nonce(_) => 0,
             VirtualAccount::Timelock(_) => 1,
@@ -66,6 +89,15 @@ impl VirtualAccount {
                 account.pack(&mut bytes[1..]).unwrap();
             },
         }
+
+        Ok(size)
+    }
+
+    /// Pack this VirtualAccount into a newly allocated byte array. On-chain
+    /// callers should prefer pack_into with a stack buffer.
+    pub fn pack(&self) -> Vec<u8> {
+        let mut bytes = vec![0u8; self.get_size()];
+        self.pack_into(&mut bytes).unwrap();
         bytes
     }
 

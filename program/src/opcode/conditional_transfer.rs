@@ -54,7 +54,7 @@ pub fn process_conditional_transfer(ctx: &ExecContext, data: &ExecIxData, vm: &C
     check_mut(omnibus_info)?;
     check_mut(external_address_info)?;
     check_program(token_program_info, &spl_token::id())?;
-    check_omnibus(omnibus_info, ctx.vm_info, vm)?;
+    check_omnibus(omnibus_info, vm)?;
 
     let mem_indicies = &data.mem_indicies;
     let mem_banks = &data.mem_banks;

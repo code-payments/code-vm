@@ -1,6 +1,5 @@
 use code_vm_api::prelude::*;
 use steel::*;
-use solana_program::msg;
 
 /*
     This instruction is used to finalize a timelock unlock. This allows the 
@@ -73,8 +72,8 @@ pub fn process_unlock(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResul
 
     let now = Clock::get()?.unix_timestamp;
 
-    msg!("current time: {}", now);
-    msg!("unlock time: {}", unlock_pda.unlock_at);
+    // msg!("current time: {}", now);
+    // msg!("unlock time: {}", unlock_pda.unlock_at);
     
     check_condition(
         unlock_pda.unlock_at < now,

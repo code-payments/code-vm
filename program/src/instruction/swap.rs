@@ -137,7 +137,7 @@ pub fn process_cancel_swap(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
 
     let vm = load_vm_checked(vm_info, vm_authority_info)?;
 
-    check_omnibus(omnibus_info, vm_info, vm)?;
+    check_omnibus(omnibus_info, vm)?;
     check_memory(vm_memory_info, vm_info)?;
 
     let va = try_read(&vm_memory_info, args.account_index)?;

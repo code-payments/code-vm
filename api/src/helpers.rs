@@ -86,12 +86,22 @@ pub fn check_seeds(account: &AccountInfo, seeds: &[&[u8]], bump: u8, program_id:
     // The bump is program-stored state proven canonical at init time by
     // check_uninitialized_pda, so a single create_program_address is
     // sufficient here (avoids walking bumps with find_program_address).
-    let bump_seed = &[bump];
-    let mut full_seeds: Vec<&[u8]> = Vec::with_capacity(seeds.len() + 1);
-    full_seeds.extend_from_slice(seeds);
-    full_seeds.push(bump_seed);
+    // Built on the stack; a heap Vec here costs measurable CU on every call.
+    // Sized to the largest seed list we actually use (5 seeds + bump) with
+    // headroom, rather than to Solana's 16-seed ceiling: initialising the
+    // array is itself measurable, so an oversized one is not free. A caller
+    // that outgrows this gets an explicit InvalidSeeds error, not silence.
+    const MAX_SEEDS: usize = 8;
+    if seeds.len() >= MAX_SEEDS {
+        return Err(ProgramError::InvalidSeeds);
+    }
 
-    let pda = Pubkey::create_program_address(&full_seeds, program_id)
+    let bump_seed = [bump];
+    let mut full_seeds: [&[u8]; MAX_SEEDS] = [&[]; MAX_SEEDS];
+    full_seeds[..seeds.len()].copy_from_slice(seeds);
+    full_seeds[seeds.len()] = &bump_seed;
+
+    let pda = Pubkey::create_program_address(&full_seeds[..seeds.len() + 1], program_id)
         .map_err(|_| ProgramError::InvalidSeeds)?;
 
     if account.key.ne(&pda) {
@@ -278,18 +288,11 @@ pub fn check_relay(
 
 pub fn check_omnibus(
     omnibus_info: &AccountInfo<'_>,
-    vm_info: &AccountInfo<'_>,
     vm: &CodeVmAccount,
 ) -> ProgramResult {
-    check_seeds(
-        omnibus_info, 
-        &[
-            CODE_VM, 
-            VM_OMNIBUS,
-            vm_info.key.as_ref()
-        ],
-        vm.get_omnibus_bump(), 
-        &crate::ID
+    check_condition(
+        vm.omnibus.vault.eq(omnibus_info.key),
+        "omnibus does not match the vault stored on the VM account",
     )?;
 
     Ok(())
@@ -346,7 +349,9 @@ pub fn try_write<'a>(
     let mut data = MemoryAccount::get_data_mut(vm_memory)?;
     let mut mem = SliceAllocatorMut::try_from_slice_mut(&mut *data, n, m)?;
     
-    let data = &account.pack();
+    let mut buf = [0u8; VirtualAccount::MAX_PACKED_LEN];
+    let size = account.pack_into(&mut buf)?;
+    let data = &buf[..size];
 
     if mem.is_empty(account_index) {
         mem.try_alloc_item(account_index, data.len())?;

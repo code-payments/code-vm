@@ -1,6 +1,5 @@
 use code_vm_api::prelude::*;
 use steel::*;
-use solana_program::msg;
 
 /*
     This instruction is used to begin the unlock process for a timelocked
@@ -120,8 +119,8 @@ pub fn process_init_unlock(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
     unlock_pda.state = TimelockState::WaitingForTimeout as u8;
     unlock_pda.unlock_at = unlock_at;
 
-    msg!("current time: {}", now);
-    msg!("the timelock can be released after: {}", unlock_at);
+    // msg!("current time: {}", now);
+    // msg!("the timelock can be released after: {}", unlock_at);
 
     vm.advance_poh(CodeInstruction::InitUnlockIx, accounts, data);
 
